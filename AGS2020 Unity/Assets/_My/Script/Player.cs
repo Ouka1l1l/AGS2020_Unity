@@ -15,21 +15,45 @@ public class Player : Character
     {
         if (_destination == transform.position)
         {
-            if (Input.GetKey(KeyCode.A))
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
             {
-                SetDestination(Dir.Left);
+                if(Input.GetKey(KeyCode.D))
+                {
+                    SetDestination(Dir.Right);
+                }
+                if(Input.GetKey(KeyCode.A))
+                {
+                    SetDestination(Dir.Left);
+                }
+
+                if (Input.GetKey(KeyCode.W))
+                {
+                    SetDestination(Dir.Top);
+                }
+                else
+                {
+                    SetDestination(Dir.Bottom);
+                }
             }
-            else if (Input.GetKey(KeyCode.D))
+            else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.A))
             {
-                SetDestination(Dir.Right);
-            }
-            else if (Input.GetKey(KeyCode.W))
-            {
-                SetDestination(Dir.Up);
-            }
-            else if (Input.GetKey(KeyCode.S))
-            {
-                SetDestination(Dir.Down);
+                if (Input.GetKey(KeyCode.W))
+                {
+                    SetDestination(Dir.Top);
+                }
+                if (Input.GetKey(KeyCode.S))
+                {
+                    SetDestination(Dir.Bottom);
+                }
+
+                if (Input.GetKey(KeyCode.D))
+                {
+                    SetDestination(Dir.Right);
+                }
+                else
+                {
+                    SetDestination(Dir.Left);
+                }
             }
         }
         Move();

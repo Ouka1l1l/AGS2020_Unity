@@ -7,10 +7,14 @@ public class Character : MonoBehaviour
 
     public enum Dir
     {
-        Up,
-        Down,
-        Left,
+        Top,
+        TopRight,
         Right,
+        BottomRight,
+        Bottom,
+        BottomLeft,
+        Left,
+        TopLeft,
         Max
     }
 
@@ -34,19 +38,39 @@ public class Character : MonoBehaviour
     {
         switch(dir)
         {
-            case Dir.Up:
+            case Dir.Top:
                 _destination.z = transform.position.z + 1;
                 break;
 
-            case Dir.Down:
-                _destination.z = transform.position.z - 1;
+            case Dir.TopRight:
+                _destination.z = transform.position.z + 1;
+                _destination.x = transform.position.x + 1;
                 break;
 
             case Dir.Right:
                 _destination.x = transform.position.x + 1;
                 break;
 
+            case Dir.BottomRight:
+                _destination.z = transform.position.z - 1;
+                _destination.x = transform.position.x + 1;
+                break;
+
+            case Dir.Bottom:
+                _destination.z = transform.position.z - 1;
+                break;
+
+            case Dir.BottomLeft:
+                _destination.z = transform.position.z - 1;
+                _destination.x = transform.position.x - 1;
+                break;
+
             case Dir.Left:
+                _destination.x = transform.position.x - 1;
+                break;
+
+            case Dir.TopLeft:
+                _destination.z = transform.position.z + 1;
                 _destination.x = transform.position.x - 1;
                 break;
 
