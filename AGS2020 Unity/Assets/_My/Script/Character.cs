@@ -7,14 +7,14 @@ public class Character : MonoBehaviour
 
     public enum Dir
     {
-        Top,
-        TopRight,
-        Right,
-        BottomRight,
-        Bottom,
-        BottomLeft,
-        Left,
-        TopLeft,
+        Top = 0,
+        TopRight = 45,
+        Right = 90,
+        BottomRight = 135,
+        Bottom = 180,
+        BottomLeft = 225,
+        Left = 270,
+        TopLeft = 315,
         Max
     }
 
@@ -36,46 +36,54 @@ public class Character : MonoBehaviour
 
     protected void SetDestination(Dir dir)
     {
-        switch(dir)
+        Vector3 tmpDestination = _destination;
+
+        switch (dir)
         {
             case Dir.Top:
-                _destination.z = transform.position.z + 1;
+                tmpDestination.z++;
                 break;
 
             case Dir.TopRight:
-                _destination.z = transform.position.z + 1;
-                _destination.x = transform.position.x + 1;
+                tmpDestination.z++;
+                tmpDestination.x++;
                 break;
 
             case Dir.Right:
-                _destination.x = transform.position.x + 1;
+                tmpDestination.x++;
                 break;
 
             case Dir.BottomRight:
-                _destination.z = transform.position.z - 1;
-                _destination.x = transform.position.x + 1;
+                tmpDestination.z--;
+                tmpDestination.x++;
                 break;
 
             case Dir.Bottom:
-                _destination.z = transform.position.z - 1;
+                tmpDestination.z--;
                 break;
 
             case Dir.BottomLeft:
-                _destination.z = transform.position.z - 1;
-                _destination.x = transform.position.x - 1;
+                tmpDestination.z--;
+                tmpDestination.x--;
                 break;
 
             case Dir.Left:
-                _destination.x = transform.position.x - 1;
+                tmpDestination.x--;
                 break;
 
             case Dir.TopLeft:
-                _destination.z = transform.position.z + 1;
-                _destination.x = transform.position.x - 1;
+                tmpDestination.z--;
+                tmpDestination.x--;
                 break;
 
             default:
                 break;
+        }
+
+        if (DungeonManager.instance._level.GetTerrainData((int)tmpDestination.x, (int)-tmpDestination.z) == Level.TerrainData.floor)
+        {
+            _destination = tmpDestination;
+            transform.rotation = Quaternion.Euler(0, (float)dir, 0);
         }
     }
 
