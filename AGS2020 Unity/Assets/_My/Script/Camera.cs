@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class Camera : MonoBehaviour
 {
+    /// <summary>
+    /// プレイヤー
+    /// </summary>
     [SerializeField]
     private Player _player;
 
+    /// <summary>
+    /// プレイヤーとカメラとの距離
+    /// </summary>
     private Vector3 _offset;
 
     // Start is called before the first frame update

@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-
+    /// <summary>
+    /// 方向
+    /// </summary>
     public enum Dir
     {
         Top = 0,
@@ -18,8 +20,14 @@ public class Character : MonoBehaviour
         Max
     }
 
+    /// <summary>
+    /// 移動先
+    /// </summary>
     protected Vector3 _destination;
 
+    /// <summary>
+    /// 体力
+    /// </summary>
     protected int _hp;
 
     // Start is called before the first frame update
@@ -34,6 +42,10 @@ public class Character : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// 移動先の設定
+    /// </summary>
+    /// <param name="dir"></param> 移動方向
     protected void SetDestination(Dir dir)
     {
         Vector3 tmpDestination = _destination;
@@ -87,11 +99,18 @@ public class Character : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 移動する
+    /// </summary>
     protected void Move()
     {
         transform.position = Vector3.MoveTowards(transform.position, _destination, Time.deltaTime * 2.0f);
     }
 
+    /// <summary>
+    /// ダメージを受ける
+    /// </summary>
+    /// <param name="damage"></param> ダメージ量
     void Damage(int damage)
     {
         _hp -= damage;

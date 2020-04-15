@@ -19,8 +19,14 @@ public class DungeonManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 階層
+    /// </summary>
     public Level _level { get; private set; }
 
+    /// <summary>
+    /// 何階層目か
+    /// </summary>
     private int _hierarchy = 0;
 
     // Start is called before the first frame update
