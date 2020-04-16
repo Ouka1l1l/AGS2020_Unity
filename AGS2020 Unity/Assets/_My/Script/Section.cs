@@ -19,7 +19,7 @@ public class Section
         /// </summary>
         public int width
         {
-            get { return right - left; }
+            get { return (right - left) + 1; }
         }
 
         /// <summary>
@@ -27,7 +27,12 @@ public class Section
         /// </summary>
         public int height
         {
-            get { return bottom - top; }
+            get { return (bottom - top) + 1; }
+        }
+
+        public int Get()
+        {
+            return 1;
         }
 
         public int Area
