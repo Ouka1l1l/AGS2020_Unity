@@ -10,8 +10,8 @@ public class Level : MonoBehaviour
     /// </summary>
     public enum TerrainData
     {
-        floor,
         Wall,
+        floor,
         Max
     }
 
@@ -28,7 +28,7 @@ public class Level : MonoBehaviour
     /// <summary>
     /// 部屋と部屋の余白
     /// </summary>
-    private Vector2Int Margin = new Vector2Int(4,4);
+    private Vector2Int Margin = new Vector2Int(6,6);
     /// <summary>
     /// 部屋の最小サイズ
     /// </summary>
@@ -36,42 +36,44 @@ public class Level : MonoBehaviour
     /// <summary>
     /// 部屋の最大サイズ
     /// </summary>
-    private Vector2Int RoomMax = new Vector2Int(8, 8);
+    private Vector2Int RoomMax = new Vector2Int(10, 10);
 
     public Material material;
 
     private void Awake()
     {
-        _level = new TerrainData[25, 50];
-        _sections = new List<Section>();
+        CreateTerrainData(new Vector2Int(50, 50), 10);
 
-        for (int z = 0; z < _level.GetLength(0); z++)
-        {
-            _level[z, 0] = TerrainData.Wall;
-            _level[z, _level.GetLength(1) - 1] = TerrainData.Wall;
-        }
-
-        for (int x = 0; x < _level.GetLength(1); x++)
-        {
-            _level[0, x] = TerrainData.Wall;
-            _level[_level.GetLength(0) - 1, x] = TerrainData.Wall;
-        }
-
-        for (int z = 0; z < _level.GetLength(0); z++)
+        for (int y = 0; y < _level.GetLength(0); y++)
         {
             for (int x = 0; x < _level.GetLength(1); x++)
             {
                 var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                cube.transform.position = new Vector3(x, -1, -z);
+                cube.transform.position = new Vector3(x, -1, -y);
                 cube.transform.SetParent(transform);
                 cube.GetComponent<Renderer>().material = material;
 
-                //if (_level[z, x] == TerrainData.Wall)
-                //{
-                //    var Wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                //    Wall.transform.position = new Vector3(x, 1, -z);
-                //    Wall.transform.SetParent(cube.transform);
-                //}
+                if (_level[y, x] == TerrainData.Wall)
+                {
+                    var Wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    Wall.transform.position = new Vector3(x, 0, -y);
+                    Wall.transform.SetParent(cube.transform);
+                }
+            }
+        }
+
+        foreach (var section in _sections)
+        {
+            for (int y = section._section.top; y <= section._section.bottom; y++)
+            {
+                for (int x = section._section.left; x <= section._section.right; x++)
+                {
+                    if (x == section._section.left || x == section._section.right || y == section._section.top || y == section._section.bottom)
+                    {
+                        var partition = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        partition.transform.position = new Vector3(x, 1, -y);
+                    }
+                }
             }
         }
     }
@@ -79,28 +81,7 @@ public class Level : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _sections.Add(new Section(0, new Section.Rect(0, _level.GetLength(1) - 1, _level.GetLength(0) - 1, 0)));
-        SectionDivision(10);
 
-        for (int s = 0; s < _sections.Count; s++)
-        {
-            var section = _sections[s]._section;
-            for (int z = section.top; z <= section.bottom; z++)
-            {
-                for (int x = section.left; x <= section.right; x++)
-                {
-                    var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    cube.transform.position = new Vector3(x, 0, -z);
-
-                    if(x == section.left || x == section.right || z == section.top || z == section.bottom)
-                    {
-                        var partition = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                        partition.transform.position = new Vector3(x, 1, -z);
-                        partition.transform.SetParent(cube.transform);
-                    }
-                }
-            }
-        }
     }
 
     // Update is called once per frame
@@ -126,6 +107,8 @@ public class Level : MonoBehaviour
     /// <param name="divisionNum"></param> 分割回数
     private void SectionDivision(int divisionNum)
     {
+        _sections.Add(new Section(0, new Section.Rect(0, _level.GetLength(1) - 1, _level.GetLength(0) - 1, 0)));
+
         for (int d = 0; d < divisionNum; d++)
         {
             var index = GetMaxWidthIndex() ;
@@ -241,5 +224,25 @@ public class Level : MonoBehaviour
         section._adjacentSection.Add(no);
 
         return true;
+    }
+
+    public void CreateTerrainData(Vector2Int mapSize,int divisionNum)
+    {
+        _level = new TerrainData[mapSize.x, mapSize.y];
+        _sections = new List<Section>();
+
+        SectionDivision(divisionNum);
+        foreach (var section in _sections)
+        {
+            section.CreateRoom(RoomMin, RoomMax, Margin);
+
+            for (int y = section._room.top; y <= section._room.bottom; y++)
+            {
+                for (int x = section._room.left; x <= section._room.right; x++)
+                {
+                    _level[y, x] = TerrainData.floor;
+                }
+            }
+        }
     }
 }

@@ -87,4 +87,33 @@ public class Section
     {
         
     }
+
+    public void CreateRoom(Vector2Int min, Vector2Int max, Vector2Int margin)
+    {
+        //部屋に使える広さ
+        int width = _section.width - margin.x;
+        int height = _section.height - margin.y;
+
+        //部屋のサイズ
+        int roomWidth = Random.Range(min.x, width + 1);
+        int roomHeight = Random.Range(min.y, height + 1);
+
+        if(roomWidth > max.x)
+        {
+            roomWidth = max.x;
+        }
+
+        if (roomHeight > max.y)
+        {
+            roomHeight = max.y;
+        }
+
+        width -= roomWidth;
+        height -= roomHeight;
+
+        int roomPosX = _section.left + Random.Range(0, width) + margin.x / 2;
+        int roomPosY = _section.top + Random.Range(0, height) + margin.y / 2;
+
+        _room = new Rect(roomPosY, roomPosX + roomWidth, roomPosY + roomHeight, roomPosX);
+    }
 }
