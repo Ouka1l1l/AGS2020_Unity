@@ -61,21 +61,6 @@ public class Level : MonoBehaviour
                 }
             }
         }
-
-        foreach (var section in _sections)
-        {
-            for (int y = section._section.top; y <= section._section.bottom; y++)
-            {
-                for (int x = section._section.left; x <= section._section.right; x++)
-                {
-                    if (x == section._section.left || x == section._section.right || y == section._section.top || y == section._section.bottom)
-                    {
-                        var partition = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                        partition.transform.position = new Vector3(x, 1, -y);
-                    }
-                }
-            }
-        }
     }
 
     // Start is called before the first frame update
@@ -109,7 +94,7 @@ public class Level : MonoBehaviour
     {
         _sections.Add(new Section(0, new Section.Rect(0, _level.GetLength(1) - 1, _level.GetLength(0) - 1, 0)));
 
-        for (int d = 0; d < divisionNum; d++)
+        for (int d = 1; d < divisionNum; d++)
         {
             var index = GetMaxWidthIndex() ;
 
@@ -137,13 +122,13 @@ public class Level : MonoBehaviour
     private int GetMaxWidthIndex()
     {
         int index = 0;
-        int max = _sections[0]._section.Area;
+        int max = _sections[0]._sectionData.Area;
         for (int s = 1; s < _sections.Count; s++)
         {
-            if (max < _sections[s]._section.Area)
+            if (max < _sections[s]._sectionData.Area)
             {
                 index = s;
-                max = _sections[s]._section.Area;
+                max = _sections[s]._sectionData.Area;
             }
         }
         return index;
@@ -156,7 +141,7 @@ public class Level : MonoBehaviour
     /// <returns></returns> true 横 false 縦
     private bool SelectDivisionDir(int index)
     {
-        return _sections[index]._section.width > _sections[index]._section.height;
+        return _sections[index]._sectionData.width > _sections[index]._sectionData.height;
     }
 
     /// <summary>
@@ -168,14 +153,14 @@ public class Level : MonoBehaviour
     private bool SectionDivisionX(Section section, int no)
     {
         //区画が分割できるサイズがあるか
-        if(section._section.width <= (RoomMin.x + Margin.x) * 2)
+        if(section._sectionData.width <= (RoomMin.x + Margin.x) * 2)
         {
             return false;
         }
 
         int min = (RoomMin.y + Margin.y) - 1;
 
-        var rect = section._section;
+        var rect = section._sectionData;
         int divPointMax = rect.right - min;
         int divPointMin = rect.left + min;
 
@@ -184,9 +169,11 @@ public class Level : MonoBehaviour
         width = Mathf.Min(width, (RoomMax.x + Margin.x) - 1);
 
         int divPoint = divPointMin + Random.Range(0, width + 1);
-        _sections.Add(new Section(no, new Section.Rect(rect.top, rect.right, rect.bottom, divPoint)));
-        section._section.right = divPoint;
-        section._adjacentSection.Add(no);
+        Section newSection = new Section(no, new Section.Rect(rect.top, rect.right, rect.bottom, divPoint));
+        _sections.Add(newSection);
+        newSection.SetAdjacentSection(Dir.Left, section._no);
+        section._sectionData.right = divPoint;
+        section.SetAdjacentSection(Dir.Right, no);
 
         return true;
     }
@@ -200,14 +187,14 @@ public class Level : MonoBehaviour
     private bool SectionDivisionY(Section section, int no)
     {
         //区画が分割できるサイズがあるか
-        if (section._section.height <= ((RoomMin.y + Margin.y) * 2))
+        if (section._sectionData.height <= ((RoomMin.y + Margin.y) * 2))
         {
             return false;
         }
 
         int min = (RoomMin.y + Margin.y) - 1;
 
-        var rect = section._section;
+        var rect = section._sectionData;
         int divPointMin = rect.top + min;
         int divPointMax = rect.bottom - min;
 
@@ -219,16 +206,118 @@ public class Level : MonoBehaviour
 
         Section newSection = new Section(no,new Section.Rect(divPoint, rect.right, rect.bottom, rect.left));
         _sections.Add(newSection);
-        newSection._adjacentSection.Add(section._no);
-        section._section.bottom = divPoint;
-        section._adjacentSection.Add(no);
+        newSection.SetAdjacentSection(Dir.Top, section._no);
+        section._sectionData.bottom = divPoint;
+        section.SetAdjacentSection(Dir.Bottom, no);
 
         return true;
     }
 
+    /// <summary>
+    /// 道を繋げる
+    /// </summary>
+    /// <param name="room1RandomMin"></param> 一つ目の道の開始地点のランダム座標の最小値
+    /// <param name="room1RandomMax"></param> 一つ目の道の開始地点のランダム座標の最大値
+    /// <param name="room1RoadStart"></param> 一つ目の道の開始地点の固定座標の値
+    /// <param name="room2RandomMin"></param> 二つ目の道の開始地点のランダム座標の最小値
+    /// <param name="room2RandomMax"></param> 二つ目の道の開始地点のランダム座標の最大値
+    /// <param name="room2RoadStart"></param> 二つ目の道の開始地点の固定座標の値
+    /// <param name="adjacentPoint"></param> 道同士を繋げるときの基準
+    /// <param name="isRandomX"></param> X座標をランダムにするか
+    private void ConnectingRoad(int room1RandomMin,int room1RandomMax,int room1RoadStart,int room2RandomMin,int room2RandomMax,int room2RoadStart,int adjacentPoint,bool isRandomX)
+    {
+        int tmp1 = Random.Range(room1RandomMin, (room1RandomMax + 1));
+        for (int r = room1RoadStart; r >= adjacentPoint; r--)
+        {
+            if (isRandomX)
+            {
+                _level[r, tmp1] = TerrainData.floor;
+            }
+            else
+            {
+                _level[tmp1, r] = TerrainData.floor;
+            }
+        }
+
+        int tmp2 = Random.Range(room2RandomMin, (room2RandomMax + 1));
+        for (int r = room2RoadStart; r <= adjacentPoint; r++)
+        {
+            if (isRandomX)
+            {
+                _level[r, tmp2] = TerrainData.floor;
+            }
+            else
+            {
+                _level[tmp2, r] = TerrainData.floor;
+            }
+        }
+
+        int adjacentStart;
+        int adjacentEnd;
+        if (tmp1 < tmp2)
+        {
+            adjacentStart = tmp1;
+            adjacentEnd = tmp2;
+        }
+        else
+        {
+            adjacentStart = tmp2;
+            adjacentEnd = tmp1;
+        }
+
+        if(isRandomX)
+        {
+            for (int t = adjacentStart; t <= adjacentEnd; t++)
+            {
+                _level[adjacentPoint, t] = TerrainData.floor;
+            }
+        }
+        else
+        {
+            for (int t = adjacentStart; t <= adjacentEnd; t++)
+            {
+                _level[t, adjacentPoint] = TerrainData.floor;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 道を作成
+    /// </summary>
+    private void CreateRoad()
+    {
+        for (int index = 0; index < _sections.Count; index++)
+        {
+            //区画の情報
+            var sectionData = _sections[index]._sectionData;
+
+            //部屋の情報
+            var room1 = _sections[index]._roomData;
+
+            //隣接部屋の情報
+            Section.Rect room2;
+
+            if (_sections[index]._adjacentSections.ContainsKey(Dir.Top))
+            {
+                room2 = _sections[_sections[index]._adjacentSections[Dir.Top]]._roomData;
+                ConnectingRoad(room1.left, room1.right, room1.top, room2.left, room2.right, room2.bottom, sectionData.top, true);
+            }
+            if (_sections[index]._adjacentSections.ContainsKey(Dir.Left))
+            {
+                room2 = _sections[_sections[index]._adjacentSections[Dir.Left]]._roomData;
+                ConnectingRoad(room1.top, room1.bottom, room1.right, room2.top, room2.bottom, room2.left, sectionData.left, false);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 地形データを作成
+    /// </summary>
+    /// <param name="mapSize"></param> マップの大きさ
+    /// <param name="divisionNum"></param> 部屋の数
     public void CreateTerrainData(Vector2Int mapSize,int divisionNum)
     {
-        _level = new TerrainData[mapSize.x, mapSize.y];
+        _level = new TerrainData[mapSize.y, mapSize.x];
         _sections = new List<Section>();
 
         SectionDivision(divisionNum);
@@ -236,13 +325,15 @@ public class Level : MonoBehaviour
         {
             section.CreateRoom(RoomMin, RoomMax, Margin);
 
-            for (int y = section._room.top; y <= section._room.bottom; y++)
+            for (int y = section._roomData.top; y <= section._roomData.bottom; y++)
             {
-                for (int x = section._room.left; x <= section._room.right; x++)
+                for (int x = section._roomData.left; x <= section._roomData.right; x++)
                 {
                     _level[y, x] = TerrainData.floor;
                 }
             }
         }
+
+        CreateRoad();
     }
 }

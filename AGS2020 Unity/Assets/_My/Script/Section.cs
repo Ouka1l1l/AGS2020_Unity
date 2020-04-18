@@ -57,42 +57,47 @@ public class Section
     /// <summary>
     /// 区画
     /// </summary>
-    public Rect _section;
+    public Rect _sectionData;
 
     /// <summary>
     /// 部屋
     /// </summary>
-    public Rect _room;
+    public Rect _roomData;
 
     /// <summary>
     /// 隣接区画
     /// </summary>
-    public List<int> _adjacentSection { get; private set; }
+    public Dictionary<Dir,int> _adjacentSections { get; private set; }
+
+    /// <summary>
+    /// 隣接区画をセット
+    /// </summary>
+    /// <param name="key"></param> 隣接区画のある方向
+    /// <param name="no"></param> 隣接区画の番号
+    public void SetAdjacentSection(Dir key,int no)
+    {
+        if(_adjacentSections.ContainsKey(key))
+        {
+            _adjacentSections[key] = no;
+        }
+        else
+        {
+            _adjacentSections.Add(key, no);
+        }
+    }
 
     public Section(int no, Rect rect)
     {
         _no = no;
-        _section = rect;
-        _adjacentSection = new List<int>();
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        _sectionData = rect;
+        _adjacentSections = new Dictionary<Dir, int>();
     }
 
     public void CreateRoom(Vector2Int min, Vector2Int max, Vector2Int margin)
     {
         //部屋に使える広さ
-        int width = _section.width - margin.x;
-        int height = _section.height - margin.y;
+        int width = _sectionData.width - margin.x;
+        int height = _sectionData.height - margin.y;
 
         //部屋のサイズ
         int roomWidth = Random.Range(min.x, width + 1);
@@ -111,9 +116,9 @@ public class Section
         width -= roomWidth;
         height -= roomHeight;
 
-        int roomPosX = _section.left + Random.Range(0, width) + margin.x / 2;
-        int roomPosY = _section.top + Random.Range(0, height) + margin.y / 2;
+        int roomPosX = _sectionData.left + Random.Range(0, width) + margin.x / 2;
+        int roomPosY = _sectionData.top + Random.Range(0, height) + margin.y / 2;
 
-        _room = new Rect(roomPosY, roomPosX + roomWidth, roomPosY + roomHeight, roomPosX);
+        _roomData = new Rect(roomPosY, roomPosX + roomWidth, roomPosY + roomHeight, roomPosX);
     }
 }

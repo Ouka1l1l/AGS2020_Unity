@@ -2,24 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 方向
+/// </summary>
+public enum Dir
+{
+    Top = 0,
+    TopRight = 45,
+    Right = 90,
+    BottomRight = 135,
+    Bottom = 180,
+    BottomLeft = 225,
+    Left = 270,
+    TopLeft = 315,
+    Max
+}
+
 public class Character : MonoBehaviour
 {
-    /// <summary>
-    /// 方向
-    /// </summary>
-    public enum Dir
-    {
-        Top = 0,
-        TopRight = 45,
-        Right = 90,
-        BottomRight = 135,
-        Bottom = 180,
-        BottomLeft = 225,
-        Left = 270,
-        TopLeft = 315,
-        Max
-    }
-
     /// <summary>
     /// 移動先
     /// </summary>
@@ -89,6 +89,7 @@ public class Character : MonoBehaviour
                 break;
 
             default:
+                Debug.LogError("CharacterError");
                 break;
         }
 
