@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
+[ExecuteInEditMode]
 public class Level : MonoBehaviour
 {
     /// <summary>
@@ -23,7 +23,7 @@ public class Level : MonoBehaviour
     /// <summary>
     /// 区画
     /// </summary>
-    private List<Section> _sections;
+    public List<Section> _sections { get; private set; }
 
     /// <summary>
     /// 部屋と部屋の余白
@@ -73,6 +73,14 @@ public class Level : MonoBehaviour
     void Update()
     {
         
+    }
+
+    private void OnDestroy()
+    {
+        foreach(Transform child in transform)
+        {
+            DestroyImmediate(child.gameObject);
+        }
     }
 
     /// <summary>
@@ -335,5 +343,33 @@ public class Level : MonoBehaviour
         }
 
         CreateRoad();
+    }
+
+    private void CreateLevel()
+    {
+        foreach (Transform child in transform)
+        {
+            DestroyImmediate(child.gameObject);
+        }
+
+        CreateTerrainData(new Vector2Int(50, 50), 10);
+
+        for (int y = 0; y < _level.GetLength(0); y++)
+        {
+            for (int x = 0; x < _level.GetLength(1); x++)
+            {
+                var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                cube.transform.position = new Vector3(x, -1, -y);
+                cube.transform.SetParent(transform);
+                cube.GetComponent<Renderer>().material = material;
+
+                if (_level[y, x] == TerrainData.Wall)
+                {
+                    var Wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    Wall.transform.position = new Vector3(x, 0, -y);
+                    Wall.transform.SetParent(cube.transform);
+                }
+            }
+        }
     }
 }

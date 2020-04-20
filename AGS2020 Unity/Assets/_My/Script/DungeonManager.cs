@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class DungeonManager : MonoBehaviour
 {
@@ -32,12 +33,20 @@ public class DungeonManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _level = Instantiate((GameObject)Resources.Load("Level")).GetComponent<Level>();
+        CreateLevel();
+        Player player = Instantiate((GameObject)Resources.Load("Player")).GetComponent<Player>();
+        player.Spawn();
+        Camera.main.GetComponent<FollowCamera>().SetTarget(player);
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void CreateLevel()
+    {
+        _level = Instantiate((GameObject)Resources.Load("Level")).GetComponent<Level>();
     }
 }
