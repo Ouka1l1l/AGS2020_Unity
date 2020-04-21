@@ -8,6 +8,8 @@ public class Player : Character
     new void Start()
     {
         base.Start();
+
+        _type = CharacterType.Player;
     }
 
     // Update is called once per frame
@@ -56,16 +58,31 @@ public class Player : Character
                 }
             }
         }
-        Move();
+
+        base.Update();
     }
 
     public void Spawn()
     {
-        var sections = DungeonManager.instance._level._sections;
-        int sectionNo = Random.Range(0, sections.Count);
-        var room = sections[sectionNo]._roomData;
+        Vector2Int pos;
+        bool flag = true;
+        do
+        {
+            var sections = DungeonManager.instance._level._sections;
+            int sectionNo = Random.Range(0, sections.Count);
+            var room = sections[sectionNo]._roomData;
 
-        Vector2Int pos = new Vector2Int(Random.Range(room.left, room.right + 1), -Random.Range(room.top, room.bottom + 1));
-        transform.position = new Vector3(pos.x, 0, pos.y);
+            pos = new Vector2Int(Random.Range(room.left, room.right + 1), Random.Range(room.top, room.bottom + 1));
+
+            if (DungeonManager.instance._level._terrainData[pos.y, pos.x] == Level.TerrainType.Floor)
+            {
+                flag = false;
+            }
+
+        } while (flag);
+
+        transform.position = new Vector3(pos.x, 0, -pos.y);
+        _destination = transform.position;
+        Camera.main.GetComponent<FollowCamera>().SetTarget(this);
     }
 }

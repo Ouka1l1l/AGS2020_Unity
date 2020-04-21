@@ -8,17 +8,23 @@ public class Level : MonoBehaviour
     /// <summary>
     /// 地形情報
     /// </summary>
-    public enum TerrainData
+    public enum TerrainType
     {
         Wall,
-        floor,
+        Floor,
+        Event,
         Max
     }
 
     /// <summary>
     /// 地形データ
     /// </summary>
-    public TerrainData[,] _level { get; private set; }
+    public TerrainType[,] _terrainData { get; private set; }
+
+    /// <summary>
+    /// イベントデータ
+    /// </summary>
+    public Event[,] _eventData { get; private set; }
 
     /// <summary>
     /// 区画
@@ -42,25 +48,7 @@ public class Level : MonoBehaviour
 
     private void Awake()
     {
-        CreateTerrainData(new Vector2Int(50, 50), 10);
 
-        for (int y = 0; y < _level.GetLength(0); y++)
-        {
-            for (int x = 0; x < _level.GetLength(1); x++)
-            {
-                var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                cube.transform.position = new Vector3(x, -1, -y);
-                cube.transform.SetParent(transform);
-                cube.GetComponent<Renderer>().material = material;
-
-                if (_level[y, x] == TerrainData.Wall)
-                {
-                    var Wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    Wall.transform.position = new Vector3(x, 0, -y);
-                    Wall.transform.SetParent(cube.transform);
-                }
-            }
-        }
     }
 
     // Start is called before the first frame update
@@ -89,9 +77,14 @@ public class Level : MonoBehaviour
     /// <param name="x"></param> 横のマス目
     /// <param name="z"></param> 縦のマス目
     /// <returns></returns> 地形情報
-    public TerrainData GetTerrainData(int x,int z)
+    public TerrainType GetTerrainData(int x,int z)
     {
-        return _level[z, x];
+        return _terrainData[z, x];
+    }
+
+    public TerrainType GetTerrainData(Vector2Int vec)
+    {
+        return GetTerrainData(vec.x, vec.y);
     }
 
     /// <summary>
@@ -100,7 +93,7 @@ public class Level : MonoBehaviour
     /// <param name="divisionNum"></param> 分割回数
     private void SectionDivision(int divisionNum)
     {
-        _sections.Add(new Section(0, new Section.Rect(0, _level.GetLength(1) - 1, _level.GetLength(0) - 1, 0)));
+        _sections.Add(new Section(0, new Section.Rect(0, _terrainData.GetLength(1) - 1, _terrainData.GetLength(0) - 1, 0)));
 
         for (int d = 1; d < divisionNum; d++)
         {
@@ -239,11 +232,11 @@ public class Level : MonoBehaviour
         {
             if (isRandomX)
             {
-                _level[r, tmp1] = TerrainData.floor;
+                _terrainData[r, tmp1] = TerrainType.Floor;
             }
             else
             {
-                _level[tmp1, r] = TerrainData.floor;
+                _terrainData[tmp1, r] = TerrainType.Floor;
             }
         }
 
@@ -252,11 +245,11 @@ public class Level : MonoBehaviour
         {
             if (isRandomX)
             {
-                _level[r, tmp2] = TerrainData.floor;
+                _terrainData[r, tmp2] = TerrainType.Floor;
             }
             else
             {
-                _level[tmp2, r] = TerrainData.floor;
+                _terrainData[tmp2, r] = TerrainType.Floor;
             }
         }
 
@@ -277,14 +270,14 @@ public class Level : MonoBehaviour
         {
             for (int t = adjacentStart; t <= adjacentEnd; t++)
             {
-                _level[adjacentPoint, t] = TerrainData.floor;
+                _terrainData[adjacentPoint, t] = TerrainType.Floor;
             }
         }
         else
         {
             for (int t = adjacentStart; t <= adjacentEnd; t++)
             {
-                _level[t, adjacentPoint] = TerrainData.floor;
+                _terrainData[t, adjacentPoint] = TerrainType.Floor;
             }
         }
     }
@@ -325,7 +318,8 @@ public class Level : MonoBehaviour
     /// <param name="divisionNum"></param> 部屋の数
     public void CreateTerrainData(Vector2Int mapSize,int divisionNum)
     {
-        _level = new TerrainData[mapSize.y, mapSize.x];
+        _terrainData = new TerrainType[mapSize.y, mapSize.x];
+        _eventData = new Event[mapSize.y, mapSize.x];
         _sections = new List<Section>();
 
         SectionDivision(divisionNum);
@@ -337,37 +331,61 @@ public class Level : MonoBehaviour
             {
                 for (int x = section._roomData.left; x <= section._roomData.right; x++)
                 {
-                    _level[y, x] = TerrainData.floor;
+                    _terrainData[y, x] = TerrainType.Floor;
                 }
             }
         }
 
+        CreateStairs();
+
         CreateRoad();
     }
 
-    private void CreateLevel()
+    private void CreateStairs()
+    {
+        int no = Random.Range(0, _sections.Count);
+        var room = _sections[no]._roomData;
+
+        //部屋の端は含めないことにする
+        int x = Random.Range(room.left + 1, room.right);
+        int y = Random.Range(room.top + 1, room.bottom);
+        _terrainData[y, x] = TerrainType.Event;
+        _eventData[y, x] = new Stairs();
+    }
+
+    public void CreateLevel(Vector2Int mapSize, int divisionNum)
     {
         foreach (Transform child in transform)
         {
+            foreach (Transform Grandchild in child)
+            {
+                DestroyImmediate(Grandchild.gameObject);
+            }
             DestroyImmediate(child.gameObject);
         }
 
-        CreateTerrainData(new Vector2Int(50, 50), 10);
+        CreateTerrainData(mapSize, divisionNum);
 
-        for (int y = 0; y < _level.GetLength(0); y++)
+        for (int y = 0; y < _terrainData.GetLength(0); y++)
         {
-            for (int x = 0; x < _level.GetLength(1); x++)
+            for (int x = 0; x < _terrainData.GetLength(1); x++)
             {
                 var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 cube.transform.position = new Vector3(x, -1, -y);
                 cube.transform.SetParent(transform);
                 cube.GetComponent<Renderer>().material = material;
 
-                if (_level[y, x] == TerrainData.Wall)
+                if (_terrainData[y, x] == TerrainType.Wall)
                 {
                     var Wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     Wall.transform.position = new Vector3(x, 0, -y);
                     Wall.transform.SetParent(cube.transform);
+                }
+                else if (_terrainData[y, x] == TerrainType.Event)
+                {
+                    var Sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    Sphere.transform.position = new Vector3(x, 1, -y);
+                    Sphere.transform.SetParent(cube.transform);
                 }
             }
         }

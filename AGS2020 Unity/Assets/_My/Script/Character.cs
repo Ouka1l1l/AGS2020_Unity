@@ -18,12 +18,23 @@ public enum Dir
     Max
 }
 
-public class Character : MonoBehaviour
+public abstract class Character : MonoBehaviour
 {
+    public enum CharacterType
+    {
+        Enemy,
+        Player,
+        Max
+    }
+
+    public CharacterType _type { get; protected set; }
+
     /// <summary>
     /// 移動先
     /// </summary>
     protected Vector3 _destination;
+
+    bool MoveFlag = false;
 
     /// <summary>
     /// 体力
@@ -37,9 +48,17 @@ public class Character : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    protected void Update()
     {
-
+        if(MoveFlag)
+        {
+            Move();
+            if(_destination == transform.position)
+            {
+                MoveFlag = false;
+                EventRaise();
+            }
+        }
     }
 
     /// <summary>
@@ -93,10 +112,11 @@ public class Character : MonoBehaviour
                 break;
         }
 
-        if (DungeonManager.instance._level.GetTerrainData((int)tmpDestination.x, (int)-tmpDestination.z) == Level.TerrainData.floor)
+        if (DungeonManager.instance._level.GetTerrainData((int)tmpDestination.x, (int)-tmpDestination.z) != Level.TerrainType.Wall)
         {
             _destination = tmpDestination;
             transform.rotation = Quaternion.Euler(0, (float)dir, 0);
+            MoveFlag = true;
         }
     }
 
@@ -115,5 +135,15 @@ public class Character : MonoBehaviour
     void Damage(int damage)
     {
         _hp -= damage;
+    }
+
+    private void EventRaise()
+    {
+        Vector2Int pos = new Vector2Int((int)transform.position.x, -(int)transform.position.z);
+
+        if (DungeonManager.instance._level._terrainData[pos.y, pos.x] == Level.TerrainType.Event)
+        {
+            DungeonManager.instance._level._eventData[pos.y, pos.x].Raise(this);
+        }
     }
 }

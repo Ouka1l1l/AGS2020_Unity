@@ -25,7 +25,6 @@ public class FollowCamera : MonoBehaviour
     void Update()
     {
         transform.position = _target.transform.position + _offset;
-
     }
 
     public void SetTarget(Player target)

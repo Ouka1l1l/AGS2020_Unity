@@ -9,7 +9,7 @@ public class DungeonManager : MonoBehaviour
 
     private void Awake()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
@@ -30,13 +30,14 @@ public class DungeonManager : MonoBehaviour
     /// </summary>
     private int _hierarchy = 0;
 
+    private Player _player;
+
     // Start is called before the first frame update
     void Start()
     {
-        CreateLevel();
-        Player player = Instantiate((GameObject)Resources.Load("Player")).GetComponent<Player>();
-        player.Spawn();
-        Camera.main.GetComponent<FollowCamera>().SetTarget(player);
+        _player = Instantiate((GameObject)Resources.Load("Player")).GetComponent<Player>();
+        _level = Instantiate((GameObject)Resources.Load("Level")).GetComponent<Level>();
+        NextLevel();
     }
 
     // Update is called once per frame
@@ -45,8 +46,10 @@ public class DungeonManager : MonoBehaviour
         
     }
 
-    public void CreateLevel()
+    public void NextLevel()
     {
-        _level = Instantiate((GameObject)Resources.Load("Level")).GetComponent<Level>();
+        _hierarchy++;
+        _level.CreateLevel(new Vector2Int(50, 50), 10);
+        _player.Spawn();
     }
 }
