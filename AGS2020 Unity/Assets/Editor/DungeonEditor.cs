@@ -14,7 +14,7 @@ public class DungeonEdito : Editor
 
         if (GUILayout.Button("ダンジョン生成"))
         {
-            level.SendMessage("CreateLevel");
+            level.SendMessage("Bloock");
             Debug.Log("生成");
         }
     }

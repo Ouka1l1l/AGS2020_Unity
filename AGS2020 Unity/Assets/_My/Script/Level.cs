@@ -359,13 +359,14 @@ public class Level : MonoBehaviour
         {
             foreach (Transform Grandchild in child)
             {
-                DestroyImmediate(Grandchild.gameObject);
+                Destroy(Grandchild.gameObject);
             }
-            DestroyImmediate(child.gameObject);
+            Destroy(child.gameObject);
         }
 
         CreateTerrainData(mapSize, divisionNum);
 
+        //地形情報どうりにブロックを設置
         for (int y = 0; y < _terrainData.GetLength(0); y++)
         {
             for (int x = 0; x < _terrainData.GetLength(1); x++)
