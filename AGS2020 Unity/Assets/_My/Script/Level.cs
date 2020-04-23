@@ -26,6 +26,8 @@ public class Level : MonoBehaviour
     /// </summary>
     public Event[,] _eventData { get; private set; }
 
+    public Character.CharacterType[,] _characterData { get; private set; }
+
     /// <summary>
     /// 区画
     /// </summary>
@@ -77,14 +79,19 @@ public class Level : MonoBehaviour
     /// <param name="x"></param> 横のマス目
     /// <param name="z"></param> 縦のマス目
     /// <returns></returns> 地形情報
-    public TerrainType GetTerrainData(int x,int z)
+    public TerrainType GetTerrainData(int x,int y)
     {
-        return _terrainData[z, x];
+        return _terrainData[y, x];
     }
 
     public TerrainType GetTerrainData(Vector2Int vec)
     {
         return GetTerrainData(vec.x, vec.y);
+    }
+
+    public TerrainType GetTerrainData(float x, float y)
+    {
+        return GetTerrainData((int)y, (int)x);
     }
 
     /// <summary>
@@ -320,6 +327,7 @@ public class Level : MonoBehaviour
     {
         _terrainData = new TerrainType[mapSize.y, mapSize.x];
         _eventData = new Event[mapSize.y, mapSize.x];
+        _characterData = new Character.CharacterType[mapSize.y, mapSize.x];
         _sections = new List<Section>();
 
         SectionDivision(divisionNum);

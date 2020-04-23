@@ -1,25 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
-public class DungeonManager : MonoBehaviour
+public class DungeonManager : Singleton<DungeonManager>
 {
-    static public DungeonManager instance;
-
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-
     /// <summary>
     /// 階層
     /// </summary>

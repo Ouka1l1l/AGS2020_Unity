@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 階段イベント
+/// </summary>
 public class Stairs : Event
 {
     private void Awake()

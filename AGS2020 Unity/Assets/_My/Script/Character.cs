@@ -22,6 +22,7 @@ public abstract class Character : MonoBehaviour
 {
     public enum CharacterType
     {
+        Non,
         Enemy,
         Player,
         Max
@@ -36,6 +37,8 @@ public abstract class Character : MonoBehaviour
 
     bool MoveFlag = false;
 
+    Dir _dir;
+
     /// <summary>
     /// 体力
     /// </summary>
@@ -45,6 +48,8 @@ public abstract class Character : MonoBehaviour
     protected void Start()
     {
         _destination = transform.position;
+        _dir = Dir.Bottom;
+        transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
     }
 
     // Update is called once per frame
@@ -56,9 +61,60 @@ public abstract class Character : MonoBehaviour
             if(_destination == transform.position)
             {
                 MoveFlag = false;
+                DungeonManager.instance._level._characterData[(int)-transform.position.z, (int)transform.position.x] = _type;
                 EventRaise();
             }
         }
+    }
+
+    protected Vector2Int GetFrontPosition()
+    {
+        Vector2Int ret = new Vector2Int((int)transform.position.x, (int)transform.position.z);
+
+        switch (_dir)
+        {
+            case Dir.Top:
+                ret.y++;
+                break;
+
+            case Dir.TopRight:
+                ret.y++;
+                ret.x++;
+                break;
+
+            case Dir.Right:
+                ret.x++;
+                break;
+
+            case Dir.BottomRight:
+                ret.y--;
+                ret.x++;
+                break;
+
+            case Dir.Bottom:
+                ret.y--;
+                break;
+
+            case Dir.BottomLeft:
+                ret.y--;
+                ret.x--;
+                break;
+
+            case Dir.Left:
+                ret.x--;
+                break;
+
+            case Dir.TopLeft:
+                ret.y--;
+                ret.x--;
+                break;
+
+            default:
+                Debug.LogError("CharacterFrontError");
+                break;
+        }
+
+        return ret;
     }
 
     /// <summary>
@@ -67,56 +123,15 @@ public abstract class Character : MonoBehaviour
     /// <param name="dir"></param> 移動方向
     protected void SetDestination(Dir dir)
     {
-        Vector3 tmpDestination = _destination;
+        _dir = dir;
+        Vector2Int tmpDestination = GetFrontPosition();
 
-        switch (dir)
+        transform.rotation = Quaternion.Euler(0, (float)dir, 0);
+        if (DungeonManager.instance._level.GetTerrainData(tmpDestination.x, -tmpDestination.y) != Level.TerrainType.Wall)
         {
-            case Dir.Top:
-                tmpDestination.z++;
-                break;
-
-            case Dir.TopRight:
-                tmpDestination.z++;
-                tmpDestination.x++;
-                break;
-
-            case Dir.Right:
-                tmpDestination.x++;
-                break;
-
-            case Dir.BottomRight:
-                tmpDestination.z--;
-                tmpDestination.x++;
-                break;
-
-            case Dir.Bottom:
-                tmpDestination.z--;
-                break;
-
-            case Dir.BottomLeft:
-                tmpDestination.z--;
-                tmpDestination.x--;
-                break;
-
-            case Dir.Left:
-                tmpDestination.x--;
-                break;
-
-            case Dir.TopLeft:
-                tmpDestination.z--;
-                tmpDestination.x--;
-                break;
-
-            default:
-                Debug.LogError("CharacterError");
-                break;
-        }
-
-        if (DungeonManager.instance._level.GetTerrainData((int)tmpDestination.x, (int)-tmpDestination.z) != Level.TerrainType.Wall)
-        {
-            _destination = tmpDestination;
-            transform.rotation = Quaternion.Euler(0, (float)dir, 0);
+            _destination = new Vector3(tmpDestination.x, _destination.y, tmpDestination.y);
             MoveFlag = true;
+            //DungeonManager.instance._level._characterData[tmpDestination.y, tmpDestination.x] = CharacterType.Non;
         }
     }
 
@@ -126,6 +141,19 @@ public abstract class Character : MonoBehaviour
     protected void Move()
     {
         transform.position = Vector3.MoveTowards(transform.position, _destination, Time.deltaTime * 2.0f);
+    }
+
+    /// <summary>
+    /// 攻撃する
+    /// </summary>
+    protected void Attack()
+    {
+        TextManager.instance.AddText(name + "の攻撃");
+        //Vector2Int flontPos = GetFrontPosition();
+        //if(DungeonManager.instance._level._characterData[flontPos.y, flontPos.x] == CharacterType.Enemy)
+        //{
+
+        //}
     }
 
     /// <summary>

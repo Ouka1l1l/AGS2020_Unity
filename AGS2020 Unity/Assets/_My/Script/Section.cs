@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 区画クラス
+/// </summary>
 public class Section
 {
     /// <summary>
@@ -30,11 +33,9 @@ public class Section
             get { return (bottom - top) + 1; }
         }
 
-        public int Get()
-        {
-            return 1;
-        }
-
+        /// <summary>
+        /// 面積
+        /// </summary>
         public int Area
         {
             get { return width * height; }
@@ -93,6 +94,12 @@ public class Section
         _adjacentSections = new Dictionary<Dir, int>();
     }
 
+    /// <summary>
+    /// 区画内に部屋を作る
+    /// </summary>
+    /// <param name="min"></param> 部屋の最小サイズ
+    /// <param name="max"></param> 部屋の最大サイズ
+    /// <param name="margin"></param> 区画端の余白
     public void CreateRoom(Vector2Int min, Vector2Int max, Vector2Int margin)
     {
         //部屋に使える広さ
@@ -103,6 +110,7 @@ public class Section
         int roomWidth = Random.Range(min.x, width + 1);
         int roomHeight = Random.Range(min.y, height + 1);
 
+        //最大サイズを超えないように調整
         if(roomWidth > max.x)
         {
             roomWidth = max.x;
@@ -113,6 +121,7 @@ public class Section
             roomHeight = max.y;
         }
 
+        //部屋の位置をずらす
         width -= roomWidth;
         height -= roomHeight;
 
