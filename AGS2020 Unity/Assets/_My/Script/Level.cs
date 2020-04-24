@@ -19,12 +19,12 @@ public class Level : MonoBehaviour
     /// <summary>
     /// 地形データ
     /// </summary>
-    public TerrainType[,] _terrainData { get; private set; }
+    private TerrainType[,] _terrainData;
 
     /// <summary>
     /// イベントデータ
     /// </summary>
-    public Event[,] _eventData { get; private set; }
+    private Event[,] _eventData;
 
     public Character.CharacterType[,] _characterData { get; private set; }
 
@@ -45,6 +45,11 @@ public class Level : MonoBehaviour
     /// 部屋の最大サイズ
     /// </summary>
     private Vector2Int RoomMax = new Vector2Int(10, 10);
+
+    private List<Enemy> _enemies;
+
+    private int _enemyMin = 5;
+    private int _enemyMax = 8;
 
     public Material material;
 
@@ -74,21 +79,33 @@ public class Level : MonoBehaviour
     }
 
     /// <summary>
+    /// T型のデータを取得
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="x"></param> 横の座標
+    /// <param name="y"></param> 縦の座標
+    /// <param name="data"></param> データの配列
+    /// <returns></returns> T型のデータ
+    private T GetData<T>(int x,int y,T[,] data)
+    {
+        var grid = DungeonManager.instance.GetGrid(x, y);
+        return data[grid.y, grid.x];
+    }
+
+    /// <summary>
     /// 地形情報を取得
     /// </summary>
-    /// <param name="x"></param> 横のマス目
-    /// <param name="z"></param> 縦のマス目
+    /// <param name="x"></param> 横の座標
+    /// <param name="z"></param> 縦の座標
     /// <returns></returns> 地形情報
     public TerrainType GetTerrainData(int x,int y)
     {
-        return _terrainData[y, x];
+        return GetData(x, y, _terrainData);
     }
-
     public TerrainType GetTerrainData(Vector2Int vec)
     {
         return GetTerrainData(vec.x, vec.y);
     }
-
     public TerrainType GetTerrainData(float x, float y)
     {
         return GetTerrainData((int)y, (int)x);
@@ -374,6 +391,10 @@ public class Level : MonoBehaviour
 
         CreateTerrainData(mapSize, divisionNum);
 
+        //敵を配置
+        _enemies = new List<Enemy>();
+        EnemysSpawn();
+
         //地形情報どうりにブロックを設置
         for (int y = 0; y < _terrainData.GetLength(0); y++)
         {
@@ -398,5 +419,31 @@ public class Level : MonoBehaviour
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// 敵を配置
+    /// </summary>
+    private void EnemysSpawn()
+    {
+        int enemyCount = Random.Range(_enemyMin, _enemyMax + 1);
+        for (int e = 0; e < enemyCount; e++)
+        {
+            Enemy enemy = Instantiate((GameObject)Resources.Load("TestEnemy")).GetComponent<Enemy>();
+            enemy.Spawn(0);
+            _enemies.Add(enemy);
+        }
+    }
+
+    /// <summary>
+    /// 該当マスのイベントを実行する
+    /// </summary>
+    /// <param name="x"></param> 横の座標
+    /// <param name="y"></param> 縦の座標
+    /// <param name="character"></param> 該当マスを踏んだキャラ
+    public void EventRaise(int x, int y,Character character)
+    {
+        var grid = DungeonManager.instance.GetGrid(x, y);
+        _eventData[grid.y, grid.x].Raise(character);
     }
 }

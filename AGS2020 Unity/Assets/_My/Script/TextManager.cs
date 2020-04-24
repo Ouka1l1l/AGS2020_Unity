@@ -13,10 +13,17 @@ public class TextManager : Singleton<TextManager>
     [SerializeField]
     private int _textDisplayMax = 4;
 
+    new private void Awake()
+    {
+        base.Awake();
+
+        _texts = new Queue<string>();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        _texts = new Queue<string>();
+
     }
 
     // Update is called once per frame

@@ -36,4 +36,19 @@ public class DungeonManager : Singleton<DungeonManager>
         _level.CreateLevel(new Vector2Int(50, 50), 10);
         _player.Spawn();
     }
+
+    public Vector2Int GetGrid(int x, int y)
+    {
+        return new Vector2Int(x, -y);
+    }
+
+    public Vector2Int GetGrid(Vector2Int pos)
+    {
+        return GetGrid(pos.x, pos.y);
+    }
+
+    public Vector2Int GetGrid(float x, float y)
+    {
+        return GetGrid((int)x, (int)y);
+    }
 }

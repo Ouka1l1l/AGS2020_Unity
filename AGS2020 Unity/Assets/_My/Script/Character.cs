@@ -37,6 +37,11 @@ public abstract class Character : MonoBehaviour
 
     bool MoveFlag = false;
 
+    /// <summary>
+    /// 行動終了フラグ
+    /// </summary>
+    public bool _turnEnd { get; protected set; }
+
     Dir _dir;
 
     /// <summary>
@@ -44,12 +49,15 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected int _hp;
 
+    protected int _level;
+
     // Start is called before the first frame update
     protected void Start()
     {
         _destination = transform.position;
         _dir = Dir.Bottom;
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
+        _turnEnd = false;
     }
 
     // Update is called once per frame
@@ -127,7 +135,7 @@ public abstract class Character : MonoBehaviour
         Vector2Int tmpDestination = GetFrontPosition();
 
         transform.rotation = Quaternion.Euler(0, (float)dir, 0);
-        if (DungeonManager.instance._level.GetTerrainData(tmpDestination.x, -tmpDestination.y) != Level.TerrainType.Wall)
+        if (DungeonManager.instance._level.GetTerrainData(tmpDestination.x, tmpDestination.y) != Level.TerrainType.Wall)
         {
             _destination = new Vector3(tmpDestination.x, _destination.y, tmpDestination.y);
             MoveFlag = true;
@@ -141,6 +149,14 @@ public abstract class Character : MonoBehaviour
     protected void Move()
     {
         transform.position = Vector3.MoveTowards(transform.position, _destination, Time.deltaTime * 2.0f);
+        if (_destination == transform.position)
+        {
+            MoveFlag = false;
+            DungeonManager.instance._level._characterData[(int)-transform.position.z, (int)transform.position.x] = _type;
+            EventRaise();
+
+            TurnEnd();
+        }
     }
 
     /// <summary>
@@ -160,18 +176,60 @@ public abstract class Character : MonoBehaviour
     /// ダメージを受ける
     /// </summary>
     /// <param name="damage"></param> ダメージ量
-    void Damage(int damage)
+    public void Damage(int damage)
     {
         _hp -= damage;
+
+        string str = string.Format(name + "は、{0:d}ダメージを受けた", damage);
+        TextManager.instance.AddText(str);
     }
 
     private void EventRaise()
     {
-        Vector2Int pos = new Vector2Int((int)transform.position.x, -(int)transform.position.z);
+        Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
 
-        if (DungeonManager.instance._level._terrainData[pos.y, pos.x] == Level.TerrainType.Event)
+        if (DungeonManager.instance._level.GetTerrainData(pos.x, pos.y) == Level.TerrainType.Event)
         {
-            DungeonManager.instance._level._eventData[pos.y, pos.x].Raise(this);
+            DungeonManager.instance._level.EventRaise(pos.x, pos.y, this);
         }
+    }
+
+    protected void Spawn()
+    {
+        Vector2Int pos;
+        bool flag = true;
+        do
+        {
+            var sections = DungeonManager.instance._level._sections;
+            int sectionNo = Random.Range(0, sections.Count);
+            var room = sections[sectionNo]._roomData;
+
+            pos = new Vector2Int(Random.Range(room.left, room.right + 1), -Random.Range(room.top, room.bottom + 1));
+
+            if (DungeonManager.instance._level.GetTerrainData(pos) == Level.TerrainType.Floor)
+            {
+                flag = false;
+            }
+
+        } while (flag);
+
+        transform.position = new Vector3(pos.x, 0, pos.y);
+        _destination = transform.position;
+    }
+
+    /// <summary>
+    /// ターン開始
+    /// </summary>
+    public void TurnStart()
+    {
+        _turnEnd = false;
+    }
+
+    /// <summary>
+    /// 自身の行動終了
+    /// </summary>
+    private void TurnEnd()
+    {
+        _turnEnd = true;
     }
 }
