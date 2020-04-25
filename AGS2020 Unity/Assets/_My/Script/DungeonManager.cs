@@ -14,7 +14,9 @@ public class DungeonManager : Singleton<DungeonManager>
     /// </summary>
     private int _hierarchy = 0;
 
-    private Player _player;
+    public Player _player { get; private set; }
+
+    private int _enemyNo;
 
     // Start is called before the first frame update
     void Start()
@@ -27,7 +29,31 @@ public class DungeonManager : Singleton<DungeonManager>
     // Update is called once per frame
     void Update()
     {
-        
+        if(!_player._turnEnd)
+        {
+
+        }
+        else
+        {
+            var enemy = _level._enemies[_enemyNo];
+            if (!enemy._turnEnd)
+            {
+
+            }
+            else
+            {
+                _enemyNo++;
+                if(_enemyNo < _level._enemies.Count)
+                {
+                    _level._enemies[_enemyNo].TurnStart();
+                }
+                else
+                {
+                    _player.TurnStart();
+                    _enemyNo = 0;
+                }
+            }
+        }
     }
 
     public void NextLevel()

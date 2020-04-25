@@ -28,9 +28,11 @@ public abstract class Enemy : Character
         
     }
 
-    public void Spawn(int level)
+    public void Spawn(int level,int id)
     {
-        base.Spawn();
+        _id = id;
         _level = level;
+
+        base.Spawn();
     }
 }

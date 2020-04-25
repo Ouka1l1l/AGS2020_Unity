@@ -10,11 +10,17 @@ public class Player : Character
         base.Start();
 
         _type = CharacterType.Player;
+        _id = 0;
     }
 
     // Update is called once per frame
     new void Update()
     {
+        if(_turnEnd)
+        {
+            return;
+        }
+
         if (_destination == transform.position)
         {
             if (Input.GetKeyDown(KeyCode.Q))

@@ -10,4 +10,14 @@ public class TestEnemy : Enemy
 
         _enemyType = EnemyType.TestEnemy;
     }
+
+    new void Update()
+    {
+        if(_turnEnd)
+        {
+            return;
+        }
+
+        TurnEnd();
+    }
 }

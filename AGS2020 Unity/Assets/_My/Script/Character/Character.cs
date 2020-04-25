@@ -22,13 +22,14 @@ public abstract class Character : MonoBehaviour
 {
     public enum CharacterType
     {
-        Non,
         Enemy,
         Player,
         Max
     }
 
     public CharacterType _type { get; protected set; }
+
+    protected int _id;
 
     /// <summary>
     /// 移動先
@@ -66,12 +67,6 @@ public abstract class Character : MonoBehaviour
         if(MoveFlag)
         {
             Move();
-            if(_destination == transform.position)
-            {
-                MoveFlag = false;
-                DungeonManager.instance._level._characterData[(int)-transform.position.z, (int)transform.position.x] = _type;
-                EventRaise();
-            }
         }
     }
 
@@ -134,12 +129,17 @@ public abstract class Character : MonoBehaviour
         _dir = dir;
         Vector2Int tmpDestination = GetFrontPosition();
 
+        var level = DungeonManager.instance._level;
+
         transform.rotation = Quaternion.Euler(0, (float)dir, 0);
-        if (DungeonManager.instance._level.GetTerrainData(tmpDestination.x, tmpDestination.y) != Level.TerrainType.Wall)
+        if (level.GetTerrainData(tmpDestination) != Level.TerrainType.Wall)
         {
-            _destination = new Vector3(tmpDestination.x, _destination.y, tmpDestination.y);
-            MoveFlag = true;
-            //DungeonManager.instance._level._characterData[tmpDestination.y, tmpDestination.x] = CharacterType.Non;
+            if (level.GetCharacterData(tmpDestination) == -1)
+            {
+                _destination = new Vector3(tmpDestination.x, _destination.y, tmpDestination.y);
+                MoveFlag = true;
+                level.SetCharacterData(transform.position.x, transform.position.z, -1);
+            }
         }
     }
 
@@ -152,7 +152,7 @@ public abstract class Character : MonoBehaviour
         if (_destination == transform.position)
         {
             MoveFlag = false;
-            DungeonManager.instance._level._characterData[(int)-transform.position.z, (int)transform.position.x] = _type;
+            DungeonManager.instance._level.SetCharacterData(transform.position.x, transform.position.z, _id);
             EventRaise();
 
             TurnEnd();
@@ -165,11 +165,21 @@ public abstract class Character : MonoBehaviour
     protected void Attack()
     {
         TextManager.instance.AddText(name + "の攻撃");
-        //Vector2Int flontPos = GetFrontPosition();
-        //if(DungeonManager.instance._level._characterData[flontPos.y, flontPos.x] == CharacterType.Enemy)
-        //{
 
-        //}
+        var dungeonManager = DungeonManager.instance;
+        Vector2Int frontPos = GetFrontPosition();
+        var characterNo = dungeonManager._level.GetCharacterData(frontPos);
+        if(characterNo != -1)
+        {
+            if(characterNo == 0)
+            {
+                dungeonManager._player.Damage(10);
+            }
+            else
+            {
+                dungeonManager._level._enemies[characterNo - 1].Damage(10);
+            }
+        }
     }
 
     /// <summary>
@@ -208,13 +218,18 @@ public abstract class Character : MonoBehaviour
 
             if (DungeonManager.instance._level.GetTerrainData(pos) == Level.TerrainType.Floor)
             {
-                flag = false;
+                if (DungeonManager.instance._level.GetCharacterData(pos) == -1)
+                {
+                    flag = false;
+                }
             }
 
         } while (flag);
 
         transform.position = new Vector3(pos.x, 0, pos.y);
         _destination = transform.position;
+
+        DungeonManager.instance._level.SetCharacterData(transform.position.x, transform.position.z, _id);
     }
 
     /// <summary>
@@ -222,13 +237,14 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     public void TurnStart()
     {
+        TextManager.instance.AddText(name + "のターン");
         _turnEnd = false;
     }
 
     /// <summary>
     /// 自身の行動終了
     /// </summary>
-    private void TurnEnd()
+    protected void TurnEnd()
     {
         _turnEnd = true;
     }

@@ -26,7 +26,10 @@ public class Level : MonoBehaviour
     /// </summary>
     private Event[,] _eventData;
 
-    public Character.CharacterType[,] _characterData { get; private set; }
+    /// <summary>
+    /// キャラクタデータ
+    /// </summary>
+    private int[,] _characterData;
 
     /// <summary>
     /// 区画
@@ -46,7 +49,7 @@ public class Level : MonoBehaviour
     /// </summary>
     private Vector2Int RoomMax = new Vector2Int(10, 10);
 
-    private List<Enemy> _enemies;
+    public List<Enemy> _enemies { get; private set; }
 
     private int _enemyMin = 5;
     private int _enemyMax = 8;
@@ -84,12 +87,12 @@ public class Level : MonoBehaviour
     /// <typeparam name="T"></typeparam>
     /// <param name="x"></param> 横の座標
     /// <param name="y"></param> 縦の座標
-    /// <param name="data"></param> データの配列
+    /// <param name="dataList"></param> データの配列
     /// <returns></returns> T型のデータ
-    private T GetData<T>(int x,int y,T[,] data)
+    private T GetData<T>(int x,int y,T[,] dataList)
     {
         var grid = DungeonManager.instance.GetGrid(x, y);
-        return data[grid.y, grid.x];
+        return dataList[grid.y, grid.x];
     }
 
     /// <summary>
@@ -104,11 +107,59 @@ public class Level : MonoBehaviour
     }
     public TerrainType GetTerrainData(Vector2Int vec)
     {
-        return GetTerrainData(vec.x, vec.y);
+        return GetData(vec.x, vec.y, _terrainData);
     }
     public TerrainType GetTerrainData(float x, float y)
     {
-        return GetTerrainData((int)y, (int)x);
+        return GetData((int)y, (int)x, _terrainData);
+    }
+
+    /// <summary>
+    /// キャラクタデータを取得
+    /// </summary>
+    /// <param name="x"></param> 横の座標
+    /// <param name="z"></param> 縦の座標
+    /// <returns></returns> キャラクタデータ
+    public int GetCharacterData(int x, int y)
+    {
+        return GetData(x, y, _characterData);
+    }
+    public int GetCharacterData(Vector2Int vec)
+    {
+        return GetData(vec.x, vec.y, _characterData);
+    }
+    public int GetCharacterData(float x, float y)
+    {
+        return GetData((int)y, (int)x, _characterData);
+    }
+
+    /// <summary>
+    /// T型の配列の指定の場所のデータを変更
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="x"></param> 横の座標
+    /// <param name="y"></param> 縦の座標
+    /// <param name="dataList"></param> 変更したいデータ配列
+    /// <param name="data"></param> 変更値
+    private void SetData<T>(int x, int y, T[,] dataList, T data)
+    {
+        var grid = DungeonManager.instance.GetGrid(x, y);
+        dataList[grid.y, grid.x] = data;
+    }
+
+    /// <summary>
+    /// キャラクタデータをセット
+    /// </summary>
+    /// <param name="x"></param> 横の座標
+    /// <param name="z"></param> 縦の座標
+    /// <param name="data"></param> セットする値
+    public void SetCharacterData(int x, int y, int data)
+    {
+        SetData(x, y, _characterData, data);
+    }
+    public void SetCharacterData(float x, float y, int data)
+    {
+        SetData((int)x, (int)y, _characterData, data);
     }
 
     /// <summary>
@@ -344,7 +395,7 @@ public class Level : MonoBehaviour
     {
         _terrainData = new TerrainType[mapSize.y, mapSize.x];
         _eventData = new Event[mapSize.y, mapSize.x];
-        _characterData = new Character.CharacterType[mapSize.y, mapSize.x];
+        _characterData = new int[mapSize.y, mapSize.x];
         _sections = new List<Section>();
 
         SectionDivision(divisionNum);
@@ -391,10 +442,6 @@ public class Level : MonoBehaviour
 
         CreateTerrainData(mapSize, divisionNum);
 
-        //敵を配置
-        _enemies = new List<Enemy>();
-        EnemysSpawn();
-
         //地形情報どうりにブロックを設置
         for (int y = 0; y < _terrainData.GetLength(0); y++)
         {
@@ -417,8 +464,15 @@ public class Level : MonoBehaviour
                     Sphere.transform.position = new Vector3(x, 1, -y);
                     Sphere.transform.SetParent(cube.transform);
                 }
+
+                //キャラクタデータの初期化
+                _characterData[y, x] = -1;
             }
         }
+
+        //敵を配置
+        _enemies = new List<Enemy>();
+        EnemysSpawn();
     }
 
     /// <summary>
@@ -427,10 +481,10 @@ public class Level : MonoBehaviour
     private void EnemysSpawn()
     {
         int enemyCount = Random.Range(_enemyMin, _enemyMax + 1);
-        for (int e = 0; e < enemyCount; e++)
+        for (int e = 1; e <= enemyCount; e++)
         {
             Enemy enemy = Instantiate((GameObject)Resources.Load("TestEnemy")).GetComponent<Enemy>();
-            enemy.Spawn(0);
+            enemy.Spawn(0, e);
             _enemies.Add(enemy);
         }
     }
