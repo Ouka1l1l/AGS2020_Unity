@@ -27,6 +27,10 @@ public class FollowCamera : MonoBehaviour
         transform.position = _target.transform.position + _offset;
     }
 
+    /// <summary>
+    /// フォローするターゲットをセット
+    /// </summary>
+    /// <param name="target"></param> フォローするターゲット
     public void SetTarget(Player target)
     {
         _target = target;

@@ -20,6 +20,9 @@ public enum Dir
 
 public abstract class Character : MonoBehaviour
 {
+    /// <summary>
+    /// キャラのタイプ
+    /// </summary>
     public enum CharacterType
     {
         Enemy,
@@ -27,8 +30,14 @@ public abstract class Character : MonoBehaviour
         Max
     }
 
+    /// <summary>
+    /// 自身のキャラタイプ
+    /// </summary>
     public CharacterType _type { get; protected set; }
 
+    /// <summary>
+    /// 自身のID
+    /// </summary>
     protected int _id;
 
     /// <summary>
@@ -43,6 +52,9 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     public bool _turnEnd { get; protected set; }
 
+    /// <summary>
+    /// 自身の向き
+    /// </summary>
     Dir _dir;
 
     /// <summary>
@@ -50,6 +62,9 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected int _hp;
 
+    /// <summary>
+    /// レベル
+    /// </summary>
     protected int _level;
 
     // Start is called before the first frame update
@@ -70,6 +85,10 @@ public abstract class Character : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 正面の座標を取得
+    /// </summary>
+    /// <returns></returns> 正面の座標
     protected Vector2Int GetFrontPosition()
     {
         Vector2Int ret = new Vector2Int((int)transform.position.x, (int)transform.position.z);
@@ -108,7 +127,7 @@ public abstract class Character : MonoBehaviour
                 break;
 
             case Dir.TopLeft:
-                ret.y--;
+                ret.y++;
                 ret.x--;
                 break;
 
@@ -194,6 +213,9 @@ public abstract class Character : MonoBehaviour
         TextManager.instance.AddText(str);
     }
 
+    /// <summary>
+    /// 足元のイベントを実行
+    /// </summary>
     private void EventRaise()
     {
         Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
@@ -204,6 +226,9 @@ public abstract class Character : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// ダンジョン内にスポーンする
+    /// </summary>
     protected void Spawn()
     {
         Vector2Int pos;
@@ -233,7 +258,7 @@ public abstract class Character : MonoBehaviour
     }
 
     /// <summary>
-    /// ターン開始
+    /// 自身のターン開始
     /// </summary>
     public void TurnStart()
     {
@@ -242,7 +267,7 @@ public abstract class Character : MonoBehaviour
     }
 
     /// <summary>
-    /// 自身の行動終了
+    /// 自身のターン終了
     /// </summary>
     protected void TurnEnd()
     {

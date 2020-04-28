@@ -16,11 +16,20 @@ public class DungeonManager : Singleton<DungeonManager>
 
     public Player _player { get; private set; }
 
+    /// <summary>
+    /// 行動中のエネミー番号
+    /// </summary>
     private int _enemyNo;
+
+    /// <summary>
+    /// 現在のターン数
+    /// </summary>
+    private int turnCount;
 
     // Start is called before the first frame update
     void Start()
     {
+        turnCount = 1;
         _player = Instantiate((GameObject)Resources.Load("Player")).GetComponent<Player>();
         _level = Instantiate((GameObject)Resources.Load("Level")).GetComponent<Level>();
         NextLevel();
@@ -29,12 +38,16 @@ public class DungeonManager : Singleton<DungeonManager>
     // Update is called once per frame
     void Update()
     {
+        //ターン制御
         if(!_player._turnEnd)
         {
-
+            //プレイヤーのターン
         }
         else
         {
+            //エネミーのターン
+
+            //現在行動中のエネミー
             var enemy = _level._enemies[_enemyNo];
             if (!enemy._turnEnd)
             {
@@ -42,20 +55,27 @@ public class DungeonManager : Singleton<DungeonManager>
             }
             else
             {
+                //現在行動中のエネミーのターン終了
                 _enemyNo++;
                 if(_enemyNo < _level._enemies.Count)
                 {
+                    //次のエネミーのターン開始
                     _level._enemies[_enemyNo].TurnStart();
                 }
                 else
                 {
+                    //プレイヤーのターン開始
                     _player.TurnStart();
                     _enemyNo = 0;
+                    turnCount++;
                 }
             }
         }
     }
 
+    /// <summary>
+    /// 次の階に進む
+    /// </summary>
     public void NextLevel()
     {
         _hierarchy++;
@@ -63,16 +83,20 @@ public class DungeonManager : Singleton<DungeonManager>
         _player.Spawn();
     }
 
+    /// <summary>
+    /// 座標をマス目に変換
+    /// </summary>
+    /// <param name="x"></param> X座標
+    /// <param name="y"></param> Y座標
+    /// <returns></returns> マス目
     public Vector2Int GetGrid(int x, int y)
     {
         return new Vector2Int(x, -y);
     }
-
     public Vector2Int GetGrid(Vector2Int pos)
     {
         return GetGrid(pos.x, pos.y);
     }
-
     public Vector2Int GetGrid(float x, float y)
     {
         return GetGrid((int)x, (int)y);

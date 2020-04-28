@@ -16,7 +16,7 @@ public class Player : Character
     // Update is called once per frame
     new void Update()
     {
-        if(_turnEnd)
+        if (_turnEnd)
         {
             return;
         }
@@ -29,45 +29,10 @@ public class Player : Character
             }
             else
             {
-                if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
+                Dir dir;
+                if (GetInputDir(out dir))
                 {
-                    if (Input.GetKey(KeyCode.D))
-                    {
-                        SetDestination(Dir.Right);
-                    }
-                    if (Input.GetKey(KeyCode.A))
-                    {
-                        SetDestination(Dir.Left);
-                    }
-
-                    if (Input.GetKey(KeyCode.W))
-                    {
-                        SetDestination(Dir.Top);
-                    }
-                    else
-                    {
-                        SetDestination(Dir.Bottom);
-                    }
-                }
-                else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.A))
-                {
-                    if (Input.GetKey(KeyCode.W))
-                    {
-                        SetDestination(Dir.Top);
-                    }
-                    if (Input.GetKey(KeyCode.S))
-                    {
-                        SetDestination(Dir.Bottom);
-                    }
-
-                    if (Input.GetKey(KeyCode.D))
-                    {
-                        SetDestination(Dir.Right);
-                    }
-                    else
-                    {
-                        SetDestination(Dir.Left);
-                    }
+                    SetDestination(dir);
                 }
             }
         }
@@ -79,5 +44,60 @@ public class Player : Character
     {
         base.Spawn();
         Camera.main.GetComponent<FollowCamera>().SetTarget(this);
+    }
+
+    /// <summary>
+    /// 入力値に遊びを持たせる
+    /// </summary>
+    /// <param name="input"></param> 入力値
+    /// <returns></returns> 遊びの値を超えたら1.0f 未満なら0.0f
+    private float InputDeadZone(float input)
+    {
+        const float deadZone = 0.5f;
+
+        float ret = 0.0f;
+        if (Mathf.Abs(input) >= deadZone)
+        {
+            if(input > 0)
+            {
+                ret = 1.0f;
+            }
+            else
+            {
+                ret = -1.0f;
+            }
+        }
+        return ret;
+    }
+
+    /// <summary>
+    /// 入力情報から向きを取得
+    /// </summary>
+    /// <param name="dir"></param> 向き
+    /// <returns></returns> 入力があったか
+    private bool GetInputDir(out Dir dir)
+    {
+        float h = Input.GetAxis("Horizontal");
+        h = InputDeadZone(h);
+
+        float v = Input.GetAxis("Vertical");
+        v = InputDeadZone(v);
+
+        if(h == 0.0f && v == 0.0f)
+        {
+            dir = Dir.Max;
+            return false;
+        }
+
+        var angle = Mathf.Atan2(h, v);
+        angle *= Mathf.Rad2Deg;
+
+        if(angle < 0)
+        {
+            angle += 360;
+        }
+
+        dir = (Dir)angle;
+        return true;
     }
 }

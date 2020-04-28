@@ -5,11 +5,20 @@ using TMPro;
 
 public class TextManager : Singleton<TextManager>
 {
+    /// <summary>
+    /// テキストキュー
+    /// </summary>
     private Queue<string> _texts;
 
+    /// <summary>
+    /// テキスト表示コンポーネント
+    /// </summary>
     [SerializeField]
     private TextMeshProUGUI _textMeshPro;
 
+    /// <summary>
+    /// 最大テキスト表示行
+    /// </summary>
     [SerializeField]
     private int _textDisplayMax = 4;
 
@@ -37,6 +46,10 @@ public class TextManager : Singleton<TextManager>
         }
     }
 
+    /// <summary>
+    /// テキストを追加
+    /// </summary>
+    /// <param name="str"></param> 追加する文字列
     public void AddText(string str)
     {
         _texts.Enqueue(str);

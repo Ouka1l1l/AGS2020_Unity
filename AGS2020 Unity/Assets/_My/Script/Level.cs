@@ -10,9 +10,9 @@ public class Level : MonoBehaviour
     /// </summary>
     public enum TerrainType
     {
-        Wall,
-        Floor,
-        Event,
+        Wall,   //壁
+        Floor,  //床
+        Event,  //イベント
         Max
     }
 
@@ -82,12 +82,25 @@ public class Level : MonoBehaviour
     }
 
     /// <summary>
+    /// 現在地の区画データを取得
+    /// </summary>
+    /// <param name="x"></param> X座標
+    /// <param name="y"></param> Y座標
+    /// <returns></returns> 現在地の区画データ
+    public Section GetSectionData(int x,int y)
+    {
+        Vector2Int grid = DungeonManager.instance.GetGrid(x, y);
+        return _sections.Find(s => s._roomData.left <= grid.x && s._roomData.right >= grid.x 
+                                && s._roomData.top <= grid.y && s._roomData.bottom >= grid.y);
+    }
+
+    /// <summary>
     /// T型のデータを取得
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T"></typeparam> 取得したいデータの型
     /// <param name="x"></param> 横の座標
     /// <param name="y"></param> 縦の座標
-    /// <param name="dataList"></param> データの配列
+    /// <param name="dataList"></param> 取得したいデータの配列
     /// <returns></returns> T型のデータ
     private T GetData<T>(int x,int y,T[,] dataList)
     {
@@ -134,9 +147,49 @@ public class Level : MonoBehaviour
     }
 
     /// <summary>
+    /// 周辺のデータを取得
+    /// </summary>
+    /// <typeparam name="T"></typeparam> 取得したいデータの型
+    /// <param name="x"></param> 中心X座標
+    /// <param name="y"></param> 中心Y座標
+    /// <param name="dataList"></param> 取得したいデータの配列
+    /// <param name="rangeX"></param> 取得したい横範囲
+    /// <param name="rangeY"></param> 取得したい縦範囲
+    /// <returns></returns> 周辺のデータリスト
+    private List<T> GetSurroundingData<T>(int x,int y,T[,] dataList,int rangeX,int rangeY)
+    {
+        List<T> ret = new List<T>();
+        for (int ry = -rangeY; ry <= rangeY; ry++)
+        {
+            for (int rx = -rangeX; rx <= rangeX; rx++)
+            {
+                if (ry != 0 || rx != 0)
+                {
+                    ret.Add(GetData(x + rx, y + ry, dataList));
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /// <summary>
+    /// 周辺のキャラデータを取得
+    /// </summary>
+    /// <param name="x"></param> 中心X座標
+    /// <param name="y"></param> 中心Y座標
+    /// <param name="rangeX"></param> 取得したい横範囲
+    /// <param name="rangeY"></param> 取得したい縦範囲
+    /// <returns></returns> 周辺のキャラデータリスト
+    public List<int> GetSurroundingCharacterData(int x,int y, int rangeX, int rangeY)
+    {
+        return GetSurroundingData(x, y, _characterData, rangeX, rangeY);
+    }
+
+    /// <summary>
     /// T型の配列の指定の場所のデータを変更
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T"></typeparam> 変更したいデータの型
     /// <param name="x"></param> 横の座標
     /// <param name="y"></param> 縦の座標
     /// <param name="dataList"></param> 変更したいデータ配列
