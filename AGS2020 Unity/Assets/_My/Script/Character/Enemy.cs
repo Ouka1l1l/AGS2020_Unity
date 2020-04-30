@@ -13,7 +13,7 @@ public abstract class Enemy : Character
     public EnemyType _enemyType { get; protected set; }
 
     // Start is called before the first frame update
-    new void Start()
+    new protected void Start()
     {
         base.Start();
 
@@ -23,9 +23,15 @@ public abstract class Enemy : Character
     }
 
     // Update is called once per frame
-    void Update()
+    new protected void Update()
     {
-        
+        if (_destination == transform.position)
+        {
+            int d = Random.Range(0, (int)Dir.Max);
+            SetDestination((Dir)(d * 45));
+        }
+
+        base.Update();
     }
 
     public void Spawn(int level,int id)

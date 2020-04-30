@@ -18,6 +18,6 @@ public class TestEnemy : Enemy
             return;
         }
 
-        TurnEnd();
+        base.Update();
     }
 }

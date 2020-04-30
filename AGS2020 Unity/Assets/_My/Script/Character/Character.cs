@@ -15,7 +15,7 @@ public enum Dir
     BottomLeft = 225,
     Left = 270,
     TopLeft = 315,
-    Max
+    Max = 8
 }
 
 public abstract class Character : MonoBehaviour
@@ -50,7 +50,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 行動終了フラグ
     /// </summary>
-    public bool _turnEnd { get; protected set; }
+    public bool _turnEnd { get; protected set; } = true;
 
     /// <summary>
     /// 自身の向き
@@ -167,7 +167,7 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected void Move()
     {
-        transform.position = Vector3.MoveTowards(transform.position, _destination, Time.deltaTime * 2.0f);
+        transform.position = Vector3.MoveTowards(transform.position, _destination, Time.deltaTime * 5.0f);
         if (_destination == transform.position)
         {
             MoveFlag = false;

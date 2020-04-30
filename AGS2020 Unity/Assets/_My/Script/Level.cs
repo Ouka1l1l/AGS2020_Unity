@@ -524,7 +524,6 @@ public class Level : MonoBehaviour
         }
 
         //敵を配置
-        _enemies = new List<Enemy>();
         EnemysSpawn();
     }
 
@@ -533,6 +532,16 @@ public class Level : MonoBehaviour
     /// </summary>
     private void EnemysSpawn()
     {
+        if (_enemies != null)
+        {
+            foreach (var enemy in _enemies)
+            {
+                Destroy(enemy.gameObject);
+            }
+        }
+
+        _enemies = new List<Enemy>();
+
         int enemyCount = Random.Range(_enemyMin, _enemyMax + 1);
         for (int e = 1; e <= enemyCount; e++)
         {
