@@ -34,6 +34,11 @@ public abstract class Enemy : Character
         base.Update();
     }
 
+    public void Ai()
+    {
+
+    }
+
     public void Spawn(int level,int id)
     {
         _id = id;

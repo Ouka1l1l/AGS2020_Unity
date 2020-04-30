@@ -60,12 +60,27 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 体力
     /// </summary>
-    protected int _hp;
+    protected int _hp = 100;
 
     /// <summary>
     /// レベル
     /// </summary>
-    protected int _level;
+    protected int _level = 1;
+
+    /// <summary>
+    /// 経験値
+    /// </summary>
+    protected int _exp;
+
+    /// <summary>
+    /// 攻撃力
+    /// </summary>
+    protected int _atk = 10;
+
+    /// <summary>
+    /// 防御力
+    /// </summary>
+    protected int _def = 5;
 
     // Start is called before the first frame update
     protected void Start()
@@ -158,6 +173,7 @@ public abstract class Character : MonoBehaviour
                 _destination = new Vector3(tmpDestination.x, _destination.y, tmpDestination.y);
                 MoveFlag = true;
                 level.SetCharacterData(transform.position.x, transform.position.z, -1);
+                DungeonManager.instance._level.SetCharacterData(tmpDestination.x, tmpDestination.y, _id);
             }
         }
     }
@@ -171,7 +187,6 @@ public abstract class Character : MonoBehaviour
         if (_destination == transform.position)
         {
             MoveFlag = false;
-            DungeonManager.instance._level.SetCharacterData(transform.position.x, transform.position.z, _id);
             EventRaise();
 
             TurnEnd();
@@ -190,15 +205,28 @@ public abstract class Character : MonoBehaviour
         var characterNo = dungeonManager._level.GetCharacterData(frontPos);
         if(characterNo != -1)
         {
+            Character target;
             if(characterNo == 0)
             {
-                dungeonManager._player.Damage(10);
+                target = dungeonManager._player;
             }
             else
             {
-                dungeonManager._level._enemies[characterNo - 1].Damage(10);
+                target = dungeonManager._level._enemies[characterNo - 1];
             }
+            int damage = DamageCalculation(target._def);
+            target.Damage(damage);
         }
+    }
+
+    private int DamageCalculation(int def)
+    {
+        int ret = _atk - def;
+        if(ret <= 0)
+        {
+            ret = 1;
+        }
+        return ret;
     }
 
     /// <summary>

@@ -12,24 +12,24 @@ public class DungeonManager : Singleton<DungeonManager>
     /// <summary>
     /// 何階層目か
     /// </summary>
-    private int _hierarchy = 0;
+    public int _hierarchy { get; private set; } = 0;
 
     public Player _player { get; private set; }
 
     /// <summary>
-    /// 行動中のエネミー番号
+    /// エネミーのターン開始トリガー
     /// </summary>
-    private int _enemyNo;
+    private bool _enemyTrigger;
 
     /// <summary>
     /// 現在のターン数
     /// </summary>
-    private int turnCount;
+    public int _turnCount { get; private set; }
 
     // Start is called before the first frame update
     void Start()
     {
-        turnCount = 1;
+        _turnCount = 1;
         _player = Instantiate((GameObject)Resources.Load("Player")).GetComponent<Player>();
         _level = Instantiate((GameObject)Resources.Load("Level")).GetComponent<Level>();
         NextLevel();
@@ -47,28 +47,33 @@ public class DungeonManager : Singleton<DungeonManager>
         {
             //エネミーのターン
 
-            //現在行動中のエネミー
-            var enemy = _level._enemies[_enemyNo];
-            if (!enemy._turnEnd)
+            if (_enemyTrigger)
             {
-
+                //エネミーのターン開始
+                foreach (var enemy in _level._enemies)
+                {
+                    enemy.TurnStart();
+                }
+                _enemyTrigger = false;
             }
-            else
+
+            //全員のターンが終了しているかチェック
+            bool enemyTurnEnd = true;
+            foreach (var enemy in _level._enemies)
             {
-                //現在行動中のエネミーのターン終了
-                _enemyNo++;
-                if(_enemyNo < _level._enemies.Count)
+                if(!enemy._turnEnd)
                 {
-                    //次のエネミーのターン開始
-                    _level._enemies[_enemyNo].TurnStart();
+                    enemyTurnEnd = false;
+                    break;
                 }
-                else
-                {
-                    //プレイヤーのターン開始
-                    _player.TurnStart();
-                    _enemyNo = 0;
-                    turnCount++;
-                }
+            }
+
+            if(enemyTurnEnd)
+            {
+                //プレイヤーのターン開始
+                _player.TurnStart();
+                _enemyTrigger = true;
+                _turnCount++;
             }
         }
     }
@@ -81,6 +86,7 @@ public class DungeonManager : Singleton<DungeonManager>
         _hierarchy++;
         _level.CreateLevel(new Vector2Int(50, 50), 10);
         _player.Spawn();
+        _enemyTrigger = true;
     }
 
     /// <summary>
