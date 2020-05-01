@@ -26,6 +26,7 @@ public class Player : Character
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 Attack();
+                return;
             }
             else
             {
@@ -85,7 +86,7 @@ public class Player : Character
 
         if(h == 0.0f && v == 0.0f)
         {
-            dir = Dir.Max;
+            dir = Dir.Bottom;
             return false;
         }
 

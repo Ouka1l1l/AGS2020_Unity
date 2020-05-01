@@ -15,7 +15,14 @@ public enum Dir
     BottomLeft = 225,
     Left = 270,
     TopLeft = 315,
-    Max = 8
+}
+
+public static class DirEnumExtension
+{
+    public static int Max(this Dir dir)
+    {
+        return System.Enum.GetValues(typeof(Dir)).Length;
+    }
 }
 
 public abstract class Character : MonoBehaviour
@@ -55,7 +62,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 自身の向き
     /// </summary>
-    Dir _dir;
+    protected Dir _dir;
 
     /// <summary>
     /// 体力
@@ -155,6 +162,37 @@ public abstract class Character : MonoBehaviour
     }
 
     /// <summary>
+    /// 自身から見てターゲットはどの方向にいるか
+    /// </summary>
+    /// <param name="targetPos"></param> ターゲットの座標
+    /// <returns></returns> 自身から見たターゲットの方向
+    protected Dir GetTargetDir(Vector3 targetPos)
+    {
+        Vector2Int vec = new Vector2Int((int)(targetPos.x - transform.position.x), (int)(targetPos.z - transform.position.z));
+
+        string str = "";
+        if(vec.y == 1)
+        {
+            str = "Top";
+        }
+        else if(vec.y == -1)
+        {
+            str = "Bottom";
+        }
+
+        if(vec.x == -1)
+        {
+            str += "Left";
+        }
+        else if(vec.x == 1)
+        {
+            str += "Right";
+        }
+
+        return (Dir)System.Enum.Parse(typeof(Dir), str);
+    }
+
+    /// <summary>
     /// 移動先の設定
     /// </summary>
     /// <param name="dir"></param> 移動方向
@@ -198,6 +236,8 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected void Attack()
     {
+        transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
+
         TextManager.instance.AddText(name + "の攻撃");
 
         var dungeonManager = DungeonManager.instance;
@@ -217,6 +257,8 @@ public abstract class Character : MonoBehaviour
             int damage = DamageCalculation(target._def);
             target.Damage(damage);
         }
+
+        TurnEnd();
     }
 
     private int DamageCalculation(int def)

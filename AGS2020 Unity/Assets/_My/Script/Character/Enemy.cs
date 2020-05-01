@@ -27,7 +27,19 @@ public abstract class Enemy : Character
     {
         if (_destination == transform.position)
         {
-            int d = Random.Range(0, (int)Dir.Max);
+            var characterDatas = DungeonManager.instance._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
+            foreach(var character in characterDatas)
+            {
+                if(character == 0)
+                {
+                    //攻撃
+                    _dir = GetTargetDir(DungeonManager.instance._player.transform.position);
+                    Attack();
+                    return;
+                }
+            }
+
+            int d = Random.Range(0, _dir.Max());
             SetDestination((Dir)(d * 45));
         }
 

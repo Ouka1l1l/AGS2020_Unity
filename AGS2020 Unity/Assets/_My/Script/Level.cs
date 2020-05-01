@@ -185,6 +185,10 @@ public class Level : MonoBehaviour
     {
         return GetSurroundingData(x, y, _characterData, rangeX, rangeY);
     }
+    public List<int> GetSurroundingCharacterData(float x, float y, int rangeX, int rangeY)
+    {
+        return GetSurroundingData((int)x, (int)y, _characterData, rangeX, rangeY);
+    }
 
     /// <summary>
     /// T型の配列の指定の場所のデータを変更
