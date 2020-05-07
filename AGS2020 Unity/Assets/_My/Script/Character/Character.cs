@@ -52,6 +52,11 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected Vector3 _destination;
 
+    /// <summary>
+    /// 現在いるの部屋の区画番号 部屋にいない場合は-1
+    /// </summary>
+    public int _roomNo;
+
     bool MoveFlag = false;
 
     /// <summary>
@@ -171,20 +176,20 @@ public abstract class Character : MonoBehaviour
         Vector2Int vec = new Vector2Int((int)(targetPos.x - transform.position.x), (int)(targetPos.z - transform.position.z));
 
         string str = "";
-        if(vec.y == 1)
+        if(vec.y > 0)
         {
             str = "Top";
         }
-        else if(vec.y == -1)
+        else if(vec.y < 0)
         {
             str = "Bottom";
         }
 
-        if(vec.x == -1)
+        if(vec.x < 0)
         {
             str += "Left";
         }
-        else if(vec.x == 1)
+        else if(vec.x > 0)
         {
             str += "Right";
         }
@@ -224,6 +229,7 @@ public abstract class Character : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, _destination, Time.deltaTime * 5.0f);
         if (_destination == transform.position)
         {
+            _roomNo = DungeonManager.instance._level.GetRoomNo(transform.position.x, transform.position.z);
             MoveFlag = false;
             EventRaise();
 
@@ -303,10 +309,11 @@ public abstract class Character : MonoBehaviour
     {
         Vector2Int pos;
         bool flag = true;
+        int sectionNo;
         do
         {
             var sections = DungeonManager.instance._level._sections;
-            int sectionNo = Random.Range(0, sections.Count);
+            sectionNo = Random.Range(0, sections.Count);
             var room = sections[sectionNo]._roomData;
 
             pos = new Vector2Int(Random.Range(room.left, room.right + 1), -Random.Range(room.top, room.bottom + 1));
@@ -323,6 +330,7 @@ public abstract class Character : MonoBehaviour
 
         transform.position = new Vector3(pos.x, 0, pos.y);
         _destination = transform.position;
+        _roomNo = sectionNo;
 
         DungeonManager.instance._level.SetCharacterData(transform.position.x, transform.position.z, _id);
     }

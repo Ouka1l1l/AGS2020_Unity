@@ -82,16 +82,26 @@ public class Level : MonoBehaviour
     }
 
     /// <summary>
-    /// 現在地の区画データを取得
+    /// 現在の部屋の区画番号を取得
     /// </summary>
     /// <param name="x"></param> X座標
     /// <param name="y"></param> Y座標
-    /// <returns></returns> 現在地の区画データ
-    public Section GetSectionData(int x,int y)
+    /// <returns></returns> 現在の部屋の区画番号 部屋の中ではない場合は-1
+    public int GetRoomNo(int x,int y)
     {
         Vector2Int grid = DungeonManager.instance.GetGrid(x, y);
-        return _sections.Find(s => s._roomData.left <= grid.x && s._roomData.right >= grid.x 
+        var section = _sections.Find(s => s._roomData.left <= grid.x && s._roomData.right >= grid.x 
                                 && s._roomData.top <= grid.y && s._roomData.bottom >= grid.y);
+        if(section != null)
+        {
+            return section._no;
+        }
+
+        return -1;
+    }
+    public int GetRoomNo(float x, float y)
+    {
+        return GetRoomNo((int)x, (int)y);
     }
 
     /// <summary>

@@ -27,20 +27,30 @@ public abstract class Enemy : Character
     {
         if (_destination == transform.position)
         {
+            var player = DungeonManager.instance._player;
+
             var characterDatas = DungeonManager.instance._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
             foreach(var character in characterDatas)
             {
                 if(character == 0)
                 {
                     //攻撃
-                    _dir = GetTargetDir(DungeonManager.instance._player.transform.position);
+                    _dir = GetTargetDir(player.transform.position);
                     Attack();
                     return;
                 }
             }
 
-            int d = Random.Range(0, _dir.Max());
-            SetDestination((Dir)(d * 45));
+            if ((_roomNo == player._roomNo) && (_roomNo != -1) && (player._roomNo != -1))
+            {
+                _dir = GetTargetDir(player.transform.position);
+                SetDestination(_dir);
+            }
+            else
+            {
+                int d = Random.Range(0, _dir.Max());
+                SetDestination((Dir)(d * 45));
+            }
         }
 
         base.Update();
