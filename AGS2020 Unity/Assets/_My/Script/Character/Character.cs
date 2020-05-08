@@ -23,6 +23,31 @@ public static class DirEnumExtension
     {
         return System.Enum.GetValues(typeof(Dir)).Length;
     }
+
+    public static int One(this Dir dir)
+    {
+        return 360 / System.Enum.GetValues(typeof(Dir)).Length;
+    }
+
+    public static Dir Addition(this Dir dir)
+    {
+        int d = (int)dir + 360 / System.Enum.GetValues(typeof(Dir)).Length;
+        if(d >= 360)
+        {
+            d = d - 360;
+        }
+        return (Dir)d;
+    }
+
+    public static Dir Subtraction(this Dir dir)
+    {
+        int d = (int)dir - 360 / System.Enum.GetValues(typeof(Dir)).Length;
+        if (d < 0)
+        {
+            d = 360 - d;
+        }
+        return (Dir)d;
+    }
 }
 
 public abstract class Character : MonoBehaviour
@@ -56,13 +81,6 @@ public abstract class Character : MonoBehaviour
     /// 現在いるの部屋の区画番号 部屋にいない場合は-1
     /// </summary>
     public int _roomNo;
-
-    bool MoveFlag = false;
-
-    /// <summary>
-    /// 行動終了フラグ
-    /// </summary>
-    public bool _turnEnd { get; protected set; } = true;
 
     /// <summary>
     /// 自身の向き
@@ -100,16 +118,21 @@ public abstract class Character : MonoBehaviour
         _destination = transform.position;
         _dir = Dir.Bottom;
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
-        _turnEnd = false;
     }
 
-    // Update is called once per frame
-    protected void Update()
+    /// <summary>
+    /// 行動を決定する
+    /// </summary>
+    /// <returns></returns> true 行動決定
+    public abstract bool Think();
+
+    /// <summary>
+    /// 行動を実行する
+    /// </summary>
+    /// <returns></returns> true 行動終了
+    public bool Act()
     {
-        if(MoveFlag)
-        {
-            Move();
-        }
+        return Move();
     }
 
     /// <summary>
@@ -159,7 +182,7 @@ public abstract class Character : MonoBehaviour
                 break;
 
             default:
-                Debug.LogError("CharacterFrontError");
+                Debug.LogError("CharacterFrontError" + _dir);
                 break;
         }
 
@@ -201,7 +224,7 @@ public abstract class Character : MonoBehaviour
     /// 移動先の設定
     /// </summary>
     /// <param name="dir"></param> 移動方向
-    protected void SetDestination(Dir dir)
+    protected bool SetDestination(Dir dir)
     {
         _dir = dir;
         Vector2Int tmpDestination = GetFrontPosition();
@@ -214,27 +237,31 @@ public abstract class Character : MonoBehaviour
             if (level.GetCharacterData(tmpDestination) == -1)
             {
                 _destination = new Vector3(tmpDestination.x, _destination.y, tmpDestination.y);
-                MoveFlag = true;
                 level.SetCharacterData(transform.position.x, transform.position.z, -1);
                 DungeonManager.instance._level.SetCharacterData(tmpDestination.x, tmpDestination.y, _id);
+
+                return true;
             }
         }
+
+        return false;
     }
 
     /// <summary>
     /// 移動する
     /// </summary>
-    protected void Move()
+    protected bool Move()
     {
         transform.position = Vector3.MoveTowards(transform.position, _destination, Time.deltaTime * 5.0f);
         if (_destination == transform.position)
         {
             _roomNo = DungeonManager.instance._level.GetRoomNo(transform.position.x, transform.position.z);
-            MoveFlag = false;
             EventRaise();
 
-            TurnEnd();
+            return true;
         }
+
+        return false;
     }
 
     /// <summary>
@@ -263,8 +290,6 @@ public abstract class Character : MonoBehaviour
             int damage = DamageCalculation(target._def);
             target.Damage(damage);
         }
-
-        TurnEnd();
     }
 
     private int DamageCalculation(int def)
@@ -333,22 +358,5 @@ public abstract class Character : MonoBehaviour
         _roomNo = sectionNo;
 
         DungeonManager.instance._level.SetCharacterData(transform.position.x, transform.position.z, _id);
-    }
-
-    /// <summary>
-    /// 自身のターン開始
-    /// </summary>
-    public void TurnStart()
-    {
-        TextManager.instance.AddText(name + "のターン");
-        _turnEnd = false;
-    }
-
-    /// <summary>
-    /// 自身のターン終了
-    /// </summary>
-    protected void TurnEnd()
-    {
-        _turnEnd = true;
     }
 }

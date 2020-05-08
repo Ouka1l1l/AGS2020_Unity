@@ -461,7 +461,6 @@ public class Level : MonoBehaviour
     public void CreateTerrainData(Vector2Int mapSize,int divisionNum)
     {
         _terrainData = new TerrainType[mapSize.y, mapSize.x];
-        _eventData = new Event[mapSize.y, mapSize.x];
         _characterData = new int[mapSize.y, mapSize.x];
         _sections = new List<Section>();
 
@@ -479,6 +478,14 @@ public class Level : MonoBehaviour
             }
         }
 
+        if (_eventData != null)
+        {
+            foreach (var e in _eventData)
+            {
+                Destroy(e.gameObject);
+            }
+        }
+        _eventData = new Event[mapSize.y, mapSize.x];
         CreateStairs();
 
         CreateRoad();
@@ -493,7 +500,9 @@ public class Level : MonoBehaviour
         int x = Random.Range(room.left + 1, room.right);
         int y = Random.Range(room.top + 1, room.bottom);
         _terrainData[y, x] = TerrainType.Event;
-        _eventData[y, x] = new Stairs();
+        Stairs stairs = Instantiate((GameObject)Resources.Load("Stairs")).GetComponent<Stairs>();
+        stairs.SetPos(x, y);
+        _eventData[y, x] = stairs;
     }
 
     public void CreateLevel(Vector2Int mapSize, int divisionNum)
@@ -524,12 +533,6 @@ public class Level : MonoBehaviour
                     var Wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     Wall.transform.position = new Vector3(x, 0, -y);
                     Wall.transform.SetParent(cube.transform);
-                }
-                else if (_terrainData[y, x] == TerrainType.Event)
-                {
-                    var Sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    Sphere.transform.position = new Vector3(x, 1, -y);
-                    Sphere.transform.SetParent(cube.transform);
                 }
 
                 //キャラクタデータの初期化

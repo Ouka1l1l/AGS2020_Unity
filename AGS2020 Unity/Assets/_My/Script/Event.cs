@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Event
+public abstract class Event : MonoBehaviour
 {
     /// <summary>
     /// イベントタイプ
@@ -18,6 +18,11 @@ public abstract class Event
     /// イベントタイプ
     /// </summary>
     public EventType _type { get; protected set; }
+
+    public void SetPos(int x,int y)
+    {
+        transform.position = new Vector3(x, transform.position.y, -y);
+    }
 
     /// <summary>
     /// イベント実行

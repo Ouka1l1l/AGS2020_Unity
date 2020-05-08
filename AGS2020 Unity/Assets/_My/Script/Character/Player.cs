@@ -13,32 +13,31 @@ public class Player : Character
         _id = 0;
     }
 
-    // Update is called once per frame
-    new void Update()
+    public override bool Think()
     {
-        if (_turnEnd)
-        {
-            return;
-        }
-
         if (_destination == transform.position)
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 Attack();
-                return;
+                return true;
             }
             else
             {
                 Dir dir;
                 if (GetInputDir(out dir))
                 {
-                    SetDestination(dir);
+                    return SetDestination(dir);
                 }
             }
         }
 
-        base.Update();
+        return false;
+    }
+
+    new public bool Act()
+    {
+        return base.Act();
     }
 
     new public void Spawn()

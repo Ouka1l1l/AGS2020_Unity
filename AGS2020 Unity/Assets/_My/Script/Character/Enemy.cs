@@ -4,13 +4,29 @@ using UnityEngine;
 
 public abstract class Enemy : Character
 {
+    /// <summary>
+    /// 敵のタイプenum
+    /// </summary>
     public enum EnemyType
     {
         TestEnemy,
         Max
     }
 
+    /// <summary>
+    /// 敵のタイプ
+    /// </summary>
     public EnemyType _enemyType { get; protected set; }
+
+    /// <summary>
+    /// 思考終了フラグ
+    /// </summary>
+    protected bool _thinkEnd;
+
+    /// <summary>
+    /// 行動終了フラグ
+    /// </summary>
+    protected bool _actEnd;
 
     // Start is called before the first frame update
     new protected void Start()
@@ -19,46 +35,90 @@ public abstract class Enemy : Character
 
         _type = CharacterType.Enemy;
 
-        _turnEnd = true;
+        _thinkEnd = false;
+        _actEnd = false;
     }
 
-    // Update is called once per frame
-    new protected void Update()
+    public override bool Think()
     {
+        if(_thinkEnd)
+        {
+            return true;
+        }
+
         if (_destination == transform.position)
         {
             var player = DungeonManager.instance._player;
 
             var characterDatas = DungeonManager.instance._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
-            foreach(var character in characterDatas)
+            foreach (var character in characterDatas)
             {
-                if(character == 0)
+                if (character == 0)
                 {
                     //攻撃
                     _dir = GetTargetDir(player.transform.position);
                     Attack();
-                    return;
+
+                    ThinkEnd();
+                    return true;
                 }
             }
 
             if ((_roomNo == player._roomNo) && (_roomNo != -1) && (player._roomNo != -1))
             {
-                _dir = GetTargetDir(player.transform.position);
-                SetDestination(_dir);
+                var dir = GetTargetDir(player.transform.position);
+                if (!SetDestination(dir))
+                {
+                    if (!SetDestination(dir.Addition()))
+                    {
+                        SetDestination(dir.Subtraction());
+                    }
+                }
+
+                ThinkEnd();
+                return true;
             }
             else
             {
                 int d = Random.Range(0, _dir.Max());
-                SetDestination((Dir)(d * 45));
+                if(SetDestination((Dir)(d * _dir.One())))
+                {
+                    ThinkEnd();
+                    return true;
+                }
             }
         }
 
-        base.Update();
+        return false;
     }
 
-    public void Ai()
+    protected void ThinkEnd()
     {
+        _thinkEnd = true;
+        _actEnd = false;
+    }
 
+    new public bool Act()
+    {
+        if(_actEnd)
+        {
+            return true;
+        }
+
+        if(base.Act())
+        {
+            ActEnd();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void ActEnd()
+    {
+        _actEnd = true;
+        _thinkEnd = false;
+        TextManager.instance.AddText(name + "のターン終了");
     }
 
     public void Spawn(int level,int id)

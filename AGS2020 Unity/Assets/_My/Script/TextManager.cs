@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class TextManager : Singleton<TextManager>
 {
@@ -21,6 +22,9 @@ public class TextManager : Singleton<TextManager>
     /// </summary>
     [SerializeField]
     private int _textDisplayMax = 4;
+
+    [SerializeField]
+    private GameObject _nextLevelPanel;
 
     new private void Awake()
     {
@@ -57,5 +61,10 @@ public class TextManager : Singleton<TextManager>
         {
             _texts.Dequeue();
         }
+    }
+
+    public void NextLevelText()
+    {
+        _nextLevelPanel.SetActive(true);
     }
 }

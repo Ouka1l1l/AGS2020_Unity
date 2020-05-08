@@ -17,18 +17,35 @@ public class DungeonManager : Singleton<DungeonManager>
     public Player _player { get; private set; }
 
     /// <summary>
-    /// エネミーのターン開始トリガー
-    /// </summary>
-    private bool _enemyTrigger;
-
-    /// <summary>
     /// 現在のターン数
     /// </summary>
     public int _turnCount { get; private set; }
 
+    /// <summary>
+    /// ターン制御用enum
+    /// </summary>
+    enum TurnControl
+    {
+        playerThink,
+        playetAct,
+        enemyThink,
+        enemyAct
+    }
+
+    /// <summary>
+    /// ターン制御用変数
+    /// </summary>
+    TurnControl _turnControl;
+
+    /// <summary>
+    /// ポーズフラグ
+    /// </summary>
+    bool _pauseFlag;
+
     // Start is called before the first frame update
     void Start()
     {
+        _pauseFlag = false;
         _turnCount = 1;
         _player = Instantiate((GameObject)Resources.Load("Player")).GetComponent<Player>();
         _level = Instantiate((GameObject)Resources.Load("Level")).GetComponent<Level>();
@@ -38,43 +55,74 @@ public class DungeonManager : Singleton<DungeonManager>
     // Update is called once per frame
     void Update()
     {
-        //ターン制御
-        if(!_player._turnEnd)
+        if(Input.GetKeyDown(KeyCode.P))
         {
-            //プレイヤーのターン
+            _pauseFlag = !_pauseFlag;
         }
-        else
-        {
-            //エネミーのターン
 
-            if (_enemyTrigger)
-            {
-                //エネミーのターン開始
+        if(_pauseFlag)
+        {
+            return;
+        }
+
+        //ターン制御
+        switch(_turnControl)
+        {
+            //プレイヤー思考待ち
+            case TurnControl.playerThink:
+                if(_player.Think())
+                {
+                    _turnControl = TurnControl.playetAct;
+                }
+                break;
+
+            //プレイヤー行動中
+            case TurnControl.playetAct:
+                if(_player.Act())
+                {
+                    _turnControl = TurnControl.enemyThink;
+                }
+                break;
+
+            //敵思考中
+            case TurnControl.enemyThink:
+                bool thinkEnd = true;
                 foreach (var enemy in _level._enemies)
                 {
-                    enemy.TurnStart();
+                    if(!enemy.Think())
+                    {
+                        thinkEnd = false;
+                    }
                 }
-                _enemyTrigger = false;
-            }
 
-            //全員のターンが終了しているかチェック
-            bool enemyTurnEnd = true;
-            foreach (var enemy in _level._enemies)
-            {
-                if(!enemy._turnEnd)
+                if (thinkEnd)
                 {
-                    enemyTurnEnd = false;
-                    break;
+                    _turnControl = TurnControl.enemyAct;
                 }
-            }
+                break;
 
-            if(enemyTurnEnd)
-            {
-                //プレイヤーのターン開始
-                _player.TurnStart();
-                _enemyTrigger = true;
-                _turnCount++;
-            }
+            //敵行動中
+            case TurnControl.enemyAct:
+
+                bool actEnd = true;
+                foreach (var enemy in _level._enemies)
+                {
+                    if(!enemy.Act())
+                    {
+                        actEnd = false;
+                    }
+                }
+
+                if(actEnd)
+                {
+                    _turnControl = TurnControl.playerThink;
+                    _turnCount++;
+                }
+                break;
+
+            default:
+                Debug.LogError("ターンエラー" + _turnControl);
+                break;
         }
     }
 
@@ -86,7 +134,7 @@ public class DungeonManager : Singleton<DungeonManager>
         _hierarchy++;
         _level.CreateLevel(new Vector2Int(50, 50), 10);
         _player.Spawn();
-        _enemyTrigger = true;
+        _turnControl = TurnControl.playerThink;
     }
 
     /// <summary>
