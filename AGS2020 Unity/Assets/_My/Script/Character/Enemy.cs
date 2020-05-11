@@ -118,7 +118,6 @@ public abstract class Enemy : Character
     {
         _actEnd = true;
         _thinkEnd = false;
-        TextManager.instance.AddText(name + "のターン終了");
     }
 
     public void Spawn(int level,int id)
