@@ -56,6 +56,8 @@ public class Level : MonoBehaviour
 
     public Material material;
 
+    public Vector2Int staisPos;
+
     private void Awake()
     {
 
@@ -482,7 +484,10 @@ public class Level : MonoBehaviour
         {
             foreach (var e in _eventData)
             {
-                Destroy(e.gameObject);
+                if (e != null)
+                {
+                    Destroy(e.gameObject);
+                }
             }
         }
         _eventData = new Event[mapSize.y, mapSize.x];
@@ -503,6 +508,8 @@ public class Level : MonoBehaviour
         Stairs stairs = Instantiate((GameObject)Resources.Load("Stairs")).GetComponent<Stairs>();
         stairs.SetPos(x, y);
         _eventData[y, x] = stairs;
+
+        staisPos = new Vector2Int(x, y);
     }
 
     public void CreateLevel(Vector2Int mapSize, int divisionNum)

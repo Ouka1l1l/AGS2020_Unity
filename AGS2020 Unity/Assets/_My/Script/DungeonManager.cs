@@ -155,4 +155,20 @@ public class DungeonManager : Singleton<DungeonManager>
     {
         return GetGrid((int)x, (int)y);
     }
+
+    /// <summary>
+    /// ポーズ開始
+    /// </summary>
+    public void PauseStart()
+    {
+        _pauseFlag = true;
+    }
+
+    /// <summary>
+    /// ポーズ終了
+    /// </summary>
+    public void PauseEnd()
+    {
+        _pauseFlag = false;
+    }
 }

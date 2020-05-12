@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
+using System;
 
 public class TextManager : Singleton<TextManager>
 {
@@ -24,7 +24,7 @@ public class TextManager : Singleton<TextManager>
     private int _textDisplayMax = 4;
 
     [SerializeField]
-    private GameObject _nextLevelPanel;
+    private QuestionText _QuestionPanel;
 
     new private void Awake()
     {
@@ -63,8 +63,10 @@ public class TextManager : Singleton<TextManager>
         }
     }
 
-    public void NextLevelText()
+    public QuestionText NextLevelText()
     {
-        _nextLevelPanel.SetActive(true);
+        _QuestionPanel.gameObject.SetActive(true);
+        _QuestionPanel.SetQuestionText("次の階に進みますか?");
+        return _QuestionPanel;
     }
 }

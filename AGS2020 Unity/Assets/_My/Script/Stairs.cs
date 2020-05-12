@@ -28,6 +28,20 @@ public class Stairs : Event
     {
         if (character._type == Character.CharacterType.Player)
         {
+            StartCoroutine(NextLevel());
+        }
+    }
+
+    private IEnumerator NextLevel()
+    {
+        bool result = false;
+
+        var question = TextManager.instance.NextLevelText().Selection(r => result = r);
+
+        yield return StartCoroutine(question);
+
+        if (result)
+        {
             DungeonManager.instance.NextLevel();
         }
     }

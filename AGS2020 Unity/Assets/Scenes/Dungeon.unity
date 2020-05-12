@@ -458,7 +458,7 @@ GameObject:
   - component: {fileID: 141248034}
   - component: {fileID: 141248036}
   m_Layer: 5
-  m_Name: NextLevelPanel
+  m_Name: QquestionPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -483,7 +483,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 80}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &141248034
@@ -534,6 +534,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41fc5f25a0651824cb0893294b118035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _question: {fileID: 118456921}
   _yesPanel: {fileID: 1293662853}
   _noPanel: {fileID: 1759433258}
 --- !u!1 &151009592
@@ -1047,7 +1048,7 @@ MonoBehaviour:
   _dontDestroyOnLoad: 0
   _textMeshPro: {fileID: 2043821072}
   _textDisplayMax: 4
-  _nextLevelPanel: {fileID: 141248032}
+  _QuestionPanel: {fileID: 141248036}
 --- !u!4 &343144771
 Transform:
   m_ObjectHideFlags: 0
@@ -4262,10 +4263,10 @@ RectTransform:
   m_Father: {fileID: 141248033}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -100, y: -71}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -150, y: -71}
+  m_SizeDelta: {x: 1040, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1293662853
 MonoBehaviour:
@@ -5249,8 +5250,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 100, y: -71}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 157, y: -71}
+  m_SizeDelta: {x: 14, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1759433258
 MonoBehaviour:
