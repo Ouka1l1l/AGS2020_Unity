@@ -7,21 +7,14 @@ using UnityEngine;
 /// </summary>
 public class Stairs : Event
 {
-    private void Awake()
+    new private void Start()
     {
+        base.Start();
         _type = EventType.Stairs;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        if (_renderer != null)
+        {
+            _renderer.enabled = true;
+        }
     }
 
     public override void Raise(Character character)

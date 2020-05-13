@@ -49,7 +49,7 @@ public class Player : Character
         Vector2Int pos = DungeonManager.instance._level.staisPos;
         pos.x++;
 
-        transform.position = new Vector3(pos.x, 0, -pos.y);
+        transform.position = new Vector3(pos.x, 0, pos.y);
         _destination = transform.position;
 
         DungeonManager.instance._level.SetCharacterData(transform.position.x, transform.position.z, _id);

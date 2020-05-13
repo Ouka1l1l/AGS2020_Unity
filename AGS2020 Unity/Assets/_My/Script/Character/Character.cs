@@ -78,6 +78,20 @@ public abstract class Character : MonoBehaviour
     protected Vector3 _destination;
 
     /// <summary>
+    /// 行動enum
+    /// </summary>
+    protected enum Action
+    {
+        Move,
+        Attack
+    }
+
+    /// <summary>
+    /// 行う行動
+    /// </summary>
+    protected Action _action;
+
+    /// <summary>
     /// 現在いるの部屋の区画番号 部屋にいない場合は-1
     /// </summary>
     public int _roomNo;
@@ -138,7 +152,18 @@ public abstract class Character : MonoBehaviour
     /// <returns></returns> true 行動終了
     public bool Act()
     {
-        return Move();
+        switch(_action)
+        {
+            case Action.Move:
+                return Move();
+
+            case Action.Attack:
+                return true;
+
+            default:
+                Debug.LogError(name + "Actエラー" + _action);
+                return true;
+        }
     }
 
     /// <summary>
@@ -246,6 +271,7 @@ public abstract class Character : MonoBehaviour
                 level.SetCharacterData(transform.position.x, transform.position.z, -1);
                 DungeonManager.instance._level.SetCharacterData(tmpDestination.x, tmpDestination.y, _id);
 
+                _action = Action.Move;
                 return true;
             }
         }
@@ -275,6 +301,8 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected void Attack()
     {
+        _action = Action.Attack;
+
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
 
         TextManager.instance.AddText(name + "の攻撃");

@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 [ExecuteInEditMode]
 public class Level : MonoBehaviour
@@ -51,8 +53,23 @@ public class Level : MonoBehaviour
 
     public List<Enemy> _enemies { get; private set; }
 
+    /// <summary>
+    /// 敵の数 最小値
+    /// </summary>
     private int _enemyMin = 5;
+    /// <summary>
+    /// 敵の数 最大値
+    /// </summary>
     private int _enemyMax = 8;
+
+    /// <summary>
+    /// イベント数 最小値
+    /// </summary>
+    private int _eventMin = 10;
+    /// <summary>
+    /// イベント数 最大値
+    /// </summary>
+    private int _eventMax = 20;
 
     public Material material;
 
@@ -371,7 +388,31 @@ public class Level : MonoBehaviour
     /// <param name="isRandomX"></param> X座標をランダムにするか
     private void ConnectingRoad(int room1RandomMin,int room1RandomMax,int room1RoadStart,int room2RandomMin,int room2RandomMax,int room2RoadStart,int adjacentPoint,bool isRandomX)
     {
-        int tmp1 = Random.Range(room1RandomMin, (room1RandomMax + 1));
+        //道の開始地点のランダム座標の値を決定
+        Func<int, int, int, int> RandomRoadStartPos = (int randomMin, int randomMax, int start) =>
+          {
+              TerrainType startTerrainType;
+              int ret;
+
+              //開始地点は何もない床
+              do
+              {
+                  ret = Random.Range(randomMin, (randomMax + 1));
+                  if (isRandomX)
+                  {
+                      startTerrainType = _terrainData[start, ret];
+                  }
+                  else
+                  {
+                      startTerrainType = _terrainData[ret, start];
+                  }
+
+              } while (startTerrainType != TerrainType.Floor);
+
+              return ret;
+          };
+
+        int tmp1 = RandomRoadStartPos(room1RandomMin, room1RandomMax, room1RoadStart);
         for (int r = room1RoadStart; r >= adjacentPoint; r--)
         {
             if (isRandomX)
@@ -384,7 +425,7 @@ public class Level : MonoBehaviour
             }
         }
 
-        int tmp2 = Random.Range(room2RandomMin, (room2RandomMax + 1));
+        int tmp2 = RandomRoadStartPos(room2RandomMin, room2RandomMax, room2RoadStart);
         for (int r = room2RoadStart; r <= adjacentPoint; r++)
         {
             if (isRandomX)
@@ -480,6 +521,34 @@ public class Level : MonoBehaviour
             }
         }
 
+        CreateEvent(mapSize);
+
+        CreateRoad();
+    }
+
+    public Vector2Int GetRandomFloorPos()
+    {
+        int x;
+        int y;
+        do
+        {
+            int no = Random.Range(0, _sections.Count);
+            var room = _sections[no]._roomData;
+
+            x = Random.Range(room.left, room.right + 1);
+            y = Random.Range(room.top, room.bottom + 1);
+
+        } while (_terrainData[y, x] != TerrainType.Floor);
+
+        return new Vector2Int(x, -y);
+    }
+
+    /// <summary>
+    /// イベントを作成
+    /// </summary>
+    /// <param name="mapSize"></param> マップのサイズ
+    private void CreateEvent(Vector2Int mapSize)
+    {
         if (_eventData != null)
         {
             foreach (var e in _eventData)
@@ -491,27 +560,42 @@ public class Level : MonoBehaviour
             }
         }
         _eventData = new Event[mapSize.y, mapSize.x];
+
         CreateStairs();
 
-        CreateRoad();
+        int eventNum = Random.Range(_eventMin, _eventMax + 1);
+        for (int e = 0; e < eventNum; e++)
+        {
+            var pos = GetRandomFloorPos();
+            var grid = DungeonManager.instance.GetGrid(pos);
+            var needleFloor = Instantiate((GameObject)Resources.Load("NeedleFloor")).GetComponent<NeedleFloor>();
+            needleFloor.SetPos(pos.x, pos.y);
+            _terrainData[grid.y, grid.x] = TerrainType.Event;
+            _eventData[grid.y, grid.x] = needleFloor;
+        }
     }
 
+    /// <summary>
+    /// 階段を作成
+    /// </summary>
     private void CreateStairs()
     {
-        int no = Random.Range(0, _sections.Count);
-        var room = _sections[no]._roomData;
-
         //部屋の端は含めないことにする
-        int x = Random.Range(room.left + 1, room.right);
-        int y = Random.Range(room.top + 1, room.bottom);
-        _terrainData[y, x] = TerrainType.Event;
+        var pos = GetRandomFloorPos();
+        var grid = DungeonManager.instance.GetGrid(pos);
+        _terrainData[grid.y, grid.x] = TerrainType.Event;
         Stairs stairs = Instantiate((GameObject)Resources.Load("Stairs")).GetComponent<Stairs>();
-        stairs.SetPos(x, y);
-        _eventData[y, x] = stairs;
+        stairs.SetPos(pos.x, pos.y);
+        _eventData[grid.y, grid.x] = stairs;
 
-        staisPos = new Vector2Int(x, y);
+        staisPos = pos;
     }
 
+    /// <summary>
+    /// 階層を作成
+    /// </summary>
+    /// <param name="mapSize"></param> マップサイズ
+    /// <param name="divisionNum"></param> 部屋の数
     public void CreateLevel(Vector2Int mapSize, int divisionNum)
     {
         foreach (Transform child in transform)
@@ -526,9 +610,9 @@ public class Level : MonoBehaviour
         CreateTerrainData(mapSize, divisionNum);
 
         //地形情報どうりにブロックを設置
-        for (int y = 0; y < _terrainData.GetLength(0); y++)
+        for (int y = 0; y < mapSize.y; y++)
         {
-            for (int x = 0; x < _terrainData.GetLength(1); x++)
+            for (int x = 0; x < mapSize.x; x++)
             {
                 var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 cube.transform.position = new Vector3(x, -1, -y);
