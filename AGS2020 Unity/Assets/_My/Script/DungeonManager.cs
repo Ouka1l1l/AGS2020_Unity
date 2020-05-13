@@ -122,6 +122,11 @@ public class DungeonManager : Singleton<DungeonManager>
 
                 if(actEnd)
                 {
+                    if (_turnCount % 5 == 0)
+                    {
+                        _level.EnemyIncrease();
+                    }
+
                     _turnControl = TurnControl.playerThink;
                     _turnCount++;
                 }

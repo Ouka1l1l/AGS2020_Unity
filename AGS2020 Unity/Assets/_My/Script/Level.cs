@@ -636,6 +636,28 @@ public class Level : MonoBehaviour
     }
 
     /// <summary>
+    /// 敵を増員
+    /// </summary>
+    public void EnemyIncrease()
+    {
+        for (int i = 0; i < _enemies.Count; i++)
+        {
+            if (_enemies[i] == null)
+            {
+                Enemy enemy = Instantiate((GameObject)Resources.Load("TestEnemy")).GetComponent<Enemy>();
+                do
+                {
+                    enemy.Spawn(0, i);
+                } while (enemy._roomNo == DungeonManager.instance._player._roomNo);
+
+                _enemies[i] = enemy;
+
+                break;
+            }
+        }
+    }
+
+    /// <summary>
     /// 敵を配置
     /// </summary>
     private void EnemysSpawn()
