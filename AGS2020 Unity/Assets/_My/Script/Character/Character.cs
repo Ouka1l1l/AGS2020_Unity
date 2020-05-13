@@ -90,7 +90,12 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 体力
     /// </summary>
-    protected int _hp = 100;
+    public int _hp { get; protected set; }
+
+    /// <summary>
+    /// 体力の最大値
+    /// </summary>
+    public int _maxHp { get; protected set; } = 100;
 
     /// <summary>
     /// レベル
@@ -115,6 +120,7 @@ public abstract class Character : MonoBehaviour
     // Start is called before the first frame update
     protected void Start()
     {
+        _hp = _maxHp;
         _destination = transform.position;
         _dir = Dir.Bottom;
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);

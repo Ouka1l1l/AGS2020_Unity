@@ -44,6 +44,8 @@ public class Player : Character
     {
         base.Spawn();
 
+        DungeonManager.instance._level.SetCharacterData(transform.position.x, transform.position.z, -1);
+
         Vector2Int pos = DungeonManager.instance._level.staisPos;
         pos.x++;
 
