@@ -127,4 +127,14 @@ public abstract class Enemy : Character
 
         base.Spawn();
     }
+
+    protected override void Death()
+    {
+        base.Death();
+
+        var dungeonManager = DungeonManager.instance;
+        dungeonManager._level.SetCharacterData(transform.position.x, transform.position.z, -1);
+
+        Destroy(gameObject);
+    }
 }

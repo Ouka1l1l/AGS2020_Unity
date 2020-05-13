@@ -29,14 +29,12 @@ public class TextManager : Singleton<TextManager>
     new private void Awake()
     {
         base.Awake();
-
-        _texts = new Queue<string>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-
+        _texts = new Queue<string>();
     }
 
     // Update is called once per frame
@@ -63,10 +61,28 @@ public class TextManager : Singleton<TextManager>
         }
     }
 
-    public QuestionText NextLevelText()
+    /// <summary>
+    /// テキストをクリアする
+    /// </summary>
+    public void TextClear()
+    {
+        _texts = new Queue<string>();
+    }
+
+    private QuestionText Question(string str)
     {
         _QuestionPanel.gameObject.SetActive(true);
-        _QuestionPanel.SetQuestionText("次の階に進みますか?");
+        _QuestionPanel.SetQuestionText(str);
         return _QuestionPanel;
+    }
+
+    public QuestionText NextLevelText()
+    {
+        return Question("次の階に進みますか?");
+    }
+
+    public QuestionText ReStartText()
+    {
+        return Question("再挑戦しますか?");
     }
 }

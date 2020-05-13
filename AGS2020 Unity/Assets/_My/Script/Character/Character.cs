@@ -73,6 +73,11 @@ public abstract class Character : MonoBehaviour
     protected int _id;
 
     /// <summary>
+    /// キャラの名前
+    /// </summary>
+    protected string _name;
+
+    /// <summary>
     /// 移動先
     /// </summary>
     protected Vector3 _destination;
@@ -161,7 +166,7 @@ public abstract class Character : MonoBehaviour
                 return true;
 
             default:
-                Debug.LogError(name + "Actエラー" + _action);
+                Debug.LogError(_name + "Actエラー" + _action);
                 return true;
         }
     }
@@ -305,7 +310,7 @@ public abstract class Character : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
 
-        TextManager.instance.AddText(name + "の攻撃");
+        TextManager.instance.AddText(_name + "の攻撃");
 
         var dungeonManager = DungeonManager.instance;
         Vector2Int frontPos = GetFrontPosition();
@@ -344,8 +349,21 @@ public abstract class Character : MonoBehaviour
     {
         _hp -= damage;
 
-        string str = string.Format(name + "は、{0:d}ダメージを受けた", damage);
+        string str = string.Format(_name + "は、{0:d}ダメージを受けた", damage);
         TextManager.instance.AddText(str);
+
+        if(_hp <= 0)
+        {
+            Death();
+        }
+    }
+
+    /// <summary>
+    /// 死亡処理
+    /// </summary>
+    protected virtual void Death()
+    {
+        TextManager.instance.AddText(_name + "は、やられた");
     }
 
     /// <summary>

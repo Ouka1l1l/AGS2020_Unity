@@ -11,6 +11,7 @@ public class Player : Character
 
         _type = CharacterType.Player;
         _id = 0;
+        _name = "プレイヤー";
     }
 
     public override bool Think()
@@ -110,5 +111,12 @@ public class Player : Character
 
         dir = (Dir)angle;
         return true;
+    }
+
+    protected override void Death()
+    {
+        base.Death();
+
+        StartCoroutine(DungeonManager.instance.ReStart());
     }
 }

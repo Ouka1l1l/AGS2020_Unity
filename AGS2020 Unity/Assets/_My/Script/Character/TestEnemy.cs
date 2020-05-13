@@ -9,5 +9,6 @@ public class TestEnemy : Enemy
         base.Start();
 
         _enemyType = EnemyType.TestEnemy;
+        _name = "敵";
     }
 }

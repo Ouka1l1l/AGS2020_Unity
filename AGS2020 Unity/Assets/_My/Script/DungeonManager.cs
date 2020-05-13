@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DungeonManager : Singleton<DungeonManager>
 {
@@ -89,9 +90,12 @@ public class DungeonManager : Singleton<DungeonManager>
                 bool thinkEnd = true;
                 foreach (var enemy in _level._enemies)
                 {
-                    if(!enemy.Think())
+                    if (enemy != null)
                     {
-                        thinkEnd = false;
+                        if (!enemy.Think())
+                        {
+                            thinkEnd = false;
+                        }
                     }
                 }
 
@@ -107,9 +111,12 @@ public class DungeonManager : Singleton<DungeonManager>
                 bool actEnd = true;
                 foreach (var enemy in _level._enemies)
                 {
-                    if(!enemy.Act())
+                    if (enemy != null)
                     {
-                        actEnd = false;
+                        if (!enemy.Act())
+                        {
+                            actEnd = false;
+                        }
                     }
                 }
 
@@ -135,6 +142,8 @@ public class DungeonManager : Singleton<DungeonManager>
         _level.CreateLevel(new Vector2Int(50, 50), 10);
         _player.Spawn();
         _turnControl = TurnControl.playerThink;
+
+        TextManager.instance.TextClear();
     }
 
     /// <summary>
@@ -170,5 +179,27 @@ public class DungeonManager : Singleton<DungeonManager>
     public void PauseEnd()
     {
         _pauseFlag = false;
+    }
+
+    public IEnumerator ReStart()
+    {
+        bool result = false;
+
+        var question = TextManager.instance.ReStartText().Selection(r => result = r);
+
+        yield return StartCoroutine(question);
+
+        if (result)
+        {
+            SceneManager.LoadScene(0);
+        }
+        else
+        {
+            #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+            #else
+                Application.Quit();
+            #endif
+        }
     }
 }
