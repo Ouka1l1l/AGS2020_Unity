@@ -75,15 +75,19 @@ public class Section
     /// </summary>
     /// <param name="key"></param> 隣接区画のある方向
     /// <param name="no"></param> 隣接区画の番号
-    public void SetAdjacentSection(Dir key,int no)
+    /// <returns></returns> 登録してあった区画番号　なかった場合は-1
+    public int SetAdjacentSection(Dir key,int no)
     {
         if(_adjacentSections.ContainsKey(key))
         {
+            int ret = _adjacentSections[key];
             _adjacentSections[key] = no;
+            return ret;
         }
         else
         {
             _adjacentSections.Add(key, no);
+            return -1;
         }
     }
 

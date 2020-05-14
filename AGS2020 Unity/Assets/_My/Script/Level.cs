@@ -381,7 +381,14 @@ public class Level : MonoBehaviour
         _sections.Add(newSection);
         newSection.SetAdjacentSection(Dir.Left, section._no);
         section._sectionData.right = divPoint;
-        section.SetAdjacentSection(Dir.Right, no);
+        int oldNo = section.SetAdjacentSection(Dir.Right, no);
+
+        if (oldNo != -1)
+        {
+            newSection.SetAdjacentSection(Dir.Right, oldNo);
+            _sections[oldNo].SetAdjacentSection(Dir.Left, no);
+        }
+
 
         return true;
     }
@@ -416,7 +423,14 @@ public class Level : MonoBehaviour
         _sections.Add(newSection);
         newSection.SetAdjacentSection(Dir.Top, section._no);
         section._sectionData.bottom = divPoint;
-        section.SetAdjacentSection(Dir.Bottom, no);
+        int oldNo = section.SetAdjacentSection(Dir.Bottom, no);
+
+        if (oldNo != -1)
+        {
+            newSection.SetAdjacentSection(Dir.Bottom, oldNo);
+            _sections[oldNo].SetAdjacentSection(Dir.Top, no);
+
+        }
 
         return true;
     }
@@ -537,7 +551,7 @@ public class Level : MonoBehaviour
             if (_sections[index]._adjacentSections.ContainsKey(Dir.Left))
             {
                 room2 = _sections[_sections[index]._adjacentSections[Dir.Left]]._roomData;
-                ConnectingRoad(room1.top, room1.bottom, room1.right, room2.top, room2.bottom, room2.left, sectionData.left, false);
+                ConnectingRoad(room1.top, room1.bottom, room1.left, room2.top, room2.bottom, room2.right, sectionData.left, false);
             }
         }
     }
