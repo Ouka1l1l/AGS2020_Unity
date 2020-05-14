@@ -136,6 +136,11 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected int _def = 5;
 
+    /// <summary>
+    /// 自動回復量
+    /// </summary>
+    protected int _regeneration;
+
     // Start is called before the first frame update
     protected void Start()
     {
@@ -364,6 +369,43 @@ public abstract class Character : MonoBehaviour
     protected virtual void Death()
     {
         TextManager.instance.AddText(_name + "は、やられた");
+    }
+
+    /// <summary>
+    /// 体力の最大値を超えないように体力を増やす
+    /// </summary>
+    /// <param name="healValue"></param> 回復量
+    /// <returns></returns> 実際の回復量
+    private int HpAdd(int healValue)
+    {
+        _hp += healValue;
+        if (_hp > _maxHp)
+        {
+            int over = _hp - _maxHp;
+            _hp = _maxHp;
+            return healValue - over;
+        }
+
+        return healValue;
+    }
+
+    /// <summary>
+    /// 回復する
+    /// </summary>
+    /// <param name="healValue"></param> 回復量
+    public void Heal(int healValue)
+    {
+        healValue = HpAdd(healValue);
+
+        TextManager.instance.AddText(_name + "は、" + healValue + "回復した");
+    }
+
+    /// <summary>
+    /// 自動回復
+    /// </summary>
+    public void Regeneration()
+    {
+        HpAdd(_regeneration);
     }
 
     /// <summary>

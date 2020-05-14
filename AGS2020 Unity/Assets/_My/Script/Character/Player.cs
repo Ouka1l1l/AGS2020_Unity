@@ -9,6 +9,8 @@ public class Player : Character
     {
         base.Start();
 
+        _atk = 20;
+
         _type = CharacterType.Player;
         _id = 0;
         _name = "プレイヤー";
@@ -18,7 +20,7 @@ public class Player : Character
     {
         if (_destination == transform.position)
         {
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (Input.GetAxis("Attack") > 0)
             {
                 Attack();
                 return true;
