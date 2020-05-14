@@ -20,6 +20,18 @@ public class Player : Character
     {
         if (_destination == transform.position)
         {
+            if(Input.GetKeyDown(KeyCode.I))
+            {
+                if(_itam != null)
+                {
+                    return UseItem();
+                }
+                else
+                {
+                    Debug.Log("持ってない");
+                }
+            }
+
             if (Input.GetAxis("Attack") > 0)
             {
                 Attack();

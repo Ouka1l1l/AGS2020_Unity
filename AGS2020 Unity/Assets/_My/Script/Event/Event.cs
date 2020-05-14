@@ -20,6 +20,14 @@ public abstract class Event : MonoBehaviour
     /// </summary>
     public EventType _type { get; protected set; }
 
+    /// <summary>
+    /// イベント名
+    /// </summary>
+    protected string _name;
+
+    /// <summary>
+    /// レンダー
+    /// </summary>
     protected Renderer _renderer;
 
     protected void Start()
@@ -27,10 +35,16 @@ public abstract class Event : MonoBehaviour
         _renderer = GetComponent<Renderer>();
         if (_renderer != null)
         {
+            //見えないように
             _renderer.enabled = false;
         }
     }
 
+    /// <summary>
+    /// 座標を変更する
+    /// </summary>
+    /// <param name="x"></param> X座標
+    /// <param name="y"></param> Y座標
     public void SetPos(int x,int y)
     {
         transform.position = new Vector3(x, transform.position.y, y);
@@ -40,8 +54,9 @@ public abstract class Event : MonoBehaviour
     /// イベント実行
     /// </summary>
     /// <param name="character"></param> イベントの影響を受けるキャラクタ
-    public virtual void Raise(Character character)
+    public virtual void Execution(Character character)
     {
         _renderer.enabled = true;
+        TextManager.instance.AddText(character._name + "は、" + _name + "を踏んだ");
     }
 }

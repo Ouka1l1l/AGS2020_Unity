@@ -17,7 +17,7 @@ public class Stairs : Event
         }
     }
 
-    public override void Raise(Character character)
+    public override void Execution(Character character)
     {
         if (character._type == Character.CharacterType.Player)
         {

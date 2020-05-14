@@ -15,6 +15,7 @@ public class Level : MonoBehaviour
         Wall,   //壁
         Floor,  //床
         Event,  //イベント
+        Item,   //アイテム
         Max
     }
 
@@ -32,6 +33,11 @@ public class Level : MonoBehaviour
     /// キャラクタデータ
     /// </summary>
     private int[,] _characterData;
+
+    /// <summary>
+    /// アイテムデータ
+    /// </summary>
+    private Item[,] _itemData;
 
     /// <summary>
     /// 区画
@@ -176,6 +182,21 @@ public class Level : MonoBehaviour
     }
 
     /// <summary>
+    /// アイテムデータを取得
+    /// </summary>
+    /// <param name="x"></param> 横の座標
+    /// <param name="z"></param> 縦の座標
+    /// <returns></returns> アイテムデータ
+    public Item GetItemData(int x, int y)
+    {
+        return GetData(x, y, _itemData);
+    }
+    public Item GetItemData(Vector2Int pos)
+    {
+        return GetData(pos.x, pos.y, _itemData);
+    }
+
+    /// <summary>
     /// 周辺のデータを取得
     /// </summary>
     /// <typeparam name="T"></typeparam> 取得したいデータの型
@@ -246,6 +267,31 @@ public class Level : MonoBehaviour
     public void SetCharacterData(float x, float y, int data)
     {
         SetData((int)x, (int)y, _characterData, data);
+    }
+
+    /// <summary>
+    /// アイテムデータをセット
+    /// </summary>
+    /// <param name="x"></param> 横の座標
+    /// <param name="y"></param> 縦の座標
+    /// <param name="data"></param> セットするアイテム
+    public void SetItemData(int x, int y,Item data)
+    {
+        SetData(x, y, _itemData, data);
+    }
+    public void SetItemData(Vector2Int pos, Item data)
+    {
+        SetData(pos.x, pos.y, _itemData, data);
+    }
+
+    public Item ItemPass(Vector2Int pos)
+    {
+        var grid = DungeonManager.instance.GetGrid(pos);
+        var ret = _itemData[grid.y, grid.x];
+        _itemData[grid.y, grid.x] = null;
+        _terrainData[grid.y, grid.x] = TerrainType.Floor;
+
+        return ret;
     }
 
     /// <summary>
@@ -523,9 +569,15 @@ public class Level : MonoBehaviour
 
         CreateEvent(mapSize);
 
+        CreateItem(mapSize);
+
         CreateRoad();
     }
 
+    /// <summary>
+    /// ランダムな床の座標を取得
+    /// </summary>
+    /// <returns></returns>
     public Vector2Int GetRandomFloorPos()
     {
         int x;
@@ -580,15 +632,49 @@ public class Level : MonoBehaviour
     /// </summary>
     private void CreateStairs()
     {
+
+        int no = Random.Range(0, _sections.Count);
+        var room = _sections[no]._roomData;
+
+        Vector2Int grid = new Vector2Int();
         //部屋の端は含めないことにする
-        var pos = GetRandomFloorPos();
-        var grid = DungeonManager.instance.GetGrid(pos);
+        grid.x = Random.Range(room.left + 1, room.right);
+        grid.y = Random.Range(room.top + 1, room.bottom);
+
+        var pos = new Vector2Int(grid.x, -grid.y);
         _terrainData[grid.y, grid.x] = TerrainType.Event;
         Stairs stairs = Instantiate((GameObject)Resources.Load("Stairs")).GetComponent<Stairs>();
         stairs.SetPos(pos.x, pos.y);
         _eventData[grid.y, grid.x] = stairs;
 
         staisPos = pos;
+    }
+
+    /// <summary>
+    /// アイテムを生成
+    /// </summary>
+    private void CreateItem(Vector2Int mapSize)
+    {
+        if (_itemData != null)
+        {
+            foreach (var item in _itemData)
+            {
+                if (item != null)
+                {
+                    Destroy(item.gameObject);
+                }
+            }
+        }
+        _itemData = new Item[mapSize.y, mapSize.x];
+
+        var pos = GetRandomFloorPos();
+        pos = new Vector2Int(staisPos.x, staisPos.y - 1);
+        var grid = DungeonManager.instance.GetGrid(pos);
+
+        _terrainData[grid.y, grid.x] = TerrainType.Item;
+        var Portion = Instantiate((GameObject)Resources.Load("Portion")).GetComponent<Portion>();
+        Portion.SetPos(pos.x, pos.y);
+        _itemData[grid.y, grid.x] = Portion;
     }
 
     /// <summary>
@@ -687,9 +773,9 @@ public class Level : MonoBehaviour
     /// <param name="x"></param> 横の座標
     /// <param name="y"></param> 縦の座標
     /// <param name="character"></param> 該当マスを踏んだキャラ
-    public void EventRaise(int x, int y,Character character)
+    public void EventExecution(int x, int y,Character character)
     {
         var grid = DungeonManager.instance.GetGrid(x, y);
-        _eventData[grid.y, grid.x].Raise(character);
+        _eventData[grid.y, grid.x].Execution(character);
     }
 }

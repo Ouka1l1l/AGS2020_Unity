@@ -75,7 +75,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// キャラの名前
     /// </summary>
-    protected string _name;
+    public string _name { get; protected set; }
 
     /// <summary>
     /// 移動先
@@ -100,6 +100,11 @@ public abstract class Character : MonoBehaviour
     /// 現在いるの部屋の区画番号 部屋にいない場合は-1
     /// </summary>
     public int _roomNo;
+
+    /// <summary>
+    /// 持っているアイテム
+    /// </summary>
+    public Item _itam;
 
     /// <summary>
     /// 自身の向き
@@ -298,12 +303,23 @@ public abstract class Character : MonoBehaviour
         if (_destination == transform.position)
         {
             _roomNo = DungeonManager.instance._level.GetRoomNo(transform.position.x, transform.position.z);
-            EventRaise();
+            FootExecution();
 
             return true;
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// アイテムを使う
+    /// </summary>
+    /// <returns></returns>
+    protected bool UseItem()
+    {
+        _itam.Use(this);
+
+        return true;
     }
 
     /// <summary>
@@ -336,6 +352,11 @@ public abstract class Character : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// ダメージ計算
+    /// </summary>
+    /// <param name="def"></param>
+    /// <returns></returns>
     private int DamageCalculation(int def)
     {
         int ret = _atk - def;
@@ -411,13 +432,32 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 足元のイベントを実行
     /// </summary>
-    private void EventRaise()
+    private void FootExecution()
     {
         Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
 
-        if (DungeonManager.instance._level.GetTerrainData(pos.x, pos.y) == Level.TerrainType.Event)
+        var terrain = DungeonManager.instance._level.GetTerrainData(pos.x, pos.y);
+        if (terrain == Level.TerrainType.Event)
         {
-            DungeonManager.instance._level.EventRaise(pos.x, pos.y, this);
+            DungeonManager.instance._level.EventExecution(pos.x, pos.y, this);
+        }
+        else if(terrain == Level.TerrainType.Item)
+        {
+            PickUpItem(pos);
+        }
+    }
+
+    /// <summary>
+    /// アイテムを拾う
+    /// </summary>
+    protected void PickUpItem(Vector2Int pos)
+    {
+        if (_itam == null)
+        {
+            _itam = DungeonManager.instance._level.ItemPass(pos);
+            _itam.BePickedUp();
+
+            TextManager.instance.AddText(_name + "は、" + _itam._name + "を拾った");
         }
     }
 

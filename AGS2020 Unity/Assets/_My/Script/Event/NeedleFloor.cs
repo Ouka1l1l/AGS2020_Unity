@@ -9,11 +9,12 @@ public class NeedleFloor : Event
     {
         base.Start();
         _type = EventType.NeedleFloor;
+        _name = "トゲトラップ";
     }
 
-    public override void Raise(Character character)
+    public override void Execution(Character character)
     {
-        base.Raise(character);
+        base.Execution(character);
         character.Damage(10);
     }
 }
