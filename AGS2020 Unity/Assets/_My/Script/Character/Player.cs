@@ -4,6 +4,16 @@ using UnityEngine;
 
 public class Player : Character
 {
+    /// <summary>
+    /// アイテムリスト
+    /// </summary>
+    private List<Item> _itemList;
+
+    /// <summary>
+    /// アイテムの所持上限
+    /// </summary>
+    private int _itamMax = 2;
+
     // Start is called before the first frame update
     new void Start()
     {
@@ -14,6 +24,10 @@ public class Player : Character
         _type = CharacterType.Player;
         _id = 0;
         _name = "プレイヤー";
+
+        _itemList = new List<Item>();
+
+        _regeneration = 1;
     }
 
     public override bool Think()
@@ -53,6 +67,18 @@ public class Player : Character
     new public bool Act()
     {
         return base.Act();
+    }
+
+    protected override void PickUpItem(Vector2Int pos)
+    {
+        if (_itemList.Count < _itamMax)
+        {
+            base.PickUpItem(pos);
+
+            //拾ったアイテムをアイテムリストにしまう
+            _itemList.Add(_itam);
+            _itam = null;
+        }
     }
 
     new public void Spawn()

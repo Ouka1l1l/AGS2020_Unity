@@ -450,7 +450,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// アイテムを拾う
     /// </summary>
-    protected void PickUpItem(Vector2Int pos)
+    protected virtual void PickUpItem(Vector2Int pos)
     {
         if (_itam == null)
         {
