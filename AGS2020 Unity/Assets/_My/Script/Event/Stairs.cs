@@ -29,7 +29,7 @@ public class Stairs : Event
     {
         bool result = false;
 
-        var question = TextManager.instance.NextLevelText().Selection(r => result = r);
+        var question = UIManager.instance.NextLevelText().Selection(r => result = r);
 
         yield return StartCoroutine(question);
 

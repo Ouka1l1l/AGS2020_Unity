@@ -37,12 +37,26 @@ public class Menu : MonoBehaviour
     {
         _choose = 0;
         _oldVertical = Input.GetAxis("Vertical");
+
+        DungeonManager.instance.PauseStart();
     }
 
     // Update is called once per frame
     void Update()
     {
         Choose((int)MenyHeadline.Max);
+
+        if(Input.GetAxis("Submit") > 0)
+        {
+            if(_choose == (int)MenyHeadline.Itam)
+            {
+                UIManager.instance.OpenItemMenu();
+            }
+            if(_choose == (int)MenyHeadline.Close)
+            {
+                UIManager.instance.CloseMenu();
+            }
+        }
     }
 
     /// <summary>
@@ -51,6 +65,11 @@ public class Menu : MonoBehaviour
     /// <param name="headlineMax"></param> 項目数
     protected void Choose(int headlineMax)
     {
+        if(Input.GetAxis("Cancel") > 0)
+        {
+            UIManager.instance.CloseMenu();
+        }
+
         if(headlineMax <= 0)
         {
             _choicePanel.SetAlpha(0);

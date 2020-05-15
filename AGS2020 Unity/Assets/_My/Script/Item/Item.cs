@@ -57,6 +57,6 @@ public abstract class Item : MonoBehaviour
     /// <param name="character"></param> 使ったキャラ
     public virtual void Use(Character character)
     {
-        TextManager.instance.AddText(character._name + "は、" + _name + "を使った");
+        UIManager.instance.AddText(character._name + "は、" + _name + "を使った");
     }
 }

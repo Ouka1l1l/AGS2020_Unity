@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using System;
 
-public class TextManager : Singleton<TextManager>
+public class UIManager : Singleton<UIManager>
 {
     /// <summary>
     /// テキストキュー
@@ -24,7 +23,15 @@ public class TextManager : Singleton<TextManager>
     private int _textDisplayMax = 4;
 
     [SerializeField]
+    private Menu _menu;
+
+    [SerializeField]
+    private ItemMenu _itemMenu;
+
+    [SerializeField]
     private QuestionText _QuestionPanel;
+
+    private Stack<Menu> _menus;
 
     new private void Awake()
     {
@@ -35,6 +42,7 @@ public class TextManager : Singleton<TextManager>
     void Start()
     {
         _texts = new Queue<string>();
+        _menus = new Stack<Menu>();
     }
 
     // Update is called once per frame
@@ -67,6 +75,30 @@ public class TextManager : Singleton<TextManager>
     public void TextClear()
     {
         _texts = new Queue<string>();
+    }
+
+    /// <summary>
+    /// メニューを開く
+    /// </summary>
+    public void OpenMenu()
+    {
+        _menus.Push(_menu);
+        _menu.gameObject.SetActive(true);
+    }
+
+    public void OpenItemMenu()
+    {
+        _menus.Push(_itemMenu);
+        _itemMenu.gameObject.SetActive(true);
+    }
+
+    public void CloseMenu()
+    {
+        _menus.Pop().gameObject.SetActive(false);
+        if(_menus.Count == 0)
+        {
+            DungeonManager.instance.PauseEnd();
+        }
     }
 
     private QuestionText Question(string str)

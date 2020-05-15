@@ -331,7 +331,7 @@ public abstract class Character : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
 
-        TextManager.instance.AddText(_name + "の攻撃");
+        UIManager.instance.AddText(_name + "の攻撃");
 
         var dungeonManager = DungeonManager.instance;
         Vector2Int frontPos = GetFrontPosition();
@@ -376,7 +376,7 @@ public abstract class Character : MonoBehaviour
         _hp -= damage;
 
         string str = string.Format(_name + "は、{0:d}ダメージを受けた", damage);
-        TextManager.instance.AddText(str);
+        UIManager.instance.AddText(str);
 
         if(_hp <= 0)
         {
@@ -389,7 +389,7 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected virtual void Death()
     {
-        TextManager.instance.AddText(_name + "は、やられた");
+        UIManager.instance.AddText(_name + "は、やられた");
     }
 
     /// <summary>
@@ -418,7 +418,7 @@ public abstract class Character : MonoBehaviour
     {
         healValue = HpAdd(healValue);
 
-        TextManager.instance.AddText(_name + "は、" + healValue + "回復した");
+        UIManager.instance.AddText(_name + "は、" + healValue + "回復した");
     }
 
     /// <summary>
@@ -457,7 +457,7 @@ public abstract class Character : MonoBehaviour
             _itam = DungeonManager.instance._level.ItemPass(pos);
             _itam.BePickedUp();
 
-            TextManager.instance.AddText(_name + "は、" + _itam._name + "を拾った");
+            UIManager.instance.AddText(_name + "は、" + _itam._name + "を拾った");
         }
     }
 

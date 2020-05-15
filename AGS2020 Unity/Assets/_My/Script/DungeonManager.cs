@@ -154,7 +154,7 @@ public class DungeonManager : Singleton<DungeonManager>
         _player.Spawn();
         _turnControl = TurnControl.playerThink;
 
-        TextManager.instance.TextClear();
+        UIManager.instance.TextClear();
     }
 
     /// <summary>
@@ -196,7 +196,7 @@ public class DungeonManager : Singleton<DungeonManager>
     {
         bool result = false;
 
-        var question = TextManager.instance.ReStartText().Selection(r => result = r);
+        var question = UIManager.instance.ReStartText().Selection(r => result = r);
 
         yield return StartCoroutine(question);
 

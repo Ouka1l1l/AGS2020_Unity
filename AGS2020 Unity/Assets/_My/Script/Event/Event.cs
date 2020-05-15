@@ -57,6 +57,6 @@ public abstract class Event : MonoBehaviour
     public virtual void Execution(Character character)
     {
         _renderer.enabled = true;
-        TextManager.instance.AddText(character._name + "は、" + _name + "を踏んだ");
+        UIManager.instance.AddText(character._name + "は、" + _name + "を踏んだ");
     }
 }

@@ -46,6 +46,11 @@ public class Player : Character
                 }
             }
 
+            if(Input.GetAxis("Menu") > 0)
+            {
+                UIManager.instance.OpenMenu();
+            }
+
             if (Input.GetAxis("Attack") > 0)
             {
                 Attack();
