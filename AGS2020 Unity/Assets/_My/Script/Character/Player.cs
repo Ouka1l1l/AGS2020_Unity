@@ -7,12 +7,12 @@ public class Player : Character
     /// <summary>
     /// アイテムリスト
     /// </summary>
-    private List<Item> _itemList;
+    public List<Item> _itemList { get; private set; }
 
     /// <summary>
     /// アイテムの所持上限
     /// </summary>
-    private int _itamMax = 2;
+    private int _itamMax = 11;
 
     // Start is called before the first frame update
     new void Start()
