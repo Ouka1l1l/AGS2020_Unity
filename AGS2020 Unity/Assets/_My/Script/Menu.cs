@@ -45,18 +45,6 @@ public class Menu : MonoBehaviour
     void Update()
     {
         Choose((int)MenyHeadline.Max);
-
-        if(Input.GetAxis("Submit") > 0)
-        {
-            if(_choose == (int)MenyHeadline.Itam)
-            {
-                UIManager.instance.OpenItemMenu();
-            }
-            if(_choose == (int)MenyHeadline.Close)
-            {
-                UIManager.instance.CloseMenu();
-            }
-        }
     }
 
     /// <summary>
@@ -65,7 +53,12 @@ public class Menu : MonoBehaviour
     /// <param name="headlineMax"></param> 項目数
     protected void Choose(int headlineMax)
     {
-        if(Input.GetAxis("Cancel") > 0)
+        if (Input.GetButtonDown("Submit"))
+        {
+            Submit();
+        }
+
+        if (Input.GetButtonDown("Cancel"))
         {
             UIManager.instance.CloseMenu();
         }
@@ -103,5 +96,23 @@ public class Menu : MonoBehaviour
         }
 
         _oldVertical = vertical;
+    }
+
+    protected virtual void Submit()
+    {
+        switch((MenyHeadline)_choose)
+        {
+            case MenyHeadline.Itam:
+                UIManager.instance.OpenItemMenu();
+                break;
+
+            case MenyHeadline.Close:
+                UIManager.instance.CloseMenu();
+                break;
+
+            default:
+                Debug.LogError("メニューエラー" + (MenyHeadline)_choose);
+                break;
+        }
     }
 }

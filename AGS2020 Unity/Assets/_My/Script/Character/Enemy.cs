@@ -46,6 +46,12 @@ public abstract class Enemy : Character
             return true;
         }
 
+        if(_action != Action.Wait)
+        {
+            ThinkEnd();
+            return true;
+        }
+
         if (_destination == transform.position)
         {
             var player = DungeonManager.instance._player;
@@ -58,9 +64,7 @@ public abstract class Enemy : Character
                     //攻撃
                     _dir = GetTargetDir(player.transform.position);
                     Attack();
-
-                    ThinkEnd();
-                    return true;
+                    return false;
                 }
             }
 
@@ -75,16 +79,14 @@ public abstract class Enemy : Character
                     }
                 }
 
-                ThinkEnd();
-                return true;
+                return false;
             }
             else
             {
                 int d = Random.Range(0, _dir.Max());
                 if(SetDestination((Dir)(d * _dir.One())))
                 {
-                    ThinkEnd();
-                    return true;
+                    return false;
                 }
             }
         }

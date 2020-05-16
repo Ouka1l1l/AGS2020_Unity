@@ -5,15 +5,6 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
-public static class ColorEnumExtension
-{
-    public static void SetAlpha(this Image Image, float a)
-    {
-        var color = Image.color;
-        Image.color = new Color(color.r, color.g, color.b, a);
-    }
-}
-
 public class QuestionText : MonoBehaviour
 {
     [SerializeField]

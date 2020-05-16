@@ -32,37 +32,28 @@ public class Player : Character
 
     public override bool Think()
     {
-        if (_destination == transform.position)
+        if(_action != Action.Wait)
         {
-            if(Input.GetKeyDown(KeyCode.I))
-            {
-                if(_itam != null)
-                {
-                    return UseItem();
-                }
-                else
-                {
-                    Debug.Log("持ってない");
-                }
-            }
+            return true;
+        }
 
-            if(Input.GetAxis("Menu") > 0)
-            {
-                UIManager.instance.OpenMenu();
-            }
+        if(Input.GetButtonDown("Menu"))
+        {
+            UIManager.instance.OpenMenu();
+            return false;
+        }
 
-            if (Input.GetAxis("Attack") > 0)
+        if (Input.GetButtonDown("Attack"))
+        {
+            Attack();
+            return false;
+        }
+        else
+        {
+            Dir dir;
+            if (GetInputDir(out dir))
             {
-                Attack();
-                return true;
-            }
-            else
-            {
-                Dir dir;
-                if (GetInputDir(out dir))
-                {
-                    return SetDestination(dir);
-                }
+                SetDestination(dir);
             }
         }
 
@@ -85,6 +76,14 @@ public class Player : Character
             _itam = null;
         }
     }
+
+    public void UseItem(int index)
+    {
+        _itemList[index].Use(this);
+        _itemList.RemoveAt(index);
+        _action = Action.Item;
+    }
+
 
     new public void Spawn()
     {

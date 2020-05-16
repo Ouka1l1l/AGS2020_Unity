@@ -86,12 +86,18 @@ public class UIManager : Singleton<UIManager>
         _menu.gameObject.SetActive(true);
     }
 
+    /// <summary>
+    /// アイテムメニューを開く
+    /// </summary>
     public void OpenItemMenu()
     {
         _menus.Push(_itemMenu);
         _itemMenu.gameObject.SetActive(true);
     }
 
+    /// <summary>
+    /// メニューを閉じる
+    /// </summary>
     public void CloseMenu()
     {
         _menus.Pop().gameObject.SetActive(false);
@@ -99,6 +105,19 @@ public class UIManager : Singleton<UIManager>
         {
             DungeonManager.instance.PauseEnd();
         }
+    }
+
+    /// <summary>
+    /// メニューをすべて閉じる
+    /// </summary>
+    public void CloseMenuAll()
+    {
+        foreach(var menu in _menus)
+        {
+            menu.gameObject.SetActive(false);
+        }
+        _menus.Clear();
+        DungeonManager.instance.PauseEnd();
     }
 
     private QuestionText Question(string str)

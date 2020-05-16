@@ -86,4 +86,10 @@ public class ItemMenu : Menu
 
         _oldHorizontal = horizontal;
     }
+
+    protected override void Submit()
+    {
+        DungeonManager.instance._player.UseItem(_choose + _indexOffset);
+        UIManager.instance.CloseMenuAll();
+    }
 }
