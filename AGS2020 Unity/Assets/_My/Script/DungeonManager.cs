@@ -41,12 +41,12 @@ public class DungeonManager : Singleton<DungeonManager>
     /// <summary>
     /// ポーズフラグ
     /// </summary>
-    bool _pauseFlag;
+    private int _pause;
 
     // Start is called before the first frame update
     void Start()
     {
-        _pauseFlag = false;
+        _pause = 0;
         _turnCount = 1;
         _player = Instantiate((GameObject)Resources.Load("Player")).GetComponent<Player>();
         _level = Instantiate((GameObject)Resources.Load("Level")).GetComponent<Level>();
@@ -61,12 +61,7 @@ public class DungeonManager : Singleton<DungeonManager>
             _player.Damage(10);
         }
 
-        if(Input.GetKeyDown(KeyCode.P))
-        {
-            _pauseFlag = !_pauseFlag;
-        }
-
-        if(_pauseFlag)
+        if(_pause > 0)
         {
             return;
         }
@@ -181,7 +176,7 @@ public class DungeonManager : Singleton<DungeonManager>
     /// </summary>
     public void PauseStart()
     {
-        _pauseFlag = true;
+        _pause++;
     }
 
     /// <summary>
@@ -189,14 +184,14 @@ public class DungeonManager : Singleton<DungeonManager>
     /// </summary>
     public void PauseEnd()
     {
-        _pauseFlag = false;
+        _pause--;
     }
 
     public IEnumerator ReStart()
     {
         bool result = false;
 
-        var question = UIManager.instance.ReStartText().Selection(r => result = r);
+        var question = UIManager.instance.Question("再挑戦しますか?").Selection(r => result = r);
 
         yield return StartCoroutine(question);
 
@@ -206,11 +201,16 @@ public class DungeonManager : Singleton<DungeonManager>
         }
         else
         {
-            #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-            #else
-                Application.Quit();
-            #endif
+            GameQuit();
         }
+    }
+
+    public void GameQuit()
+    {
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+                Application.Quit();
+        #endif
     }
 }

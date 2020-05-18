@@ -101,11 +101,7 @@ public class UIManager : Singleton<UIManager>
     public void CloseMenu()
     {
         _menus.Pop().gameObject.SetActive(false);
-        if(_menus.Count == 0)
-        {
-            DungeonManager.instance.PauseEnd();
-        }
-        else
+        if(_menus.Count > 0)
         {
             _menus.Peek().PauseEnd();
         }
@@ -121,23 +117,12 @@ public class UIManager : Singleton<UIManager>
             menu.gameObject.SetActive(false);
         }
         _menus.Clear();
-        DungeonManager.instance.PauseEnd();
     }
 
-    private QuestionText Question(string str)
+    public QuestionText Question(string str)
     {
         _QuestionPanel.gameObject.SetActive(true);
         _QuestionPanel.SetQuestionText(str);
         return _QuestionPanel;
-    }
-
-    public QuestionText NextLevelText()
-    {
-        return Question("次の階に進みますか?");
-    }
-
-    public QuestionText ReStartText()
-    {
-        return Question("再挑戦しますか?");
     }
 }

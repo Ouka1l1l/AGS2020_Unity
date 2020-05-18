@@ -43,6 +43,11 @@ public class Menu : MonoBehaviour
         DungeonManager.instance.PauseStart();
     }
 
+    protected void OnDisable()
+    {
+        DungeonManager.instance.PauseEnd();
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -127,6 +132,11 @@ public class Menu : MonoBehaviour
                 UIManager.instance.CloseMenu();
                 break;
 
+            case MenyHeadline.GiveUp:
+                PauseStart();
+                StartCoroutine(GiveUp());
+                break;
+
             case MenyHeadline.Close:
                 UIManager.instance.CloseMenu();
                 break;
@@ -134,6 +144,24 @@ public class Menu : MonoBehaviour
             default:
                 Debug.LogError("メニューエラー" + (MenyHeadline)_choose);
                 break;
+        }
+    }
+
+    private IEnumerator GiveUp()
+    {
+        bool result = false;
+
+        var question = UIManager.instance.Question("あきらめますか?").Selection(r => result = r);
+
+        yield return StartCoroutine(question);
+
+        if (result)
+        {
+            DungeonManager.instance.GameQuit();
+        }
+        else
+        {
+            PauseEnd();
         }
     }
 
