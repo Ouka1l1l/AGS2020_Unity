@@ -105,6 +105,10 @@ public class UIManager : Singleton<UIManager>
         {
             DungeonManager.instance.PauseEnd();
         }
+        else
+        {
+            _menus.Peek().PauseEnd();
+        }
     }
 
     /// <summary>

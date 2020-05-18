@@ -14,6 +14,8 @@ public class Menu : MonoBehaviour
 
     private float _oldVertical;
 
+    protected bool _pause;
+
     enum MenyHeadline
     {
         Itam,
@@ -37,25 +39,38 @@ public class Menu : MonoBehaviour
     {
         _choose = 0;
         _oldVertical = Input.GetAxis("Vertical");
-
+        _pause = false;
         DungeonManager.instance.PauseStart();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(_pause)
+        {
+            return;
+        }
+
         Choose((int)MenyHeadline.Max);
     }
 
     /// <summary>
-    /// 
+    /// 選択する
     /// </summary>
     /// <param name="headlineMax"></param> 項目数
     protected void Choose(int headlineMax)
     {
+        if (_choose > headlineMax)
+        {
+            _choose = 0;
+        }
+
         if (Input.GetButtonDown("Submit"))
         {
-            Submit();
+            if(headlineMax > 0)
+            {
+                Submit();
+            }
         }
 
         if (Input.GetButtonDown("Cancel"))
@@ -103,7 +118,13 @@ public class Menu : MonoBehaviour
         switch((MenyHeadline)_choose)
         {
             case MenyHeadline.Itam:
+                PauseStart();
                 UIManager.instance.OpenItemMenu();
+                break;
+
+            case MenyHeadline.Foot:
+                DungeonManager.instance._player.FootEvent();
+                UIManager.instance.CloseMenu();
                 break;
 
             case MenyHeadline.Close:
@@ -114,5 +135,15 @@ public class Menu : MonoBehaviour
                 Debug.LogError("メニューエラー" + (MenyHeadline)_choose);
                 break;
         }
+    }
+
+    public void PauseStart()
+    {
+        _pause = true;
+    }
+
+    public void PauseEnd()
+    {
+        _pause = false;
     }
 }

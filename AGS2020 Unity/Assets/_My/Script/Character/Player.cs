@@ -12,14 +12,14 @@ public class Player : Character
     /// <summary>
     /// アイテムの所持上限
     /// </summary>
-    private int _itamMax = 11;
+    private int _itamMax = 12;
 
     // Start is called before the first frame update
     new void Start()
     {
         base.Start();
 
-        _atk = 20;
+        _atk = 30;
 
         _type = CharacterType.Player;
         _id = 0;
@@ -77,11 +77,20 @@ public class Player : Character
         }
     }
 
+    /// <summary>
+    /// アイテムを使用
+    /// </summary>
+    /// <param name="index"></param> 使用するアイテムの番号
     public void UseItem(int index)
     {
         _itemList[index].Use(this);
         _itemList.RemoveAt(index);
         _action = Action.Item;
+    }
+
+    public void FootEvent()
+    {
+        _action = Action.Move;
     }
 
 

@@ -82,7 +82,23 @@ public class ItemMenu : Menu
             }
         }
 
-        Choose((textMax - 1) - ((textMax - 1) - (itemMax % textMax)));
+        if(_indexOffset + textMax < itemMax)
+        {
+            Choose(textMax);
+        }
+        else
+        {
+            int headlineMax = itemMax % textMax;
+
+            if (headlineMax == 0 && itemMax > 0)
+            {
+                Choose(textMax);
+            }
+            else
+            {
+                Choose(itemMax % textMax);
+            }
+        }
 
         _oldHorizontal = horizontal;
     }

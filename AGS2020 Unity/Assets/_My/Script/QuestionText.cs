@@ -35,9 +35,9 @@ public class QuestionText : MonoBehaviour
     public IEnumerator Selection(Action<bool> CallBack)
     {
         //決定されるまで
-        while (Input.GetAxis("Submit") <= 0)
+        while (!Input.GetButtonDown("Submit"))
         {
-            if(Input.GetAxis("Cancel") > 0)
+            if(Input.GetButtonDown("Cancel"))
             {
                 _yes = false;
                 Submit(CallBack);
