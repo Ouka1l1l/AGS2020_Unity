@@ -126,22 +126,24 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// レベル
     /// </summary>
-    protected int _level = 1;
+    public int _level { get; protected set; } = 1;
 
     /// <summary>
     /// 経験値
     /// </summary>
-    protected int _exp;
+    public int _exp { get; protected set; } = 0;
+
+    public int _nextLevelExp { get; protected set; } = 100;
 
     /// <summary>
     /// 攻撃力
     /// </summary>
-    protected int _atk = 10;
+    public int _atk { get; protected set; } = 10;
 
     /// <summary>
     /// 防御力
     /// </summary>
-    protected int _def = 5;
+    public int _def { get; protected set; } = 5;
 
     /// <summary>
     /// 自動回復量

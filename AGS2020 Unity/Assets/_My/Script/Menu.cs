@@ -132,6 +132,11 @@ public class Menu : MonoBehaviour
                 UIManager.instance.CloseMenu();
                 break;
 
+            case MenyHeadline.Status:
+                PauseStart();
+                UIManager.instance.OpenStatusMenu();
+                break;
+
             case MenyHeadline.GiveUp:
                 PauseStart();
                 StartCoroutine(GiveUp());

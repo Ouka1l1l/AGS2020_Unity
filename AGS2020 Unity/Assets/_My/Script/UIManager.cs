@@ -29,6 +29,9 @@ public class UIManager : Singleton<UIManager>
     private ItemMenu _itemMenu;
 
     [SerializeField]
+    private StatusMenu _statusMenu;
+
+    [SerializeField]
     private QuestionText _QuestionPanel;
 
     private Stack<Menu> _menus;
@@ -93,6 +96,12 @@ public class UIManager : Singleton<UIManager>
     {
         _menus.Push(_itemMenu);
         _itemMenu.gameObject.SetActive(true);
+    }
+
+    public void OpenStatusMenu()
+    {
+        _menus.Push(_statusMenu);
+        _statusMenu.gameObject.SetActive(true);
     }
 
     /// <summary>

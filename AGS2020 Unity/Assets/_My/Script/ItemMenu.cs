@@ -25,6 +25,14 @@ public class ItemMenu : Menu
         base.Start();
 
         _offset = 23;
+
+        foreach(var name in _itemNames)
+        {
+            name.text = "";
+        }
+
+        _rightImage.SetAlpha(0.2f);
+        _leftImage.SetAlpha(0.2f);
     }
 
     new private void OnEnable()
