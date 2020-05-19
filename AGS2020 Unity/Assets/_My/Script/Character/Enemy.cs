@@ -33,12 +33,17 @@ public abstract class Enemy : Character
     {
         base.Start();
 
-        _exp = 250;
-
         _type = CharacterType.Enemy;
 
         _thinkEnd = false;
         _actEnd = false;
+
+        var enemyStatus = Resources.Load<EnemyData>("ScriptableObject/EnemyData").enemyData[(int)_enemyType];
+        _name = enemyStatus.name;
+        _hp = _maxHp = enemyStatus.maxHp;
+        _atk = enemyStatus.atk;
+        _def = enemyStatus.def;
+        _exp = enemyStatus.exp;
     }
 
     public override bool Think()

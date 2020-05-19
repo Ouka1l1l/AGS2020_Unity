@@ -6,9 +6,8 @@ public class TestEnemy : Enemy
 {
     new void Start()
     {
-        base.Start();
-
         _enemyType = EnemyType.TestEnemy;
-        _name = "敵";
+
+        base.Start();
     }
 }
