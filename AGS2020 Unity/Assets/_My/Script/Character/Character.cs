@@ -357,7 +357,8 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 攻撃する
     /// </summary>
-    protected void Attack()
+    /// <returns></returns> 経験値
+    protected int Attack()
     {
         _action = Action.Attack;
 
@@ -380,8 +381,13 @@ public abstract class Character : MonoBehaviour
                 target = dungeonManager._level._enemies[characterNo - 1];
             }
             int damage = DamageCalculation(target._def);
-            target.Damage(damage);
+            if(target.Damage(damage))
+            {
+                return target._exp;
+            }
         }
+
+        return 0;
     }
 
     /// <summary>
@@ -403,7 +409,8 @@ public abstract class Character : MonoBehaviour
     /// ダメージを受ける
     /// </summary>
     /// <param name="damage"></param> ダメージ量
-    public void Damage(int damage)
+    /// <returns></returns> trueなら死亡
+    public bool Damage(int damage)
     {
         _hp -= damage;
 
@@ -413,7 +420,10 @@ public abstract class Character : MonoBehaviour
         if(_hp <= 0)
         {
             Death();
+            return true;
         }
+
+        return false;
     }
 
     /// <summary>

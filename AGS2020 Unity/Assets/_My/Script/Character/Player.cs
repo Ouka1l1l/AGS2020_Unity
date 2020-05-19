@@ -45,7 +45,11 @@ public class Player : Character
 
         if (Input.GetButtonDown("Attack"))
         {
-            Attack();
+            int exp = Attack();
+            if (exp > 0)
+            {
+                ExpUp(exp);
+            }
             return false;
         }
         else
@@ -93,6 +97,26 @@ public class Player : Character
         _action = Action.Move;
     }
 
+    private void ExpUp(int exp)
+    {
+        _exp += exp;
+        while(_exp >= _nextLevelExp)
+        {
+            LevelUp();
+            _exp -= _nextLevelExp;
+        }
+    }
+
+    private void LevelUp()
+    {
+        _level++;
+        UIManager.instance.AddText(_name + "は、" + _level + "になった");
+
+        _maxHp += 10;
+        _nextLevelExp += 10;
+        _atk++;
+        _def++;
+    }
 
     new public void Spawn()
     {

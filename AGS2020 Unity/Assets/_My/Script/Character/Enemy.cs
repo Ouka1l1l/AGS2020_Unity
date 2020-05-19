@@ -33,6 +33,8 @@ public abstract class Enemy : Character
     {
         base.Start();
 
+        _exp = 250;
+
         _type = CharacterType.Enemy;
 
         _thinkEnd = false;
@@ -52,16 +54,16 @@ public abstract class Enemy : Character
             return true;
         }
 
-        //if(_itam != null)
-        //{
-        //    if (Random.Range(0, 100) < 20)
-        //    {
-        //        if (UseItem())
-        //        {
-        //            return false;
-        //        }
-        //    }
-        //}
+        if (_itam != null)
+        {
+            if (Random.Range(0, 100) < 20)
+            {
+                if (UseItem())
+                {
+                    return false;
+                }
+            }
+        }
 
         var player = DungeonManager.instance._player;
         var characterDatas = DungeonManager.instance._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
