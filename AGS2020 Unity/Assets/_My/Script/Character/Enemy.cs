@@ -46,51 +46,62 @@ public abstract class Enemy : Character
             return true;
         }
 
-        if(_action != Action.Wait)
+        if(_action != Action.Non)
         {
             ThinkEnd();
             return true;
         }
 
-        if (_destination == transform.position)
+        if(_itam != null)
         {
-            var player = DungeonManager.instance._player;
-
-            var characterDatas = DungeonManager.instance._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
-            foreach (var character in characterDatas)
+            if (Random.Range(0, 100) < 20)
             {
-                if (character == 0)
-                {
-                    //攻撃
-                    _dir = GetTargetDir(player.transform.position);
-                    Attack();
-                    return false;
-                }
-            }
-
-            if ((_roomNo == player._roomNo) && (_roomNo != -1) && (player._roomNo != -1))
-            {
-                var dir = GetTargetDir(player.transform.position);
-                if (!SetDestination(dir))
-                {
-                    if (!SetDestination(dir.Addition()))
-                    {
-                        SetDestination(dir.Subtraction());
-                    }
-                }
-
-                return false;
-            }
-            else
-            {
-                int d = Random.Range(0, _dir.Max());
-                if(SetDestination((Dir)(d * _dir.One())))
+                if (UseItem())
                 {
                     return false;
                 }
             }
         }
 
+        var player = DungeonManager.instance._player;
+        var characterDatas = DungeonManager.instance._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
+        foreach (var character in characterDatas)
+        {
+            if (character == 0)
+            {
+                //攻撃
+                _dir = GetTargetDir(player.transform.position);
+                Attack();
+                return false;
+            }
+        }
+
+        if ((_roomNo == player._roomNo) && (_roomNo != -1) && (player._roomNo != -1))
+        {
+            var dir = GetTargetDir(player.transform.position);
+            if (!SetDestination(dir))
+            {
+                if (!SetDestination(dir.Addition()))
+                {
+                    SetDestination(dir.Subtraction());
+                }
+            }
+
+            return false;
+        }
+        else
+        {
+            if (Random.Range(0, 100) > 10)
+            {
+                int d = Random.Range(0, _dir.Max());
+                if (SetDestination((Dir)(d * _dir.One())))
+                {
+                    return false;
+                }
+            }
+        }
+
+        _action = Action.Wait;
         return false;
     }
 
@@ -120,6 +131,32 @@ public abstract class Enemy : Character
     {
         _actEnd = true;
         _thinkEnd = false;
+    }
+
+    protected bool UseItem()
+    {
+        bool useFlag = false;
+        switch (_itam._type)
+        {
+            case Item.ItemType.Portion:
+                if (_hp < (_maxHp / 2))
+                {
+                    useFlag = true;
+                }
+                break;
+
+            default:
+                Debug.LogError("敵アイテムエラー" + _itam._type);
+                break;
+        }
+
+        if (useFlag)
+        {
+            base.UseItem();
+            return true;
+        }
+
+        return false;
     }
 
     public void Spawn(int level,int id)

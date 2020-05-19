@@ -32,7 +32,7 @@ public class Player : Character
 
     public override bool Think()
     {
-        if(_action != Action.Wait)
+        if(_action != Action.Non)
         {
             return true;
         }

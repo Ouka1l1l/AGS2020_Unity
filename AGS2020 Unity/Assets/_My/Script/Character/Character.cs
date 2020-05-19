@@ -87,6 +87,7 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected enum Action
     {
+        Non,
         Wait,
         Move,
         Attack,
@@ -174,6 +175,10 @@ public abstract class Character : MonoBehaviour
         bool end = false;
         switch(_action)
         {
+            case Action.Wait:
+                end = true;
+                break;
+
             case Action.Move:
                 end = Move();
                 break;
@@ -194,16 +199,11 @@ public abstract class Character : MonoBehaviour
 
         if(end)
         {
-            _action = Action.Wait;
+            _action = Action.Non;
             return true;
         }
 
         return false;
-    }
-
-    public void ActEnd()
-    {
-        _action = Action.Wait;
     }
 
     /// <summary>
@@ -340,12 +340,10 @@ public abstract class Character : MonoBehaviour
     /// アイテムを使う
     /// </summary>
     /// <returns></returns>
-    protected bool UseItem()
+    protected void UseItem()
     {
         _itam.Use(this);
         _action = Action.Item;
-
-        return true;
     }
 
     /// <summary>
@@ -517,7 +515,7 @@ public abstract class Character : MonoBehaviour
         _destination = transform.position;
         _roomNo = sectionNo;
 
-        _action = Action.Wait;
+        _action = Action.Non;
 
         DungeonManager.instance._level.SetCharacterData(transform.position.x, transform.position.z, _id);
     }
