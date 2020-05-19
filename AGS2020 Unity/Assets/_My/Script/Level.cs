@@ -206,21 +206,32 @@ public class Level : MonoBehaviour
     /// <param name="rangeX"></param> 取得したい横範囲
     /// <param name="rangeY"></param> 取得したい縦範囲
     /// <returns></returns> 周辺のデータリスト
-    private List<T> GetSurroundingData<T>(int x,int y,T[,] dataList,int rangeX,int rangeY)
+    private Dictionary<Vector2Int,T> GetSurroundingData<T>(int x,int y,T[,] dataList,int rangeX,int rangeY)
     {
-        List<T> ret = new List<T>();
+        Dictionary<Vector2Int, T> ret = new Dictionary<Vector2Int, T>();
         for (int ry = -rangeY; ry <= rangeY; ry++)
         {
             for (int rx = -rangeX; rx <= rangeX; rx++)
             {
-                if (ry != 0 || rx != 0)
-                {
-                    ret.Add(GetData(x + rx, y + ry, dataList));
-                }
+                Vector2Int key =  new Vector2Int(rx, ry);
+                ret.Add(key, GetData(x + rx, y + ry, dataList));
             }
         }
 
         return ret;
+    }
+
+    /// <summary>
+    /// 周辺の地形データを取得
+    /// </summary>
+    /// <param name="x"></param> 中心X座標
+    /// <param name="y"></param> 中心Y座標
+    /// <param name="rangeX"></param> 取得したい横範囲
+    /// <param name="rangeY"></param> 取得したい縦範囲
+    /// <returns></returns> 周辺の地形データリスト
+    public Dictionary<Vector2Int, TerrainType> GetSurroundingTerrainData(int x, int y, int rangeX, int rangeY)
+    {
+        return GetSurroundingData(x, y, _terrainData, rangeX, rangeY);
     }
 
     /// <summary>
@@ -231,11 +242,11 @@ public class Level : MonoBehaviour
     /// <param name="rangeX"></param> 取得したい横範囲
     /// <param name="rangeY"></param> 取得したい縦範囲
     /// <returns></returns> 周辺のキャラデータリスト
-    public List<int> GetSurroundingCharacterData(int x,int y, int rangeX, int rangeY)
+    public Dictionary<Vector2Int, int> GetSurroundingCharacterData(int x,int y, int rangeX, int rangeY)
     {
         return GetSurroundingData(x, y, _characterData, rangeX, rangeY);
     }
-    public List<int> GetSurroundingCharacterData(float x, float y, int rangeX, int rangeY)
+    public Dictionary<Vector2Int, int> GetSurroundingCharacterData(float x, float y, int rangeX, int rangeY)
     {
         return GetSurroundingData((int)x, (int)y, _characterData, rangeX, rangeY);
     }
@@ -252,6 +263,21 @@ public class Level : MonoBehaviour
     {
         var grid = DungeonManager.instance.GetGrid(x, y);
         dataList[grid.y, grid.x] = data;
+    }
+
+    /// <summary>
+    /// 地形データをセット
+    /// </summary>
+    /// <param name="x"></param> 横の座標
+    /// <param name="z"></param> 縦の座標
+    /// <param name="data"></param> セットする地形データ
+    public void SetTerrainData(int x,int y,TerrainType data)
+    {
+        SetData(x, y, _terrainData, data);
+    }
+    public void SetTerrainData(Vector2Int pos, TerrainType data)
+    {
+        SetData(pos.x, pos.y, _terrainData, data);
     }
 
     /// <summary>
@@ -282,16 +308,6 @@ public class Level : MonoBehaviour
     public void SetItemData(Vector2Int pos, Item data)
     {
         SetData(pos.x, pos.y, _itemData, data);
-    }
-
-    public Item ItemPass(Vector2Int pos)
-    {
-        var grid = DungeonManager.instance.GetGrid(pos);
-        var ret = _itemData[grid.y, grid.x];
-        _itemData[grid.y, grid.x] = null;
-        _terrainData[grid.y, grid.x] = TerrainType.Floor;
-
-        return ret;
     }
 
     /// <summary>

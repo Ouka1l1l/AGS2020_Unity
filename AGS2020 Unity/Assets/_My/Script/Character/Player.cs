@@ -12,7 +12,7 @@ public class Player : Character
     /// <summary>
     /// アイテムの所持上限
     /// </summary>
-    private int _itamMax = 12;
+    private int _itamMax = 1;
 
     // Start is called before the first frame update
     new void Start()

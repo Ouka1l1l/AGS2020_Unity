@@ -52,22 +52,22 @@ public abstract class Enemy : Character
             return true;
         }
 
-        if(_itam != null)
-        {
-            if (Random.Range(0, 100) < 20)
-            {
-                if (UseItem())
-                {
-                    return false;
-                }
-            }
-        }
+        //if(_itam != null)
+        //{
+        //    if (Random.Range(0, 100) < 20)
+        //    {
+        //        if (UseItem())
+        //        {
+        //            return false;
+        //        }
+        //    }
+        //}
 
         var player = DungeonManager.instance._player;
         var characterDatas = DungeonManager.instance._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
         foreach (var character in characterDatas)
         {
-            if (character == 0)
+            if (character.Value == 0)
             {
                 //攻撃
                 _dir = GetTargetDir(player.transform.position);
@@ -133,7 +133,7 @@ public abstract class Enemy : Character
         _thinkEnd = false;
     }
 
-    protected bool UseItem()
+    new protected bool UseItem()
     {
         bool useFlag = false;
         switch (_itam._type)
@@ -173,6 +173,11 @@ public abstract class Enemy : Character
 
         var dungeonManager = DungeonManager.instance;
         dungeonManager._level.SetCharacterData(transform.position.x, transform.position.z, -1);
+
+        if(_itam != null)
+        {
+            _itam.Drop(transform.position.x, transform.position.z);
+        }
 
         Destroy(gameObject);
     }

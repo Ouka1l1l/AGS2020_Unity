@@ -19,6 +19,55 @@ public enum Dir
 
 public static class DirEnumExtension
 {
+    public static Vector2Int ToVector2Int(this Dir dir)
+    {
+        Vector2Int ret = new Vector2Int(); ;
+        switch (dir)
+        {
+            case Dir.Top:
+                ret.y++;
+                break;
+
+            case Dir.TopRight:
+                ret.y++;
+                ret.x++;
+                break;
+
+            case Dir.Right:
+                ret.x++;
+                break;
+
+            case Dir.BottomRight:
+                ret.y--;
+                ret.x++;
+                break;
+
+            case Dir.Bottom:
+                ret.y--;
+                break;
+
+            case Dir.BottomLeft:
+                ret.y--;
+                ret.x--;
+                break;
+
+            case Dir.Left:
+                ret.x--;
+                break;
+
+            case Dir.TopLeft:
+                ret.y++;
+                ret.x--;
+                break;
+
+            default:
+                Debug.LogError("DirToVector2Int" + dir);
+                break;
+        }
+
+        return ret;
+    }
+
     public static int Max(this Dir dir)
     {
         return System.Enum.GetValues(typeof(Dir)).Length;
@@ -214,48 +263,7 @@ public abstract class Character : MonoBehaviour
     {
         Vector2Int ret = new Vector2Int((int)transform.position.x, (int)transform.position.z);
 
-        switch (_dir)
-        {
-            case Dir.Top:
-                ret.y++;
-                break;
-
-            case Dir.TopRight:
-                ret.y++;
-                ret.x++;
-                break;
-
-            case Dir.Right:
-                ret.x++;
-                break;
-
-            case Dir.BottomRight:
-                ret.y--;
-                ret.x++;
-                break;
-
-            case Dir.Bottom:
-                ret.y--;
-                break;
-
-            case Dir.BottomLeft:
-                ret.y--;
-                ret.x--;
-                break;
-
-            case Dir.Left:
-                ret.x--;
-                break;
-
-            case Dir.TopLeft:
-                ret.y++;
-                ret.x--;
-                break;
-
-            default:
-                Debug.LogError("CharacterFrontError" + _dir);
-                break;
-        }
+        ret += _dir.ToVector2Int();
 
         return ret;
     }
@@ -478,7 +486,7 @@ public abstract class Character : MonoBehaviour
     {
         if (_itam == null)
         {
-            _itam = DungeonManager.instance._level.ItemPass(pos);
+            _itam = DungeonManager.instance._level.GetItemData(pos);
             _itam.BePickedUp();
 
             UIManager.instance.AddText(_name + "は、" + _itam._name + "を拾った");
