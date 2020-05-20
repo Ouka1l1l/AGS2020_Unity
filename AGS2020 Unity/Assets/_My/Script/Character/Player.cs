@@ -14,6 +14,14 @@ public class Player : Character
     /// </summary>
     private int _itamMax = 1;
 
+    public enum SkillAttack
+    {
+        Non,
+        RotaryAttack
+    }
+
+    public SkillAttack[] _skillAttacks { get; private set; }
+
     // Start is called before the first frame update
     new void Start()
     {
@@ -28,6 +36,11 @@ public class Player : Character
         _itemList = new List<Item>();
 
         _regeneration = 1;
+
+        _skillAttacks = new SkillAttack[4];
+
+        _skillAttacks[0] = SkillAttack.RotaryAttack;
+        _skillAttacks[3] = SkillAttack.RotaryAttack;
     }
 
     public override bool Think()
