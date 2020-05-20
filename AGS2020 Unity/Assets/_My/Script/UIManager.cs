@@ -34,6 +34,9 @@ public class UIManager : Singleton<UIManager>
     [SerializeField]
     private QuestionText _QuestionPanel;
 
+    [SerializeField]
+    private SkillMenu _skillMenu;
+
     private Stack<Menu> _menus;
 
     new private void Awake()
@@ -98,6 +101,9 @@ public class UIManager : Singleton<UIManager>
         _itemMenu.gameObject.SetActive(true);
     }
 
+    /// <summary>
+    /// ステータスメニューを開く
+    /// </summary>
     public void OpenStatusMenu()
     {
         _menus.Push(_statusMenu);
@@ -126,6 +132,11 @@ public class UIManager : Singleton<UIManager>
             menu.gameObject.SetActive(false);
         }
         _menus.Clear();
+    }
+
+    public SkillMenu GetSkillMenu()
+    {
+        return _skillMenu;
     }
 
     public QuestionText Question(string str)

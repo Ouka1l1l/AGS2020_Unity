@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ public class Player : Character
         RotaryAttack
     }
 
-    public SkillAttack[] _skillAttacks { get; private set; }
+    public SkillAttack[] _skillAttackSlot { get; private set; }
 
     // Start is called before the first frame update
     new void Start()
@@ -37,10 +38,11 @@ public class Player : Character
 
         _regeneration = 1;
 
-        _skillAttacks = new SkillAttack[4];
+        _skillAttackSlot = new SkillAttack[4];
 
-        _skillAttacks[0] = SkillAttack.RotaryAttack;
-        _skillAttacks[3] = SkillAttack.RotaryAttack;
+        UIManager.instance.GetSkillMenu().SetSkill(1, (int)SkillAttack.RotaryAttack);
+
+        _skillAttackSlot[1] = SkillAttack.RotaryAttack;
     }
 
     public override bool Think()
@@ -50,15 +52,21 @@ public class Player : Character
             return true;
         }
 
-        if(Input.GetButtonDown("Menu"))
+        if (Input.GetButtonDown("R_Shoulder"))
         {
-            UIManager.instance.OpenMenu();
+            UIManager.instance.GetSkillMenu().gameObject.SetActive(true);
+        }
+
+        if(Input.GetButton("R_Shoulder"))
+        {
+            SkillAttackChoice();
             return false;
         }
 
-        if(Input.GetButtonDown("Special"))
+        if (Input.GetButtonDown("Y_Button"))
         {
-            RotaryAttack();
+            UIManager.instance.OpenMenu();
+            return false;
         }
 
         if (Input.GetButtonDown("Attack"))
@@ -85,6 +93,57 @@ public class Player : Character
     new public bool Act()
     {
         return base.Act();
+    }
+
+    private void SkillAttackChoice()
+    {
+        Func<int> SkillAttack = null;
+
+        Func<int, bool> SlotChoice = (int slotNo) =>
+          {
+              var skillAttackType = _skillAttackSlot[slotNo];
+              if (_skillAttackData[(int)skillAttackType].cost > 0)
+              {
+                  switch(skillAttackType)
+                  {
+                      case Player.SkillAttack.RotaryAttack:
+                          SkillAttack = RotaryAttack;
+                          break;
+
+                      default:
+                          Debug.LogError("技選択エラー" + skillAttackType);
+                          break;
+                  }
+              }
+
+              return false;
+          };
+
+        if(Input.GetButtonDown("Y_Button"))
+        {
+            SlotChoice(0);
+        }
+        else if(Input.GetButtonDown("B_Button"))
+        {
+            SlotChoice(1);
+        }
+        else if(Input.GetButtonDown("A_Button"))
+        {
+            SlotChoice(2);
+        }
+        else if(Input.GetButtonDown("X_Button"))
+        {
+            SlotChoice(3);
+        }
+
+        if (SkillAttack != null)
+        {
+            int exp = SkillAttack();
+            if (exp > 0)
+            {
+                ExpUp(exp);
+            }
+        }
     }
 
     protected override void PickUpItem(Vector2Int pos)

@@ -140,6 +140,7 @@ public abstract class Character : MonoBehaviour
         Wait,
         Move,
         Attack,
+        SkillAttack,
         Item
     }
 
@@ -200,6 +201,11 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected int _regeneration;
 
+    /// <summary>
+    /// 技のデータ
+    /// </summary>
+    protected List<SkillAttack> _skillAttackData;
+
     // Start is called before the first frame update
     protected void Start()
     {
@@ -207,6 +213,8 @@ public abstract class Character : MonoBehaviour
         _destination = transform.position;
         _dir = Dir.Bottom;
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
+
+        _skillAttackData = Resources.Load<SkillAttackData>("ScriptableObject/SkillAttackData").skillAttackData;
     }
 
     /// <summary>
@@ -233,6 +241,7 @@ public abstract class Character : MonoBehaviour
                 break;
 
             case Action.Attack:
+            case Action.SkillAttack:
                 end = true;
                 break;
 
@@ -392,6 +401,8 @@ public abstract class Character : MonoBehaviour
 
     protected int RotaryAttack()
     {
+        _action = Action.SkillAttack;
+
         UIManager.instance.AddText(_name + "の回転切り");
         var dungeonManager = DungeonManager.instance;
 

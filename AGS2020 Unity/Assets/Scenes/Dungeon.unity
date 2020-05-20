@@ -2577,6 +2577,7 @@ MonoBehaviour:
   _itemMenu: {fileID: 979250503}
   _statusMenu: {fileID: 1621814167}
   _QuestionPanel: {fileID: 141248036}
+  _skillMenu: {fileID: 1714843221}
 --- !u!4 &343144771
 Transform:
   m_ObjectHideFlags: 0
@@ -12512,17 +12513,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b419a583455aa94990606967317ceaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillPanels:
+  _skillPanels:
   - {fileID: 890728242}
   - {fileID: 359380588}
   - {fileID: 758586306}
   - {fileID: 1940220105}
-  skillNames:
+  _skillNames:
   - {fileID: 822804952}
   - {fileID: 1649632930}
   - {fileID: 510232569}
   - {fileID: 330548839}
-  skillCosts:
+  _skillCosts:
   - {fileID: 195431014}
   - {fileID: 173498391}
   - {fileID: 1331121628}

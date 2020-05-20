@@ -7,41 +7,48 @@ using UnityEngine.UI;
 public class SkillMenu : MonoBehaviour
 {
     [SerializeField]
-    private Image[] skillPanels = new Image[4];
+    private Image[] _skillPanels = new Image[4];
 
     [SerializeField]
-    private TextMeshProUGUI[] skillNames = new TextMeshProUGUI[4];
+    private TextMeshProUGUI[] _skillNames = new TextMeshProUGUI[4];
 
     [SerializeField]
-    private TextMeshProUGUI[] skillCosts = new TextMeshProUGUI[4];
+    private TextMeshProUGUI[] _skillCosts = new TextMeshProUGUI[4];
 
     private List<SkillAttack> _data;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         _data = Resources.Load<SkillAttackData>("ScriptableObject/SkillAttackData").skillAttackData;
+
+        foreach (var skillPanel in _skillPanels)
+        {
+            skillPanel.gameObject.SetActive(false);
+        }
+
+        gameObject.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        var playerSkill = DungeonManager.instance._player._skillAttacks;
-
-        for (int s = 0; s < 4; s++)
+        if(Input.GetButtonUp("R_Shoulder"))
         {
-            int skillId = (int)playerSkill[s];
-            if (skillId > 0)
-            {
-                skillId--;
-                skillPanels[s].gameObject.SetActive(true);
-                skillNames[s].text = _data[skillId].name;
-                skillCosts[s].text = _data[skillId].cost.ToString();
-            }
-            else
-            {
-                skillPanels[s].gameObject.SetActive(false);
-            }
+            gameObject.SetActive(false);
+        }
+    }
+
+    public void SetSkill(int slotNo,int skillId)
+    {
+        if (skillId > 0 && 4 > slotNo && slotNo >= 0)
+        {
+            _skillPanels[slotNo].gameObject.SetActive(true);
+            _skillNames[slotNo].text = _data[skillId].name;
+            _skillCosts[slotNo].text = _data[skillId].cost.ToString();
+        }
+        else
+        {
+            Debug.LogError("スキルセットエラー" + skillId);
         }
     }
 }

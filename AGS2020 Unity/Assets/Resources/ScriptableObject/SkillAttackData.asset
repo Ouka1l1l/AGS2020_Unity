@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: SkillAttackData
   m_EditorClassIdentifier: 
   skillAttackData:
+  - name: "\u306A\u3057"
+    cost: 0
   - name: "\u56DE\u8EE2\u5207\u308A"
     cost: 30
