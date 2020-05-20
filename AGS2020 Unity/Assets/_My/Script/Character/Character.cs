@@ -390,6 +390,48 @@ public abstract class Character : MonoBehaviour
         return 0;
     }
 
+    protected int RotaryAttack()
+    {
+        UIManager.instance.AddText(_name + "の回転切り");
+        var dungeonManager = DungeonManager.instance;
+
+        int ret = 0;
+
+        var characterData = dungeonManager._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
+        foreach(var charData in characterData)
+        {
+            if (charData.Value != -1)
+            {
+                Character target = null;
+                if (_id == 0)
+                {
+                    if (charData.Value > 0)
+                    {
+                        target = dungeonManager._level._enemies[charData.Value - 1];
+                    }
+                }
+                else
+                {
+                    if (charData.Value == 0)
+                    {
+                        target = dungeonManager._player;
+                    }
+                }
+
+                if (target != null)
+                {
+                    int damage = DamageCalculation(target._def);
+                    if (target.Damage(damage))
+                    {
+                        ret += target._exp;
+                    }
+                }
+            }
+        }
+
+        return ret;
+    }
+
     /// <summary>
     /// ダメージ計算
     /// </summary>

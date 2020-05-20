@@ -56,7 +56,7 @@ public class DungeonManager : Singleton<DungeonManager>
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.V))
+        if (Input.GetKeyDown(KeyCode.V))
         {
             _player.Damage(10);
         }

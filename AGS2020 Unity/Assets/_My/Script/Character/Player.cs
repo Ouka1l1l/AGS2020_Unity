@@ -43,6 +43,11 @@ public class Player : Character
             return false;
         }
 
+        if(Input.GetButtonDown("Special"))
+        {
+            RotaryAttack();
+        }
+
         if (Input.GetButtonDown("Attack"))
         {
             int exp = Attack();
