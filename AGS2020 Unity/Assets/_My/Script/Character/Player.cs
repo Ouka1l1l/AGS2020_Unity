@@ -95,6 +95,25 @@ public class Player : Character
         return base.Act();
     }
 
+    protected override bool Move()
+    {
+        if(base.Move())
+        {
+            if(_roomNo == -1)
+            {
+                DungeonManager.instance._level.UpdateMiniMap((int)transform.position.x, (int)transform.position.z);
+            }
+            else
+            {
+                DungeonManager.instance._level.UpdateMiniMap(_roomNo);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     private void SkillAttackChoice()
     {
         Func<int> SkillAttack = null;
@@ -201,6 +220,7 @@ public class Player : Character
 
         DungeonManager.instance._level.SetCharacterData(transform.position.x, transform.position.z, -1);
 
+        /////////デバック
         Vector2Int pos = DungeonManager.instance._level.staisPos;
         pos.x++;
 
@@ -208,6 +228,10 @@ public class Player : Character
         _destination = transform.position;
 
         DungeonManager.instance._level.SetCharacterData(transform.position.x, transform.position.z, _id);
+        _roomNo = DungeonManager.instance._level.GetRoomNo(transform.position.x, transform.position.z);
+        ////////
+
+        DungeonManager.instance._level.UpdateMiniMap(_roomNo);
 
         Camera.main.GetComponent<FollowCamera>().SetTarget(this);
     }

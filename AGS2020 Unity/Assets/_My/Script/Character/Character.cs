@@ -339,7 +339,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 移動する
     /// </summary>
-    protected bool Move()
+    protected virtual bool Move()
     {
         transform.position = Vector3.MoveTowards(transform.position, _destination, Time.deltaTime * 5.0f);
         if (_destination == transform.position)

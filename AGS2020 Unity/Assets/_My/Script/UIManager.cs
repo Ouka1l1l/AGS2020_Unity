@@ -39,6 +39,12 @@ public class UIManager : Singleton<UIManager>
 
     private Stack<Menu> _menus;
 
+    /// <summary>
+    /// ミニマップ用カメラ
+    /// </summary>
+    [SerializeField]
+    private Camera _miniMapCamera;
+
     new private void Awake()
     {
         base.Awake();
@@ -144,5 +150,24 @@ public class UIManager : Singleton<UIManager>
         _QuestionPanel.gameObject.SetActive(true);
         _QuestionPanel.SetQuestionText(str);
         return _QuestionPanel;
+    }
+
+    /// <summary>
+    /// ミニマップ用カメラの座標をセット
+    /// </summary>
+    /// <param name="mapSize"></param> マップサイズ
+    public void SetMiniMapCamera(Vector2Int mapSize)
+    {
+        _miniMapCamera.transform.SetX(mapSize.x / 2);
+        _miniMapCamera.transform.SetZ(-mapSize.y / 2);
+
+        if (mapSize.x > mapSize.y)
+        {
+            _miniMapCamera.orthographicSize = mapSize.x / 2;
+        }
+        else
+        {
+            _miniMapCamera.orthographicSize = mapSize.y / 2;
+        }
     }
 }

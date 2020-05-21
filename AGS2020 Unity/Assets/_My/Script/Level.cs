@@ -14,6 +14,7 @@ public class Level : MonoBehaviour
     {
         Wall,   //壁
         Floor,  //床
+        Road,   //道
         Event,  //イベント
         Item,   //アイテム
         Max
@@ -23,6 +24,8 @@ public class Level : MonoBehaviour
     /// 地形データ
     /// </summary>
     private TerrainType[,] _terrainData;
+
+    private GameObject[,] _miniMapMask;
 
     /// <summary>
     /// イベントデータ
@@ -493,11 +496,17 @@ public class Level : MonoBehaviour
         {
             if (isRandomX)
             {
-                _terrainData[r, tmp1] = TerrainType.Floor;
+                if(_terrainData[r, tmp1] == TerrainType.Wall)
+                {
+                    _terrainData[r, tmp1] = TerrainType.Road;
+                }
             }
             else
             {
-                _terrainData[tmp1, r] = TerrainType.Floor;
+                if (_terrainData[tmp1, r] == TerrainType.Wall)
+                {
+                    _terrainData[tmp1, r] = TerrainType.Road;
+                }
             }
         }
 
@@ -506,11 +515,17 @@ public class Level : MonoBehaviour
         {
             if (isRandomX)
             {
-                _terrainData[r, tmp2] = TerrainType.Floor;
+                if (_terrainData[r, tmp2] == TerrainType.Wall)
+                {
+                    _terrainData[r, tmp2] = TerrainType.Road;
+                }
             }
             else
             {
-                _terrainData[tmp2, r] = TerrainType.Floor;
+                if (_terrainData[tmp2, r] == TerrainType.Wall)
+                {
+                    _terrainData[tmp2, r] = TerrainType.Road;
+                }
             }
         }
 
@@ -531,14 +546,20 @@ public class Level : MonoBehaviour
         {
             for (int t = adjacentStart; t <= adjacentEnd; t++)
             {
-                _terrainData[adjacentPoint, t] = TerrainType.Floor;
+                if (_terrainData[adjacentPoint, t] == TerrainType.Wall)
+                {
+                    _terrainData[adjacentPoint, t] = TerrainType.Road;
+                }
             }
         }
         else
         {
             for (int t = adjacentStart; t <= adjacentEnd; t++)
             {
-                _terrainData[t, adjacentPoint] = TerrainType.Floor;
+                if (_terrainData[t, adjacentPoint] == TerrainType.Wall)
+                {
+                    _terrainData[t, adjacentPoint] = TerrainType.Road;
+                }
             }
         }
     }
@@ -714,6 +735,8 @@ public class Level : MonoBehaviour
     /// <param name="divisionNum"></param> 部屋の数
     public void CreateLevel(Vector2Int mapSize, int divisionNum)
     {
+        UIManager.instance.SetMiniMapCamera(mapSize);
+
         foreach (Transform child in transform)
         {
             foreach (Transform Grandchild in child)
@@ -725,6 +748,8 @@ public class Level : MonoBehaviour
 
         CreateTerrainData(mapSize, divisionNum);
 
+        _miniMapMask = new GameObject[mapSize.y, mapSize.x];
+
         //地形情報どうりにブロックを設置
         for (int y = 0; y < mapSize.y; y++)
         {
@@ -734,6 +759,8 @@ public class Level : MonoBehaviour
                 cube.transform.position = new Vector3(x, -1, -y);
                 cube.transform.SetParent(transform);
                 cube.GetComponent<Renderer>().material = material;
+
+                _miniMapMask[y, x] = cube;
 
                 if (_terrainData[y, x] == TerrainType.Wall)
                 {
@@ -810,5 +837,44 @@ public class Level : MonoBehaviour
     {
         var grid = DungeonManager.instance.GetGrid(x, y);
         _eventData[grid.y, grid.x].Execution(character);
+    }
+
+    private void UpdateMiniMap(int startX,int startY,int endX,int endY)
+    {
+        int maskLayer = LayerMask.NameToLayer("MiniMapMask");
+
+        for (int my = startY; my <= endY; my++)
+        {
+            for (int mx = startX; mx <= endX; mx++)
+            {
+                if (_terrainData[my, mx] != TerrainType.Wall)
+                {
+                    _miniMapMask[my, mx].layer = maskLayer;
+                }
+            }
+        }
+    }
+
+    public void UpdateMiniMap(int x,int y)
+    {
+        var grid = DungeonManager.instance.GetGrid(x, y);
+
+        int maskLayer = LayerMask.NameToLayer("MiniMapMask");
+
+        UpdateMiniMap((grid.x - 1), (grid.y - 1), (grid.x + 1), (grid.y + 1));
+    }
+
+    public void UpdateMiniMap(int roomNo)
+    {
+        var room = _sections[roomNo]._roomData;
+
+        int maskLayer = LayerMask.NameToLayer("MiniMapMask");
+
+        if(_miniMapMask[room.height / 2, room.width / 2].layer == maskLayer)
+        {
+            return;
+        }
+
+        UpdateMiniMap(room.left - 1, room.top - 1, room.right + 1, room.bottom + 1);
     }
 }

@@ -30,6 +30,8 @@ public abstract class Event : MonoBehaviour
     /// </summary>
     protected Renderer _renderer;
 
+    protected Renderer _iconRenderer;
+
     protected void Start()
     {
         _renderer = GetComponent<Renderer>();
@@ -37,6 +39,13 @@ public abstract class Event : MonoBehaviour
         {
             //見えないように
             _renderer.enabled = false;
+        }
+
+        _iconRenderer = transform.Find("MiniMapIcon").GetComponent<Renderer>();
+        if (_iconRenderer != null)
+        {
+            //見えないように
+            _iconRenderer.enabled = false;
         }
     }
 
@@ -57,6 +66,7 @@ public abstract class Event : MonoBehaviour
     public virtual void Execution(Character character)
     {
         _renderer.enabled = true;
+        _iconRenderer.enabled = true;
         UIManager.instance.AddText(character._name + "は、" + _name + "を踏んだ");
     }
 }
