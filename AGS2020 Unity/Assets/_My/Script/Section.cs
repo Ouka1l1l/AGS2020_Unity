@@ -3,53 +3,53 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
+/// 短形
+/// </summary>
+public struct Rect
+{
+    public int top;
+    public int right;
+    public int bottom;
+    public int left;
+
+    /// <summary>
+    /// 横幅
+    /// </summary>
+    public int width
+    {
+        get { return (right - left) + 1; }
+    }
+
+    /// <summary>
+    /// 縦幅
+    /// </summary>
+    public int height
+    {
+        get { return (bottom - top) + 1; }
+    }
+
+    /// <summary>
+    /// 面積
+    /// </summary>
+    public int Area
+    {
+        get { return width * height; }
+    }
+
+    public Rect(int sTop, int sRight, int sBottom, int sLeft)
+    {
+        top = sTop;
+        right = sRight;
+        bottom = sBottom;
+        left = sLeft;
+    }
+}
+
+/// <summary>
 /// 区画クラス
 /// </summary>
 public class Section
 {
-    /// <summary>
-    /// 短形
-    /// </summary>
-    public struct Rect
-    {
-        public int top;
-        public int right;
-        public int bottom;
-        public int left;
-
-        /// <summary>
-        /// 横幅
-        /// </summary>
-        public int width
-        {
-            get { return (right - left) + 1; }
-        }
-
-        /// <summary>
-        /// 縦幅
-        /// </summary>
-        public int height
-        {
-            get { return (bottom - top) + 1; }
-        }
-
-        /// <summary>
-        /// 面積
-        /// </summary>
-        public int Area
-        {
-            get { return width * height; }
-        }
-
-        public Rect(int sTop, int sRight, int sBottom, int sLeft)
-        {
-            top = sTop;
-            right = sRight;
-            bottom = sBottom;
-            left = sLeft;
-        }
-    }
-
     /// <summary>
     /// 区画番号
     /// </summary>

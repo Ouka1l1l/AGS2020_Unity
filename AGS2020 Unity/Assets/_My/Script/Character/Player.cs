@@ -15,6 +15,8 @@ public class Player : Character
     /// </summary>
     private int _itamMax = 1;
 
+    private Rect _visibleRect;
+
     public enum SkillAttack
     {
         Non,
@@ -43,6 +45,8 @@ public class Player : Character
         UIManager.instance.GetSkillMenu().SetSkill(1, (int)SkillAttack.RotaryAttack);
 
         _skillAttackSlot[1] = SkillAttack.RotaryAttack;
+
+        _visibleRect = new Rect(2, 2, 2, 2);
     }
 
     public override bool Think()
@@ -99,13 +103,14 @@ public class Player : Character
     {
         if(base.Move())
         {
-            if(_roomNo == -1)
+            var level = DungeonManager.instance._level;
+            if (_roomNo == -1)
             {
-                DungeonManager.instance._level.UpdateMiniMap((int)transform.position.x, (int)transform.position.z);
+                level.UpdateMiniMap((int)transform.position.x, (int)transform.position.z);
             }
             else
             {
-                DungeonManager.instance._level.UpdateMiniMap(_roomNo);
+                level.UpdateMiniMap(_roomNo);
             }
 
             return true;
@@ -296,5 +301,73 @@ public class Player : Character
         base.Death();
 
         StartCoroutine(DungeonManager.instance.ReStart());
+    }
+
+    public bool VisibilityCheck(Vector3 pos)
+    {
+        var level = DungeonManager.instance._level;
+
+        bool ret = false;
+
+        if (_roomNo == -1)
+        {
+            Vector2Int playerPos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
+
+            if (playerPos.x - 1 <= pos.x && pos.x <= playerPos.x + 1
+                && playerPos.y - 1 <= pos.z && pos.z <= playerPos.y + 1)
+            {
+                int x = 0;
+                if (playerPos.x < pos.x)
+                {
+                    x--;
+                }
+                else if (playerPos.x > pos.x)
+                {
+                    x++;
+                }
+
+                if (level.GetTerrainData(pos.x + x, pos.z) != Level.TerrainType.Wall)
+                {
+                    ret = true;
+                }
+                else
+                {
+
+                    int y = 0;
+                    if (playerPos.y < pos.z)
+                    {
+                        y--;
+                    }
+                    else if (playerPos.y > pos.z)
+                    {
+                        y++;
+                    }
+
+                    if (level.GetTerrainData(pos.x, pos.z + y) != Level.TerrainType.Wall)
+                    {
+                        ret = true;
+                    }
+                    else
+                    {
+                        if (level.GetTerrainData(pos.x + x, pos.z + y) != Level.TerrainType.Wall)
+                        {
+                            ret = true;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            var room = DungeonManager.instance._level._sections[_roomNo]._roomData;
+
+            if (room.left - 1 <= pos.x && pos.x <= room.right + 1
+                && room.top - 1 <= -pos.z && -pos.z <= room.bottom + 1)
+            {
+                ret = true;
+            }
+        }
+
+        return ret;
     }
 }

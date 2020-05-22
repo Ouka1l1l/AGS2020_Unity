@@ -28,6 +28,8 @@ public abstract class Enemy : Character
     /// </summary>
     protected bool _actEnd;
 
+    protected Renderer[] _renderers;
+
     // Start is called before the first frame update
     new protected void Start()
     {
@@ -38,12 +40,23 @@ public abstract class Enemy : Character
         _thinkEnd = false;
         _actEnd = false;
 
+        _renderers = GetComponentsInChildren<Renderer>();
+
         var enemyStatus = Resources.Load<EnemyData>("ScriptableObject/EnemyData").enemyData[(int)_enemyType];
         _name = enemyStatus.name;
         _hp = _maxHp = enemyStatus.maxHp;
         _atk = enemyStatus.atk;
         _def = enemyStatus.def;
         _exp = enemyStatus.exp;
+    }
+
+    private void Update()
+    {
+        bool ret = DungeonManager.instance._player.VisibilityCheck(transform.position);
+        foreach (var renderer in _renderers)
+        {
+            renderer.enabled = ret;
+        }
     }
 
     public override bool Think()

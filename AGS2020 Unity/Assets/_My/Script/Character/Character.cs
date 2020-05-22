@@ -93,7 +93,7 @@ public static class DirEnumExtension
         int d = (int)dir - 360 / System.Enum.GetValues(typeof(Dir)).Length;
         if (d < 0)
         {
-            d = 360 - d;
+            d = 360 + d;
         }
         return (Dir)d;
     }

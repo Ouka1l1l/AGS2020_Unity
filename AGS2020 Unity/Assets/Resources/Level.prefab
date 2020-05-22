@@ -43,4 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 407a2b8037d290746a4e50e115bc6362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _maskCube: {fileID: 7804540303340314029, guid: 49b36df68c08f7148bc53de2ae6f99e5,
+    type: 3}
   material: {fileID: 2100000, guid: 44681b5d76c042d41815780eb8822927, type: 2}
+  staisPos: {x: 0, y: 0}

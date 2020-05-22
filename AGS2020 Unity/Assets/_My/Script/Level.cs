@@ -80,6 +80,9 @@ public class Level : MonoBehaviour
     /// </summary>
     private int _eventMax = 20;
 
+    [SerializeField]
+    private GameObject _maskCube;
+
     public Material material;
 
     public Vector2Int staisPos;
@@ -162,7 +165,7 @@ public class Level : MonoBehaviour
     }
     public TerrainType GetTerrainData(float x, float y)
     {
-        return GetData((int)y, (int)x, _terrainData);
+        return GetData((int)x, (int)y, _terrainData);
     }
 
     /// <summary>
@@ -319,7 +322,7 @@ public class Level : MonoBehaviour
     /// <param name="divisionNum"></param> 分割回数
     private void SectionDivision(int divisionNum)
     {
-        _sections.Add(new Section(0, new Section.Rect(0, _terrainData.GetLength(1) - 1, _terrainData.GetLength(0) - 1, 0)));
+        _sections.Add(new Section(0, new Rect(0, _terrainData.GetLength(1) - 1, _terrainData.GetLength(0) - 1, 0)));
 
         for (int d = 1; d < divisionNum; d++)
         {
@@ -396,7 +399,7 @@ public class Level : MonoBehaviour
         width = Mathf.Min(width, (RoomMax.x + Margin.x) - 1);
 
         int divPoint = divPointMin + Random.Range(0, width + 1);
-        Section newSection = new Section(no, new Section.Rect(rect.top, rect.right, rect.bottom, divPoint));
+        Section newSection = new Section(no, new Rect(rect.top, rect.right, rect.bottom, divPoint));
         _sections.Add(newSection);
         newSection.SetAdjacentSection(Dir.Left, section._no);
         section._sectionData.right = divPoint;
@@ -438,7 +441,7 @@ public class Level : MonoBehaviour
 
         int divPoint = divPointMin + Random.Range(0, width + 1);
 
-        Section newSection = new Section(no,new Section.Rect(divPoint, rect.right, rect.bottom, rect.left));
+        Section newSection = new Section(no,new Rect(divPoint, rect.right, rect.bottom, rect.left));
         _sections.Add(newSection);
         newSection.SetAdjacentSection(Dir.Top, section._no);
         section._sectionData.bottom = divPoint;
@@ -578,7 +581,7 @@ public class Level : MonoBehaviour
             var room1 = _sections[index]._roomData;
 
             //隣接部屋の情報
-            Section.Rect room2;
+            Rect room2;
 
             if (_sections[index]._adjacentSections.ContainsKey(Dir.Top))
             {
@@ -683,7 +686,6 @@ public class Level : MonoBehaviour
     /// </summary>
     private void CreateStairs()
     {
-
         int no = Random.Range(0, _sections.Count);
         var room = _sections[no]._roomData;
 
@@ -755,6 +757,10 @@ public class Level : MonoBehaviour
         {
             for (int x = 0; x < mapSize.x; x++)
             {
+                var maskCube = Instantiate(_maskCube);
+                maskCube.transform.position = new Vector3(x, 1, -y);
+                maskCube.transform.SetParent(transform);
+
                 var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 cube.transform.position = new Vector3(x, -1, -y);
                 cube.transform.SetParent(transform);
