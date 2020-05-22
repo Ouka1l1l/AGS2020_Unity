@@ -13,7 +13,7 @@ public class FollowCamera : MonoBehaviour
     /// プレイヤーとカメラとの距離
     /// </summary>
     [SerializeField]
-    private Vector3Int _offset;
+    private Vector3 _offset;
 
     // Start is called before the first frame update
     void Start()

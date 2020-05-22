@@ -107,6 +107,33 @@ public class Player : Character
             if (_roomNo == -1)
             {
                 level.UpdateMiniMap((int)transform.position.x, (int)transform.position.z);
+
+                Vector2Int playerPos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
+
+                _visibleRect = new Rect(playerPos.y, playerPos.x, playerPos.y, playerPos.x);
+
+                for (int i = 1; i <= 2; i++)
+                {
+                    if(level.GetTerrainData(playerPos.x + i,playerPos.y) == Level.TerrainType.Road)
+                    {
+                        _visibleRect.right = playerPos.x + i;
+                    }
+
+                    if (level.GetTerrainData(playerPos.x - i, playerPos.y) == Level.TerrainType.Road)
+                    {
+                        _visibleRect.left = playerPos.x - i;
+                    }
+
+                    if (level.GetTerrainData(playerPos.x, playerPos.y + i) == Level.TerrainType.Road)
+                    {
+                        _visibleRect.bottom = playerPos.y + i;
+                    }
+
+                    if (level.GetTerrainData(playerPos.x, playerPos.y - i) == Level.TerrainType.Road)
+                    {
+                        _visibleRect.top = playerPos.y - i;
+                    }
+                }
             }
             else
             {
@@ -303,6 +330,11 @@ public class Player : Character
         StartCoroutine(DungeonManager.instance.ReStart());
     }
 
+    /// <summary>
+    /// 見えているかのチェック
+    /// </summary>
+    /// <param name="pos"></param> 座標
+    /// <returns></returns>
     public bool VisibilityCheck(Vector3 pos)
     {
         var level = DungeonManager.instance._level;
@@ -313,8 +345,8 @@ public class Player : Character
         {
             Vector2Int playerPos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
 
-            if (playerPos.x - 1 <= pos.x && pos.x <= playerPos.x + 1
-                && playerPos.y - 1 <= pos.z && pos.z <= playerPos.y + 1)
+            if (_visibleRect.left - 1 <= pos.x && pos.x <= _visibleRect.right + 1
+                && _visibleRect.top - 1 <= pos.z && pos.z <= _visibleRect.bottom + 1)
             {
                 int x = 0;
                 if (playerPos.x < pos.x)
@@ -326,7 +358,7 @@ public class Player : Character
                     x++;
                 }
 
-                if (level.GetTerrainData(pos.x + x, pos.z) != Level.TerrainType.Wall)
+                if (level.GetTerrainData(pos.x + x, pos.z) == Level.TerrainType.Road)
                 {
                     ret = true;
                 }
@@ -343,13 +375,13 @@ public class Player : Character
                         y++;
                     }
 
-                    if (level.GetTerrainData(pos.x, pos.z + y) != Level.TerrainType.Wall)
+                    if (level.GetTerrainData(pos.x, pos.z + y) == Level.TerrainType.Road)
                     {
                         ret = true;
                     }
                     else
                     {
-                        if (level.GetTerrainData(pos.x + x, pos.z + y) != Level.TerrainType.Wall)
+                        if (level.GetTerrainData(pos.x + x, pos.z + y) == Level.TerrainType.Road)
                         {
                             ret = true;
                         }

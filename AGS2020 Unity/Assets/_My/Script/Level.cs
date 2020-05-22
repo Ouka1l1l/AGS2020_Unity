@@ -758,7 +758,7 @@ public class Level : MonoBehaviour
             for (int x = 0; x < mapSize.x; x++)
             {
                 var maskCube = Instantiate(_maskCube);
-                maskCube.transform.position = new Vector3(x, 1, -y);
+                maskCube.transform.position = new Vector3(x, 0.6f, -y);
                 maskCube.transform.SetParent(transform);
 
                 var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
