@@ -26,6 +26,11 @@ public abstract class Event : MonoBehaviour
     protected string _name;
 
     /// <summary>
+    /// 部屋番号
+    /// </summary>
+    protected int _roomNo;
+
+    /// <summary>
     /// レンダー
     /// </summary>
     protected Renderer _renderer;
@@ -54,7 +59,8 @@ public abstract class Event : MonoBehaviour
     /// </summary>
     /// <param name="x"></param> X座標
     /// <param name="y"></param> Y座標
-    public void SetPos(int x,int y)
+    /// <param name="roomNo"></param> 部屋番号
+    public void Init(int x,int y,int roomNo)
     {
         transform.position = new Vector3(x, transform.position.y, y);
     }
@@ -65,8 +71,11 @@ public abstract class Event : MonoBehaviour
     /// <param name="character"></param> イベントの影響を受けるキャラクタ
     public virtual void Execution(Character character)
     {
-        _renderer.enabled = true;
-        _iconRenderer.enabled = true;
+        if (DungeonManager.instance._player._roomNo == _roomNo)
+        {
+            _renderer.enabled = true;
+            _iconRenderer.enabled = true;
+        }
         UIManager.instance.AddText(character._name + "は、" + _name + "を踏んだ");
     }
 }

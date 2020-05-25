@@ -15,5 +15,6 @@ public class SkillAttackData : ScriptableObject
 public struct SkillAttack
 {
     public string name;
+    public Sprite icon;
     public int cost;
 }

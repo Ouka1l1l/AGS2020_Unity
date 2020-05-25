@@ -632,14 +632,14 @@ public class Level : MonoBehaviour
     /// ランダムな床の座標を取得
     /// </summary>
     /// <returns></returns>
-    public Vector2Int GetRandomFloorPos()
+    public Vector2Int GetRandomFloorPos(out int roomNo)
     {
         int x;
         int y;
         do
         {
-            int no = Random.Range(0, _sections.Count);
-            var room = _sections[no]._roomData;
+            roomNo = Random.Range(0, _sections.Count);
+            var room = _sections[roomNo]._roomData;
 
             x = Random.Range(room.left, room.right + 1);
             y = Random.Range(room.top, room.bottom + 1);
@@ -672,10 +672,11 @@ public class Level : MonoBehaviour
         int eventNum = Random.Range(_eventMin, _eventMax + 1);
         for (int e = 0; e < eventNum; e++)
         {
-            var pos = GetRandomFloorPos();
+            int roomNo;
+            var pos = GetRandomFloorPos(out roomNo);
             var grid = DungeonManager.instance.GetGrid(pos);
             var needleFloor = Instantiate((GameObject)Resources.Load("NeedleFloor")).GetComponent<NeedleFloor>();
-            needleFloor.SetPos(pos.x, pos.y);
+            needleFloor.Init(pos.x, pos.y, roomNo);
             _terrainData[grid.y, grid.x] = TerrainType.Event;
             _eventData[grid.y, grid.x] = needleFloor;
         }
@@ -697,7 +698,7 @@ public class Level : MonoBehaviour
         var pos = new Vector2Int(grid.x, -grid.y);
         _terrainData[grid.y, grid.x] = TerrainType.Event;
         Stairs stairs = Instantiate((GameObject)Resources.Load("Stairs")).GetComponent<Stairs>();
-        stairs.SetPos(pos.x, pos.y);
+        stairs.Init(pos.x, pos.y, no);
         _eventData[grid.y, grid.x] = stairs;
 
         staisPos = pos;
@@ -720,7 +721,8 @@ public class Level : MonoBehaviour
         }
         _itemData = new Item[mapSize.y, mapSize.x];
 
-        var pos = GetRandomFloorPos();
+        int roomNo;
+        var pos = GetRandomFloorPos(out roomNo);
         pos = new Vector2Int(staisPos.x, staisPos.y - 1);
         var grid = DungeonManager.instance.GetGrid(pos);
 
@@ -752,14 +754,18 @@ public class Level : MonoBehaviour
 
         _miniMapMask = new GameObject[mapSize.y, mapSize.x];
 
+        var maskEvent = DungeonManager.instance._player._maskEvent;
+        maskEvent.RemoveAllListeners();
+
         //地形情報どうりにブロックを設置
         for (int y = 0; y < mapSize.y; y++)
         {
             for (int x = 0; x < mapSize.x; x++)
             {
-                var maskCube = Instantiate(_maskCube);
+                var maskCube = Instantiate(_maskCube).GetComponent<MaskCube>();
                 maskCube.transform.position = new Vector3(x, 0.6f, -y);
                 maskCube.transform.SetParent(transform);
+                maskEvent.AddListener(maskCube.Visibility);
 
                 var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 cube.transform.position = new Vector3(x, -1, -y);

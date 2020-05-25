@@ -13,12 +13,19 @@ public class MaskCube : MonoBehaviour
     {
         _renderer = GetComponent<Renderer>();
         _player = DungeonManager.instance._player;
+
+        Visibility();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(_player.VisibilityCheck(transform.position))
+
+    }
+
+    public void Visibility()
+    {
+        if (_player.VisibilityCheck(transform.position))
         {
             _renderer.enabled = false;
         }

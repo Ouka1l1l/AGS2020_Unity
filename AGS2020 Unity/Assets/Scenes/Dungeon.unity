@@ -12759,6 +12759,11 @@ MonoBehaviour:
   - {fileID: 1649632930}
   - {fileID: 510232569}
   - {fileID: 330548839}
+  _skillIcons:
+  - {fileID: 2019834829}
+  - {fileID: 279261080}
+  - {fileID: 1025681298}
+  - {fileID: 461613628}
   _skillCosts:
   - {fileID: 195431014}
   - {fileID: 173498391}

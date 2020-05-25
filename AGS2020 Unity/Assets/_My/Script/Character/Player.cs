@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Player : Character
 {
@@ -24,6 +25,8 @@ public class Player : Character
     }
 
     public SkillAttack[] _skillAttackSlot { get; private set; }
+
+    public UnityEvent _maskEvent { get; private set; } = new UnityEvent();
 
     // Start is called before the first frame update
     new void Start()
@@ -139,6 +142,8 @@ public class Player : Character
             {
                 level.UpdateMiniMap(_roomNo);
             }
+
+            _maskEvent.Invoke();
 
             return true;
         }

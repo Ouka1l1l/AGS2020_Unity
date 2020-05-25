@@ -13,6 +13,9 @@ public class SkillMenu : MonoBehaviour
     private TextMeshProUGUI[] _skillNames = new TextMeshProUGUI[4];
 
     [SerializeField]
+    private Image[] _skillIcons = new Image[4];
+
+    [SerializeField]
     private TextMeshProUGUI[] _skillCosts = new TextMeshProUGUI[4];
 
     private List<SkillAttack> _data;
@@ -44,6 +47,7 @@ public class SkillMenu : MonoBehaviour
         {
             _skillPanels[slotNo].gameObject.SetActive(true);
             _skillNames[slotNo].text = _data[skillId].name;
+            _skillIcons[slotNo].sprite = _data[skillId].icon;
             _skillCosts[slotNo].text = _data[skillId].cost.ToString();
         }
         else
