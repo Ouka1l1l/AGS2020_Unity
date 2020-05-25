@@ -106,7 +106,7 @@ public class Player : Character
     {
         if(base.Move())
         {
-            var level = DungeonManager.instance._level;
+            var level = _dungeonManager._level;
             if (_roomNo == -1)
             {
                 level.UpdateMiniMap((int)transform.position.x, (int)transform.position.z);
@@ -255,20 +255,20 @@ public class Player : Character
     {
         base.Spawn();
 
-        DungeonManager.instance._level.SetCharacterData(transform.position.x, transform.position.z, -1);
+        _dungeonManager._level.SetCharacterData(transform.position.x, transform.position.z, -1);
 
         /////////デバック
-        Vector2Int pos = DungeonManager.instance._level.staisPos;
+        Vector2Int pos = _dungeonManager._level.staisPos;
         pos.x++;
 
         transform.position = new Vector3(pos.x, 0, pos.y);
         _destination = transform.position;
 
-        DungeonManager.instance._level.SetCharacterData(transform.position.x, transform.position.z, _id);
-        _roomNo = DungeonManager.instance._level.GetRoomNo(transform.position.x, transform.position.z);
+        _dungeonManager._level.SetCharacterData(transform.position.x, transform.position.z, _id);
+        _roomNo = _dungeonManager._level.GetRoomNo(transform.position.x, transform.position.z);
         ////////
 
-        DungeonManager.instance._level.UpdateMiniMap(_roomNo);
+        _dungeonManager._level.UpdateMiniMap(_roomNo);
 
         Camera.main.GetComponent<FollowCamera>().SetTarget(this);
     }
@@ -332,7 +332,7 @@ public class Player : Character
     {
         base.Death();
 
-        StartCoroutine(DungeonManager.instance.ReStart());
+        StartCoroutine(_dungeonManager.ReStart());
     }
 
     /// <summary>
@@ -342,7 +342,7 @@ public class Player : Character
     /// <returns></returns>
     public bool VisibilityCheck(Vector3 pos)
     {
-        var level = DungeonManager.instance._level;
+        var level = _dungeonManager._level;
 
         bool ret = false;
 
@@ -396,7 +396,7 @@ public class Player : Character
         }
         else
         {
-            var room = DungeonManager.instance._level._sections[_roomNo]._roomData;
+            var room = _dungeonManager._level._sections[_roomNo]._roomData;
 
             if (room.left - 1 <= pos.x && pos.x <= room.right + 1
                 && room.top - 1 <= -pos.z && -pos.z <= room.bottom + 1)

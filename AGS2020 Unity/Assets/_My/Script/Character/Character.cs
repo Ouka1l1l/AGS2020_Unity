@@ -119,7 +119,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 自身のID
     /// </summary>
-    protected int _id;
+    public int _id { get; protected set; }
 
     /// <summary>
     /// キャラの名前
@@ -206,9 +206,13 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected List<SkillAttack> _skillAttackData;
 
+    protected DungeonManager _dungeonManager;
+
     // Start is called before the first frame update
     protected void Start()
     {
+        _dungeonManager = DungeonManager.instance;
+
         _hp = _maxHp;
         _destination = transform.position;
         _dir = Dir.Bottom;
@@ -317,7 +321,7 @@ public abstract class Character : MonoBehaviour
         _dir = dir;
         Vector2Int tmpDestination = GetFrontPosition();
 
-        var level = DungeonManager.instance._level;
+        var level = _dungeonManager._level;
 
         transform.rotation = Quaternion.Euler(0, (float)dir, 0);
         if (level.GetTerrainData(tmpDestination) != Level.TerrainType.Wall)
@@ -326,7 +330,7 @@ public abstract class Character : MonoBehaviour
             {
                 _destination = new Vector3(tmpDestination.x, _destination.y, tmpDestination.y);
                 level.SetCharacterData(transform.position.x, transform.position.z, -1);
-                DungeonManager.instance._level.SetCharacterData(tmpDestination.x, tmpDestination.y, _id);
+                _dungeonManager._level.SetCharacterData(tmpDestination.x, tmpDestination.y, _id);
 
                 _action = Action.Move;
                 return true;
@@ -344,7 +348,7 @@ public abstract class Character : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, _destination, Time.deltaTime * 5.0f);
         if (_destination == transform.position)
         {
-            _roomNo = DungeonManager.instance._level.GetRoomNo(transform.position.x, transform.position.z);
+            _roomNo = _dungeonManager._level.GetRoomNo(transform.position.x, transform.position.z);
             FootExecution();
 
             return true;
@@ -375,19 +379,18 @@ public abstract class Character : MonoBehaviour
 
         UIManager.instance.AddText(_name + "の攻撃");
 
-        var dungeonManager = DungeonManager.instance;
         Vector2Int frontPos = GetFrontPosition();
-        var characterNo = dungeonManager._level.GetCharacterData(frontPos);
+        var characterNo = _dungeonManager._level.GetCharacterData(frontPos);
         if(characterNo != -1)
         {
             Character target;
             if(characterNo == 0)
             {
-                target = dungeonManager._player;
+                target = _dungeonManager._player;
             }
             else
             {
-                target = dungeonManager._level._enemies[characterNo - 1];
+                target = _dungeonManager._level._enemies[characterNo - 1];
             }
             int damage = DamageCalculation(target._def);
             if(target.Damage(damage))
@@ -404,11 +407,10 @@ public abstract class Character : MonoBehaviour
         _action = Action.SkillAttack;
 
         UIManager.instance.AddText(_name + "の回転切り");
-        var dungeonManager = DungeonManager.instance;
 
         int ret = 0;
 
-        var characterData = dungeonManager._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
+        var characterData = _dungeonManager._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
         foreach(var charData in characterData)
         {
             if (charData.Value != -1)
@@ -418,14 +420,14 @@ public abstract class Character : MonoBehaviour
                 {
                     if (charData.Value > 0)
                     {
-                        target = dungeonManager._level._enemies[charData.Value - 1];
+                        target = _dungeonManager._level._enemies[charData.Value - 1];
                     }
                 }
                 else
                 {
                     if (charData.Value == 0)
                     {
-                        target = dungeonManager._player;
+                        target = _dungeonManager._player;
                     }
                 }
 
@@ -531,10 +533,10 @@ public abstract class Character : MonoBehaviour
     {
         Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
 
-        var terrain = DungeonManager.instance._level.GetTerrainData(pos.x, pos.y);
+        var terrain = _dungeonManager._level.GetTerrainData(pos.x, pos.y);
         if (terrain == Level.TerrainType.Event)
         {
-            DungeonManager.instance._level.EventExecution(pos.x, pos.y, this);
+            _dungeonManager._level.EventExecution(pos.x, pos.y, this);
         }
         else if(terrain == Level.TerrainType.Item)
         {
@@ -549,7 +551,7 @@ public abstract class Character : MonoBehaviour
     {
         if (_itam == null)
         {
-            _itam = DungeonManager.instance._level.GetItemData(pos);
+            _itam = _dungeonManager._level.GetItemData(pos);
             _itam.BePickedUp();
 
             UIManager.instance.AddText(_name + "は、" + _itam._name + "を拾った");
@@ -561,20 +563,22 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected void Spawn()
     {
+        _dungeonManager = DungeonManager.instance;
+
         Vector2Int pos;
         bool flag = true;
         int sectionNo;
         do
         {
-            var sections = DungeonManager.instance._level._sections;
+            var sections = _dungeonManager._level._sections;
             sectionNo = Random.Range(0, sections.Count);
             var room = sections[sectionNo]._roomData;
 
             pos = new Vector2Int(Random.Range(room.left, room.right + 1), -Random.Range(room.top, room.bottom + 1));
 
-            if (DungeonManager.instance._level.GetTerrainData(pos) == Level.TerrainType.Floor)
+            if (_dungeonManager._level.GetTerrainData(pos) == Level.TerrainType.Floor)
             {
-                if (DungeonManager.instance._level.GetCharacterData(pos) == -1)
+                if (_dungeonManager._level.GetCharacterData(pos) == -1)
                 {
                     flag = false;
                 }
@@ -588,6 +592,6 @@ public abstract class Character : MonoBehaviour
 
         _action = Action.Non;
 
-        DungeonManager.instance._level.SetCharacterData(transform.position.x, transform.position.z, _id);
+        _dungeonManager._level.SetCharacterData(transform.position.x, transform.position.z, _id);
     }
 }

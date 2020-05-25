@@ -28,7 +28,22 @@ public abstract class Enemy : Character
     /// </summary>
     protected bool _actEnd;
 
+    /// <summary>
+    /// 検知範囲
+    /// </summary>
+    protected Vector2Int _detectionRange;
+
+    /// <summary>
+    /// レンダー
+    /// </summary>
     protected Renderer[] _renderers;
+
+    /// <summary>
+    /// プレイヤー
+    /// </summary>
+    protected Player _player;
+
+    protected Vector3 _targetPos;
 
     // Start is called before the first frame update
     new protected void Start()
@@ -48,15 +63,19 @@ public abstract class Enemy : Character
         _atk = enemyStatus.atk;
         _def = enemyStatus.def;
         _exp = enemyStatus.exp;
+
+        _detectionRange = new Vector2Int(3, 3);
+
+        _player = _dungeonManager._player;
     }
 
     private void Update()
     {
-        bool ret = DungeonManager.instance._player.VisibilityCheck(transform.position);
-        foreach (var renderer in _renderers)
-        {
-            renderer.enabled = ret;
-        }
+        //bool ret = _player.VisibilityCheck(transform.position);
+        //foreach (var renderer in _renderers)
+        //{
+        //    renderer.enabled = ret;
+        //}
     }
 
     public override bool Think()
@@ -83,40 +102,83 @@ public abstract class Enemy : Character
             }
         }
 
-        var player = DungeonManager.instance._player;
-        var characterDatas = DungeonManager.instance._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
-        foreach (var character in characterDatas)
+        if (Random.Range(0, 100) > 10)
         {
-            if (character.Value == 0)
+            if (PlayerDetection(new Vector2Int(1, 1)))
             {
                 //攻撃
-                _dir = GetTargetDir(player.transform.position);
+                _dir = GetTargetDir(_player.transform.position);
                 Attack();
                 return false;
             }
         }
 
-        if ((_roomNo == player._roomNo) && (_roomNo != -1) && (player._roomNo != -1))
+        if (Random.Range(0, 100) > 20)
         {
-            var dir = GetTargetDir(player.transform.position);
-            if (!SetDestination(dir))
+            if (PlayerDetection(_detectionRange))
             {
-                if (!SetDestination(dir.Addition()))
-                {
-                    SetDestination(dir.Subtraction());
-                }
-            }
-
-            return false;
-        }
-        else
-        {
-            if (Random.Range(0, 100) > 10)
-            {
-                int d = Random.Range(0, _dir.Max());
-                if (SetDestination((Dir)(d * _dir.One())))
+                _targetPos = _player.transform.position;
+                //プレイヤーが周辺にいる
+                if (TowardsTarget())
                 {
                     return false;
+                }
+            }
+            else
+            {
+                if ((_roomNo == _player._roomNo) && (_roomNo != -1) && (_player._roomNo != -1))
+                {
+                    //プレイヤーが同じ部屋にいる
+                    _targetPos = _player.transform.position;
+                    if (TowardsTarget())
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (_dungeonManager._level.GetTerrainData(transform.position.x, transform.position.z) == Level.TerrainType.Road)
+                    {
+                        //道の途中
+                        Vector2Int vec2Int = GetFrontPosition();
+                        _targetPos = new Vector3(vec2Int.x, transform.position.y, vec2Int.y);
+                        if (TowardsTarget())
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+
+                        if (_targetPos != transform.position)
+                        {
+                            //目的地まで到達した
+                            if (TowardsTarget())
+                            {
+                                return false;
+                            }
+                        }
+
+                        if (Random.Range(0, 100) < 5)
+                        {
+                            //別の部屋へ
+                            var roadStartList = _dungeonManager._level._sections[_roomNo]._roadStartList;
+
+                            _targetPos = roadStartList[Random.Range(0, roadStartList.Count)];
+                            if (TowardsTarget())
+                            {
+                                return false;
+                            }
+                        }
+                    }
+
+                    //ランダム移動
+                    int d = Random.Range(0, _dir.Max());
+                    if (SetDestination((Dir)(d * _dir.One())))
+                    {
+                        _targetPos = _destination;
+                        return false;
+                    }
                 }
             }
         }
@@ -129,6 +191,60 @@ public abstract class Enemy : Character
     {
         _thinkEnd = true;
         _actEnd = false;
+    }
+
+    /// <summary>
+    /// プレイヤー検知
+    /// </summary>
+    /// <param name="detectionRange"></param> 検知範囲
+    /// <returns></returns> true 検知した
+    protected bool PlayerDetection(Vector2Int detectionRange)
+    {
+        var SurroundingCharacterData = _dungeonManager._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, detectionRange.x, detectionRange.y);
+
+        bool ret = false;
+        foreach(var characterID in SurroundingCharacterData.Values)
+        {
+            if(characterID == _player._id)
+            {
+                ret = true;
+                break;
+            }
+        }
+
+        return ret;
+    }
+
+    protected bool TowardsTarget()
+    {
+        var dir = GetTargetDir(_targetPos);
+
+        if(SetDestination(dir))
+        {
+            return true;
+        }
+        else
+        {
+            Dir da = dir;
+            Dir ds = dir;
+            do
+            {
+                da = da.Addition();
+                if(SetDestination(da))
+                {
+                    return true;
+                }
+
+                ds = ds.Subtraction();
+                if(SetDestination(ds))
+                {
+                    return true;
+                }
+
+            } while (da != ds);
+        }
+
+        return false;
     }
 
     new public bool Act()
@@ -185,14 +301,15 @@ public abstract class Enemy : Character
         _level = level;
 
         base.Spawn();
+
+        _targetPos = transform.position;
     }
 
     protected override void Death()
     {
         base.Death();
 
-        var dungeonManager = DungeonManager.instance;
-        dungeonManager._level.SetCharacterData(transform.position.x, transform.position.z, -1);
+        _dungeonManager._level.SetCharacterData(transform.position.x, transform.position.z, -1);
 
         if(_itam != null)
         {

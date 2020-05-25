@@ -70,6 +70,8 @@ public class Section
     /// </summary>
     public Dictionary<Dir,int> _adjacentSections { get; private set; }
 
+    public List<Vector3> _roadStartList { get; private set; }
+
     /// <summary>
     /// 隣接区画をセット
     /// </summary>
@@ -96,6 +98,8 @@ public class Section
         _no = no;
         _sectionData = rect;
         _adjacentSections = new Dictionary<Dir, int>();
+
+        _roadStartList = new List<Vector3>();
     }
 
     /// <summary>

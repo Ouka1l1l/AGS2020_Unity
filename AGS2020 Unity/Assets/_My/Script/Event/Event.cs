@@ -63,6 +63,7 @@ public abstract class Event : MonoBehaviour
     public void Init(int x,int y,int roomNo)
     {
         transform.position = new Vector3(x, transform.position.y, y);
+        _roomNo = roomNo;
     }
 
     /// <summary>
