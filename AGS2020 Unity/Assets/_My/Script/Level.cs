@@ -756,7 +756,7 @@ public class Level : MonoBehaviour
         var grid = DungeonManager.instance.GetGrid(pos);
 
         _terrainData[grid.y, grid.x] = TerrainType.Item;
-        var Portion = Instantiate((GameObject)Resources.Load("Portion")).GetComponent<Portion>();
+        var Portion = Instantiate((GameObject)Resources.Load("MedicalBox")).GetComponent<MedicalBox>();
         Portion.SetPos(pos.x, pos.y);
         _itemData[grid.y, grid.x] = Portion;
     }

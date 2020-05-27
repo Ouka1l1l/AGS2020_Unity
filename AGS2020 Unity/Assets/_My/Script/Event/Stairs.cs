@@ -9,12 +9,7 @@ public class Stairs : Event
 {
     new private void Start()
     {
-        base.Start();
         _type = EventType.Stairs;
-        if (_renderer != null)
-        {
-            _renderer.enabled = true;
-        }
     }
 
     public override void Execution(Character character)

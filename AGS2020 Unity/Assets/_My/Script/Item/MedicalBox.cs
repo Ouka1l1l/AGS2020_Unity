@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Portion : Item
+public class MedicalBox : Item
 {
     protected int healValue;
 
@@ -11,7 +11,7 @@ public class Portion : Item
     {
         base.Start();
 
-        _type = ItemType.Portion;
+        _type = ItemType.MedicalBox;
         _name = "回復薬";
         healValue = 10;
     }

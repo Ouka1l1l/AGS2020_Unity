@@ -81,7 +81,7 @@ public class DungeonManager : Singleton<DungeonManager>
             case TurnControl.playetAct:
                 if(_player.Act())
                 {
-                    _player.Regeneration();
+                    _player.ActEnd(_turnCount);
                     _turnControl = TurnControl.enemyThink;
                 }
                 break;

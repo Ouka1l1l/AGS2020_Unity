@@ -16,15 +16,11 @@ public class Player : Character
     /// </summary>
     private int _itamMax = 1;
 
+    public int _cpLimit { get; private set; }
+
     private Rect _visibleRect;
 
-    public enum SkillAttack
-    {
-        Non,
-        RotaryAttack
-    }
-
-    public SkillAttack[] _skillAttackSlot { get; private set; }
+    public SkillAttackType[] _skillAttackSlot { get; private set; }
 
     public UnityEvent _maskEvent { get; private set; } = new UnityEvent();
 
@@ -43,13 +39,15 @@ public class Player : Character
 
         _regeneration = 1;
 
-        _skillAttackSlot = new SkillAttack[4];
+        _skillAttackSlot = new SkillAttackType[4];
 
-        UIManager.instance.GetSkillMenu().SetSkill(1, (int)SkillAttack.RotaryAttack);
+        UIManager.instance.GetSkillMenu().SetSkill(1, (int)SkillAttackType.RotaryAttack);
 
-        _skillAttackSlot[1] = SkillAttack.RotaryAttack;
+        _skillAttackSlot[1] = SkillAttackType.RotaryAttack;
 
         _visibleRect = new Rect(2, 2, 2, 2);
+
+        _cpLimit = 100;
     }
 
     public override bool Think()
@@ -100,6 +98,19 @@ public class Player : Character
     new public bool Act()
     {
         return base.Act();
+    }
+
+    public void ActEnd(int turnCount)
+    {
+        if((turnCount % 1) == 0)
+        {
+            CpAdd(1);
+        }
+
+        if(_cp <= _cpLimit)
+        {
+            Regeneration();
+        }
     }
 
     protected override bool Move()
@@ -162,7 +173,7 @@ public class Player : Character
               {
                   switch(skillAttackType)
                   {
-                      case Player.SkillAttack.RotaryAttack:
+                      case Player.SkillAttackType.RotaryAttack:
                           SkillAttack = RotaryAttack;
                           break;
 
@@ -333,6 +344,23 @@ public class Player : Character
         base.Death();
 
         StartCoroutine(_dungeonManager.ReStart());
+    }
+
+    public override int CpAdd(int value)
+    {
+        base.CpAdd(value);
+        _cp += value;
+        if (_cp > _cpLimit)
+        {
+            int over = _cp - _cpLimit;
+            _cp = _cpLimit;
+
+            Damage(over);
+
+            return value - over;
+        }
+
+        return value;
     }
 
     /// <summary>

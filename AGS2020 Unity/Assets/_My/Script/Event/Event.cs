@@ -39,7 +39,7 @@ public abstract class Event : MonoBehaviour
 
     protected void Start()
     {
-        _renderer = GetComponent<Renderer>();
+        _renderer = GetComponentInChildren<Renderer>();
         if (_renderer != null)
         {
             //見えないように

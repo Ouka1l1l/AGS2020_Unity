@@ -196,10 +196,18 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     public int _def { get; protected set; } = 5;
 
+    public int _cp { get; protected set; }
+
     /// <summary>
     /// 自動回復量
     /// </summary>
     protected int _regeneration;
+
+    public enum SkillAttackType
+    {
+        Non,
+        RotaryAttack
+    }
 
     /// <summary>
     /// 技のデータ
@@ -214,6 +222,9 @@ public abstract class Character : MonoBehaviour
         _dungeonManager = DungeonManager.instance;
 
         _hp = _maxHp;
+
+        _cp = 0;
+
         _destination = transform.position;
         _dir = Dir.Bottom;
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
@@ -408,6 +419,8 @@ public abstract class Character : MonoBehaviour
 
         UIManager.instance.AddText(_name + "の回転切り");
 
+        CpAdd(_skillAttackData[(int)SkillAttackType.RotaryAttack].cost);
+
         int ret = 0;
 
         var characterData = _dungeonManager._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
@@ -524,6 +537,26 @@ public abstract class Character : MonoBehaviour
     public void Regeneration()
     {
         HpAdd(_regeneration);
+    }
+
+    public virtual int CpAdd(int value)
+    {
+        _cp += value;
+
+        return value;
+    }
+
+    public int CpSub(int value)
+    {
+        _cp -= value;
+        if (_cp < 0)
+        {
+            int over = -_cp;
+            _cp = 0;
+            return value - over;
+        }
+
+        return value;
     }
 
     /// <summary>

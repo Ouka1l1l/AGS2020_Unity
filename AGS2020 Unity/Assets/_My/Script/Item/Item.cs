@@ -10,7 +10,7 @@ public abstract class Item : MonoBehaviour
     /// </summary>
     public enum ItemType
     {
-        Portion
+        MedicalBox
     }
 
     /// <summary>
@@ -31,7 +31,7 @@ public abstract class Item : MonoBehaviour
     // Start is called before the first frame update
     protected void Start()
     {
-        _renderer = GetComponent<Renderer>();
+        _renderer = GetComponentInChildren<Renderer>();
     }
 
     /// <summary>

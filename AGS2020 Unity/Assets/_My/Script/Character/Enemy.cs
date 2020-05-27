@@ -71,11 +71,11 @@ public abstract class Enemy : Character
 
     private void Update()
     {
-        //bool ret = _player.VisibilityCheck(transform.position);
-        //foreach (var renderer in _renderers)
-        //{
-        //    renderer.enabled = ret;
-        //}
+        bool ret = _player.VisibilityCheck(transform.position);
+        foreach (var renderer in _renderers)
+        {
+            renderer.enabled = ret;
+        }
     }
 
     public override bool Think()
@@ -274,7 +274,7 @@ public abstract class Enemy : Character
         bool useFlag = false;
         switch (_itam._type)
         {
-            case Item.ItemType.Portion:
+            case Item.ItemType.MedicalBox:
                 if (_hp < (_maxHp / 2))
                 {
                     useFlag = true;
