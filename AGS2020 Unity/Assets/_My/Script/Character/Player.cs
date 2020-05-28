@@ -246,8 +246,8 @@ public class Player : Character
         _exp += exp;
         while(_exp >= _nextLevelExp)
         {
-            LevelUp();
             _exp -= _nextLevelExp;
+            LevelUp();
         }
     }
 
@@ -349,7 +349,6 @@ public class Player : Character
     public override int CpAdd(int value)
     {
         base.CpAdd(value);
-        _cp += value;
         if (_cp > _cpLimit)
         {
             int over = _cp - _cpLimit;
