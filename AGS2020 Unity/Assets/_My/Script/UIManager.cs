@@ -6,6 +6,12 @@ using TMPro;
 public class UIManager : Singleton<UIManager>
 {
     /// <summary>
+    /// テキスト表示コンポーネント
+    /// </summary>
+    [SerializeField]
+    private TextMeshProUGUI _floorText;
+
+    /// <summary>
     /// テキストキュー
     /// </summary>
     private Queue<string> _texts;
@@ -169,5 +175,14 @@ public class UIManager : Singleton<UIManager>
         {
             _miniMapCamera.orthographicSize = mapSize.y / 2;
         }
+    }
+
+    /// <summary>
+    /// 階層表記を変更
+    /// </summary>
+    /// <param name="floor"></param> 階層数
+    public void WhatFloor(int floor)
+    {
+        _floorText.text = string.Format("{0:d}F", floor);
     }
 }

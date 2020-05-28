@@ -809,10 +809,10 @@ public class Level : MonoBehaviour
                     Wall.transform.position = new Vector3(x, 0, -y);
                     Wall.transform.SetParent(cube.transform);
                 }
-                //else
-                //{
-                //    cube.layer = LayerMask.NameToLayer("MiniMapMask");
-                //}
+                else
+                {
+                    cube.layer = LayerMask.NameToLayer("MiniMapMask");
+                }
 
                 //キャラクタデータの初期化
                 _characterData[y, x] = -1;

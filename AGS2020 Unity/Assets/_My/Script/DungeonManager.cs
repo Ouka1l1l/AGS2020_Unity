@@ -149,6 +149,7 @@ public class DungeonManager : Singleton<DungeonManager>
         _player.Spawn();
         _turnControl = TurnControl.playerThink;
 
+        UIManager.instance.WhatFloor(_hierarchy);
         UIManager.instance.TextClear();
     }
 
