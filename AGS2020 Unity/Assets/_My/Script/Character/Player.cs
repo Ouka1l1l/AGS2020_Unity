@@ -57,12 +57,23 @@ public class Player : Character
             return true;
         }
 
-        if (Input.GetButtonDown("R_Shoulder"))
+        if (Input.GetButton("R_Shoulder"))
+        {
+            Dir dir;
+            if (GetInputDir(out dir))
+            {
+                _dir = dir;
+                transform.rotation = Quaternion.Euler(0, (float)dir, 0);
+            }
+            return false;
+        }
+
+        if (Input.GetButtonDown("L_Shoulder"))
         {
             UIManager.instance.GetSkillMenu().gameObject.SetActive(true);
         }
 
-        if(Input.GetButton("R_Shoulder"))
+        if(Input.GetButton("L_Shoulder"))
         {
             SkillAttackChoice();
             return false;
@@ -74,7 +85,7 @@ public class Player : Character
             return false;
         }
 
-        if (Input.GetButtonDown("Attack"))
+        if (Input.GetButtonDown("B_Button"))
         {
             int exp = Attack();
             if (exp > 0)

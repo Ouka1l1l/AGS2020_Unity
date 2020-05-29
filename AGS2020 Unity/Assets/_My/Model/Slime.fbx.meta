@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 82e0b523200111346b867b818a7ab346
+guid: ff0ca0cf44cae354eabc7fe5fd57f33f
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable:
@@ -15,17 +15,15 @@ ModelImporter:
   - first:
       74: -1376111629564563538
     second: "\u30A2\u30FC\u30DE\u30C1\u30E5\u30A2|RotaryAttack"
+  - first:
+      74: -5788797061500770298
+    second: "\u30A2\u30FC\u30DE\u30C1\u30E5\u30A2|Idle (1)"
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: palette.008
-    second: {fileID: 2100000, guid: 93fa630b5cfee4f4da8c865c070ffcb7, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: palette.009
-    second: {fileID: 2100000, guid: 273e09ab0e493af4caf5787d9287626c, type: 2}
+      name: palette.001
+    second: {fileID: 2100000, guid: b167a2c845bec0f438f987d19ecd3999, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -45,7 +43,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 3
+    animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -58,7 +56,7 @@ ModelImporter:
       takeName: "\u30A2\u30FC\u30DE\u30C1\u30E5\u30A2|Attack"
       internalID: 0
       firstFrame: 0
-      lastFrame: 15
+      lastFrame: 30
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -145,7 +143,7 @@ ModelImporter:
       takeName: "\u30A2\u30FC\u30DE\u30C1\u30E5\u30A2|RotaryAttack"
       internalID: 0
       firstFrame: 0
-      lastFrame: 35
+      lastFrame: 30
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -221,7 +219,7 @@ ModelImporter:
     globalScale: 1
     rootMotionBoneName: "\u30A2\u30FC\u30DE\u30C1\u30E5\u30A2"
     hasTranslationDoF: 0
-    hasExtraRoot: 1
+    hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1

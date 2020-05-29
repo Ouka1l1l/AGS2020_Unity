@@ -214,6 +214,16 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected List<SkillAttack> _skillAttackData;
 
+    /// <summary>
+    /// アニメーター
+    /// </summary>
+    protected Animator _animator;
+
+    /// <summary>
+    /// 待機アニメーションのハッシュ値
+    /// </summary>
+    private int _idleHash;
+
     protected DungeonManager _dungeonManager;
 
     // Start is called before the first frame update
@@ -230,6 +240,10 @@ public abstract class Character : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
 
         _skillAttackData = Resources.Load<SkillAttackData>("ScriptableObject/SkillAttackData").skillAttackData;
+
+        _animator = GetComponent<Animator>();
+
+        _idleHash = Animator.StringToHash("Base Layer.アーマチュア|Idle");
     }
 
     /// <summary>
@@ -269,8 +283,8 @@ public abstract class Character : MonoBehaviour
                 end = true;
                 break;
         }
-
-        if(end)
+        
+        if (_idleHash == _animator.GetCurrentAnimatorStateInfo(0).fullPathHash)
         {
             _action = Action.Non;
             return true;
@@ -344,6 +358,9 @@ public abstract class Character : MonoBehaviour
                 _dungeonManager._level.SetCharacterData(tmpDestination.x, tmpDestination.y, _id);
 
                 _action = Action.Move;
+
+                _animator.SetBool("MoveFlag", true);
+
                 return true;
             }
         }
@@ -359,6 +376,8 @@ public abstract class Character : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, _destination, Time.deltaTime * 5.0f);
         if (_destination == transform.position)
         {
+            _animator.SetBool("MoveFlag", false);
+
             _roomNo = _dungeonManager._level.GetRoomNo(transform.position.x, transform.position.z);
             FootExecution();
 
@@ -385,6 +404,8 @@ public abstract class Character : MonoBehaviour
     protected int Attack()
     {
         _action = Action.Attack;
+
+        _animator.SetTrigger("AttackTrigger");
 
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
 
@@ -416,6 +437,8 @@ public abstract class Character : MonoBehaviour
     protected int RotaryAttack()
     {
         _action = Action.SkillAttack;
+
+        _animator.SetTrigger("RotaryAttackTrigger");
 
         UIManager.instance.AddText(_name + "の回転切り");
 

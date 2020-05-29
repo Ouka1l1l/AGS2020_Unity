@@ -35,7 +35,7 @@ public class SkillMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetButtonUp("R_Shoulder"))
+        if(Input.GetButtonUp("L_Shoulder"))
         {
             gameObject.SetActive(false);
         }
