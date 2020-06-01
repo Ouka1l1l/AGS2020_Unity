@@ -24,6 +24,12 @@ public class Player : Character
 
     public UnityEvent _maskEvent { get; private set; } = new UnityEvent();
 
+    /// <summary>
+    /// 八方向の矢印
+    /// </summary>
+    [SerializeField]
+    private GameObject _arrow;
+
     // Start is called before the first frame update
     new void Start()
     {
@@ -59,13 +65,21 @@ public class Player : Character
 
         if (Input.GetButton("R_Shoulder"))
         {
+            _arrow.SetActive(true);
             Dir dir;
             if (GetInputDir(out dir))
             {
                 _dir = dir;
                 transform.rotation = Quaternion.Euler(0, (float)dir, 0);
+                var arrowRot = _arrow.transform.rotation;
+                _arrow.transform.rotation = Quaternion.Euler(arrowRot.x, 0, arrowRot.z);
             }
             return false;
+        }
+
+        if(Input.GetButtonUp("R_Shoulder"))
+        {
+            _arrow.SetActive(false);
         }
 
         if (Input.GetButtonDown("L_Shoulder"))
@@ -118,7 +132,7 @@ public class Player : Character
             CpAdd(1);
         }
 
-        if(_cp <= _cpLimit)
+        if(_cp < _cpLimit)
         {
             Regeneration();
         }

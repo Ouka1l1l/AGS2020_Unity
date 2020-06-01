@@ -149,6 +149,8 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected Action _action;
 
+    protected bool _actEnd;
+
     /// <summary>
     /// 現在いるの部屋の区画番号 部屋にいない場合は-1
     /// </summary>
@@ -258,38 +260,43 @@ public abstract class Character : MonoBehaviour
     /// <returns></returns> true 行動終了
     public bool Act()
     {
-        bool end = false;
+        if (_actEnd)
+        {
+            if (_idleHash == _animator.GetCurrentAnimatorStateInfo(0).fullPathHash)
+            {
+                _action = Action.Non;
+                _actEnd = false;
+                return true;
+            }
+
+            return false;
+        }
+
         switch(_action)
         {
             case Action.Wait:
-                end = true;
+                _actEnd = true;
                 break;
 
             case Action.Move:
-                end = Move();
+                _actEnd = Move();
                 break;
 
             case Action.Attack:
             case Action.SkillAttack:
-                end = true;
+                _actEnd = true;
                 break;
 
             case Action.Item:
-                end = true;
+                _actEnd = true;
                 break;
 
             default:
                 Debug.LogError(_name + "Actエラー" + _action);
-                end = true;
+                _actEnd = true;
                 break;
         }
         
-        if (_idleHash == _animator.GetCurrentAnimatorStateInfo(0).fullPathHash)
-        {
-            _action = Action.Non;
-            return true;
-        }
-
         return false;
     }
 
@@ -647,6 +654,7 @@ public abstract class Character : MonoBehaviour
         _roomNo = sectionNo;
 
         _action = Action.Non;
+        _actEnd = false;
 
         _dungeonManager._level.SetCharacterData(transform.position.x, transform.position.z, _id);
     }

@@ -463,6 +463,27 @@ public class Level : MonoBehaviour
         return true;
     }
 
+    private void Road(int start_Random, int start_Fixed, int end, bool isRandomX)
+    {
+        for (int r = start_Fixed; r >= end; r--)
+        {
+            if (isRandomX)
+            {
+                if (_terrainData[r, start_Random] == TerrainType.Wall)
+                {
+                    _terrainData[r, start_Random] = TerrainType.Road;
+                }
+            }
+            else
+            {
+                if (_terrainData[start_Random, r] == TerrainType.Wall)
+                {
+                    _terrainData[start_Random, r] = TerrainType.Road;
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// 道を繋げる
     /// </summary>
@@ -474,6 +495,7 @@ public class Level : MonoBehaviour
     /// <param name="isRandomX"></param> X座標をランダムにするか
     private void ConnectingRoad(int room1Start_Random, int room1Start_Fixed, int room2Start_Random, int room2Start_Fixed, int adjacentPoint, bool isRandomX)
     {
+        //区画の境界まで道を伸ばす
         for (int r = room1Start_Fixed; r >= adjacentPoint; r--)
         {
             if (isRandomX)
@@ -510,6 +532,7 @@ public class Level : MonoBehaviour
             }
         }
 
+        //境界間を繋げる
         int adjacentStart;
         int adjacentEnd;
         if (room1Start_Random < room2Start_Random)
@@ -621,6 +644,43 @@ public class Level : MonoBehaviour
                 adjacentSection._roadStartList.Add(room2Start);
 
                 ConnectingRoad(Start1Y, room1.left, Start2Y, room2.right, sectionData.left, false);
+            }
+            if (_sections[index]._adjacentSections.ContainsKey(Dir.Bottom))
+            {
+                int Start1X = RandomRoadStartPos(room1.left, room1.right, room1.top, true);
+                room1Start = new Vector3(Start1X, transform.position.y, -(room1.bottom + 1));
+                _sections[index]._roadStartList.Add(room1Start);
+
+                Road(Start1X, sectionData.bottom, room1.bottom, true);
+
+                int random = Random.Range(0, 3);
+                if (random == 0)
+                {
+                    Road(sectionData.bottom, Start1X, Random.Range(sectionData.left, Start1X), false);
+                }
+                else
+                {
+                    Road(sectionData.bottom, Random.Range(Start1X + 1, sectionData.right + 1), Start1X, false);
+                }
+            }
+            if (_sections[index]._adjacentSections.ContainsKey(Dir.Right))
+            {
+                int Start1Y = RandomRoadStartPos(room1.top, room1.bottom, room1.left, false);
+
+                room1Start = new Vector3(room1.left - 1, transform.position.y, -Start1Y);
+                _sections[index]._roadStartList.Add(room1Start);
+
+                Road(Start1Y, sectionData.right, room1.right, false);
+
+                int random = Random.Range(0, 3);
+                if (random == 0)
+                {
+                    Road(sectionData.right, Start1Y, Random.Range(sectionData.top, Start1Y), true);
+                }
+                else
+                {
+                    Road(sectionData.right, Random.Range(Start1Y + 1, sectionData.bottom + 1), Start1Y, true);
+                }
             }
         }
     }
