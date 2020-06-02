@@ -10,7 +10,8 @@ public abstract class Item : MonoBehaviour
     /// </summary>
     public enum ItemType
     {
-        MedicalBox
+        MedicalBox,
+        CP_RecoveryAgents
     }
 
     /// <summary>

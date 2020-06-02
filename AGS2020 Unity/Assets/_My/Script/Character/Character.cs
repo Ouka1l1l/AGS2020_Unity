@@ -515,7 +515,9 @@ public abstract class Character : MonoBehaviour
         string str = string.Format(_name + "は、{0:d}ダメージを受けた", damage);
         UIManager.instance.AddText(str);
 
-        if(_hp <= 0)
+        _animator.SetTrigger("DamageTrigger");
+
+        if (_hp <= 0)
         {
             Death();
             return true;

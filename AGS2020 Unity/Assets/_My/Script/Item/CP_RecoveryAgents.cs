@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MedicalBox : Item
+public class CP_RecoveryAgents : Item
 {
     private int healValue;
 
@@ -11,8 +11,8 @@ public class MedicalBox : Item
     {
         base.Start();
 
-        _type = ItemType.MedicalBox;
-        _name = "回復薬";
+        _type = ItemType.CP_RecoveryAgents;
+        _name = "CP回復薬";
         healValue = 10;
     }
 
@@ -20,7 +20,7 @@ public class MedicalBox : Item
     {
         base.Use(character);
 
-        character.Heal(healValue);
+        character.CpSub(healValue);
 
         Destroy(gameObject);
     }
