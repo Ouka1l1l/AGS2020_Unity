@@ -5,7 +5,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 [ExecuteInEditMode]
-public class Level : MonoBehaviour
+public class Floor : MonoBehaviour
 {
     /// <summary>
     /// 地形情報
@@ -463,74 +463,55 @@ public class Level : MonoBehaviour
         return true;
     }
 
-    private void Road(int start_Random, int start_Fixed, int end, bool isRandomX)
+    /// <summary>
+    /// 道を繋げる
+    /// </summary>
+    /// <param name="start_Random"></param>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <param name="vertically"></param> 垂直方向に道を繋げるか
+    private void ConnectRoad(int start_Random, int start, int end, bool vertically)
     {
-        for (int r = start_Fixed; r >= end; r--)
+        int x;
+        int y;
+        for (int r = start; r <= end; r++)
         {
-            if (isRandomX)
+            if (r != 0 && r != (_terrainData.GetLength(vertically == true ? 0 : 1) - 1))
             {
-                if (_terrainData[r, start_Random] == TerrainType.Wall)
+                if(vertically)
                 {
-                    _terrainData[r, start_Random] = TerrainType.Road;
+                    x = start_Random;
+                    y = r;
                 }
-            }
-            else
-            {
-                if (_terrainData[start_Random, r] == TerrainType.Wall)
+                else
                 {
-                    _terrainData[start_Random, r] = TerrainType.Road;
+                    x = r;
+                    y = start_Random;
+                }
+
+                if (_terrainData[y, x] == TerrainType.Wall)
+                {
+                    _terrainData[y, x] = TerrainType.Road;
                 }
             }
         }
     }
 
     /// <summary>
-    /// 道を繋げる
+    /// 部屋を繋げる
     /// </summary>
     /// <param name="room1Start_Random"></param> 一つ目の道の開始地点のランダム座標
     /// <param name="room1Start_Fixed"></param> 一つ目の道の開始地点の固定座標の値
     /// <param name="room2Start_Random"></param> 二つ目の道の開始地点のランダム座標
     /// <param name="room2Start_Fixed"></param> 二つ目の道の開始地点の固定座標の値
     /// <param name="adjacentPoint"></param> 道同士を繋げるときの基準
-    /// <param name="isRandomX"></param> X座標をランダムにするか
-    private void ConnectingRoad(int room1Start_Random, int room1Start_Fixed, int room2Start_Random, int room2Start_Fixed, int adjacentPoint, bool isRandomX)
+    /// <param name="vertically"></param> 区画の位置関係が垂直か
+    private void ConnectRooms(int room1Start_Random, int room1Start_Fixed, int room2Start_Random, int room2Start_Fixed, int adjacentPoint, bool vertically)
     {
         //区画の境界まで道を伸ばす
-        for (int r = room1Start_Fixed; r >= adjacentPoint; r--)
-        {
-            if (isRandomX)
-            {
-                if(_terrainData[r, room1Start_Random] == TerrainType.Wall)
-                {
-                    _terrainData[r, room1Start_Random] = TerrainType.Road;
-                }
-            }
-            else
-            {
-                if (_terrainData[room1Start_Random, r] == TerrainType.Wall)
-                {
-                    _terrainData[room1Start_Random, r] = TerrainType.Road;
-                }
-            }
-        }
+        ConnectRoad(room1Start_Random, adjacentPoint, room1Start_Fixed, vertically);
 
-        for (int r = room2Start_Fixed; r <= adjacentPoint; r++)
-        {
-            if (isRandomX)
-            {
-                if (_terrainData[r, room2Start_Random] == TerrainType.Wall)
-                {
-                    _terrainData[r, room2Start_Random] = TerrainType.Road;
-                }
-            }
-            else
-            {
-                if (_terrainData[room2Start_Random, r] == TerrainType.Wall)
-                {
-                    _terrainData[room2Start_Random, r] = TerrainType.Road;
-                }
-            }
-        }
+        ConnectRoad(room2Start_Random, room2Start_Fixed, adjacentPoint, vertically);
 
         //境界間を繋げる
         int adjacentStart;
@@ -546,26 +527,7 @@ public class Level : MonoBehaviour
             adjacentEnd = room1Start_Random;
         }
 
-        if(isRandomX)
-        {
-            for (int t = adjacentStart; t <= adjacentEnd; t++)
-            {
-                if (_terrainData[adjacentPoint, t] == TerrainType.Wall)
-                {
-                    _terrainData[adjacentPoint, t] = TerrainType.Road;
-                }
-            }
-        }
-        else
-        {
-            for (int t = adjacentStart; t <= adjacentEnd; t++)
-            {
-                if (_terrainData[t, adjacentPoint] == TerrainType.Wall)
-                {
-                    _terrainData[t, adjacentPoint] = TerrainType.Road;
-                }
-            }
-        }
+        ConnectRoad(adjacentPoint, adjacentStart, adjacentEnd, !vertically);
     }
 
     /// <summary>
@@ -627,7 +589,7 @@ public class Level : MonoBehaviour
                 room2Start = new Vector3(Start2X, transform.position.y, -(room1.bottom + 1));
                 adjacentSection._roadStartList.Add(room2Start);
 
-                ConnectingRoad(Start1X , room1.top, Start2X, room2.bottom, sectionData.top, true);
+                ConnectRooms(Start1X, room1.top, Start2X, room2.bottom, sectionData.top, true);
             }
             if (_sections[index]._adjacentSections.ContainsKey(Dir.Left))
             {
@@ -643,7 +605,7 @@ public class Level : MonoBehaviour
                 room2Start = new Vector3(room2.right + 1, transform.position.y, -Start2Y);
                 adjacentSection._roadStartList.Add(room2Start);
 
-                ConnectingRoad(Start1Y, room1.left, Start2Y, room2.right, sectionData.left, false);
+                ConnectRooms(Start1Y, room1.left, Start2Y, room2.right, sectionData.left, false);
             }
             if (_sections[index]._adjacentSections.ContainsKey(Dir.Bottom))
             {
@@ -651,16 +613,16 @@ public class Level : MonoBehaviour
                 room1Start = new Vector3(Start1X, transform.position.y, -(room1.bottom + 1));
                 _sections[index]._roadStartList.Add(room1Start);
 
-                Road(Start1X, sectionData.bottom, room1.bottom, true);
+                ConnectRoad(Start1X, room1.bottom, sectionData.bottom, true);
 
                 int random = Random.Range(0, 3);
                 if (random == 0)
                 {
-                    Road(sectionData.bottom, Start1X, Random.Range(sectionData.left, Start1X), false);
+                    ConnectRoad(sectionData.bottom, Random.Range(sectionData.left, Start1X), Start1X, false);
                 }
                 else
                 {
-                    Road(sectionData.bottom, Random.Range(Start1X + 1, sectionData.right + 1), Start1X, false);
+                    ConnectRoad(sectionData.bottom, Start1X, Random.Range(Start1X + 1, sectionData.right + 1), false);
                 }
             }
             if (_sections[index]._adjacentSections.ContainsKey(Dir.Right))
@@ -670,16 +632,16 @@ public class Level : MonoBehaviour
                 room1Start = new Vector3(room1.left - 1, transform.position.y, -Start1Y);
                 _sections[index]._roadStartList.Add(room1Start);
 
-                Road(Start1Y, sectionData.right, room1.right, false);
+                ConnectRoad(Start1Y, room1.right, sectionData.right, false);
 
                 int random = Random.Range(0, 3);
                 if (random == 0)
                 {
-                    Road(sectionData.right, Start1Y, Random.Range(sectionData.top, Start1Y), true);
+                    ConnectRoad(sectionData.right, Random.Range(sectionData.top, Start1Y), Start1Y, true);
                 }
                 else
                 {
-                    Road(sectionData.right, Random.Range(Start1Y + 1, sectionData.bottom + 1), Start1Y, true);
+                    ConnectRoad(sectionData.right, Start1Y, Random.Range(Start1Y + 1, sectionData.bottom + 1), true);
                 }
             }
         }
@@ -810,15 +772,35 @@ public class Level : MonoBehaviour
         }
         _itemData = new Item[mapSize.y, mapSize.x];
 
-        int roomNo;
-        var pos = GetRandomFloorPos(out roomNo);
-        pos = new Vector2Int(staisPos.x, staisPos.y - 1);
-        var grid = DungeonManager.instance.GetGrid(pos);
+        int itemMax = Random.Range(1, 6);
+        for (int i = 0; i < itemMax; i++)
+        {
+            int roomNo;
+            var pos = GetRandomFloorPos(out roomNo);
+            var grid = DungeonManager.instance.GetGrid(pos);
 
-        _terrainData[grid.y, grid.x] = TerrainType.Item;
-        var Portion = Instantiate((GameObject)Resources.Load("CP")).GetComponent<Item>();
-        Portion.SetPos(pos.x, pos.y);
-        _itemData[grid.y, grid.x] = Portion;
+            _terrainData[grid.y, grid.x] = TerrainType.Item;
+            Item Item;
+            if (Random.Range(0, 2) == 0)
+            {
+                Item = Instantiate((GameObject)Resources.Load("MedicalBox")).GetComponent<Item>();
+            }
+            else
+            {
+                Item = Instantiate((GameObject)Resources.Load("CP")).GetComponent<Item>();
+            }
+            Item.SetPos(pos.x, pos.y);
+            _itemData[grid.y, grid.x] = Item;
+        }
+        //int roomNo;
+        //var pos = GetRandomFloorPos(out roomNo);
+        //pos = new Vector2Int(staisPos.x, staisPos.y - 1);
+        //var grid = DungeonManager.instance.GetGrid(pos);
+
+        //_terrainData[grid.y, grid.x] = TerrainType.Item;
+        //var Portion = Instantiate((GameObject)Resources.Load("CP")).GetComponent<Item>();
+        //Portion.SetPos(pos.x, pos.y);
+        //_itemData[grid.y, grid.x] = Portion;
     }
 
     /// <summary>
@@ -826,7 +808,7 @@ public class Level : MonoBehaviour
     /// </summary>
     /// <param name="mapSize"></param> マップサイズ
     /// <param name="divisionNum"></param> 部屋の数
-    public void CreateLevel(Vector2Int mapSize, int divisionNum)
+    public void CreateFloor(Vector2Int mapSize, int divisionNum)
     {
         UIManager.instance.SetMiniMapCamera(mapSize);
 
@@ -869,10 +851,10 @@ public class Level : MonoBehaviour
                     Wall.transform.position = new Vector3(x, 0, -y);
                     Wall.transform.SetParent(cube.transform);
                 }
-                else
-                {
-                    cube.layer = LayerMask.NameToLayer("MiniMapMask");
-                }
+                //else
+                //{
+                //    cube.layer = LayerMask.NameToLayer("MiniMapMask");
+                //}
 
                 //キャラクタデータの初期化
                 _characterData[y, x] = -1;
@@ -895,7 +877,7 @@ public class Level : MonoBehaviour
                 Enemy enemy = Instantiate((GameObject)Resources.Load("TestEnemy")).GetComponent<Enemy>();
                 do
                 {
-                    enemy.Spawn(0, i);
+                    enemy.Spawn(0, i + 1);
                 } while (enemy._roomNo == DungeonManager.instance._player._roomNo);
 
                 _enemies[i] = enemy;

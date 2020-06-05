@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class Menu : MonoBehaviour
 {
     [SerializeField]
     protected Image _choicePanel;
 
-    private Vector3 _defPos;
-
-    protected int _offset;
+    protected List<float> _headlinePosYs;
 
     private float _oldVertical;
 
@@ -31,8 +30,11 @@ public class Menu : MonoBehaviour
     // Start is called before the first frame update
     protected void Start()
     {
-        _defPos = _choicePanel.transform.position;
-        _offset = 27;
+        _headlinePosYs = new List<float>();
+        foreach (var text in GetComponentsInChildren<TextMeshProUGUI>())
+        {
+            _headlinePosYs.Add(text.transform.position.y);
+        }
     }
 
     protected void OnEnable()
@@ -110,9 +112,7 @@ public class Menu : MonoBehaviour
                 }
             }
 
-            var tmpPos = _defPos;
-            tmpPos.y -= _offset * _choose;
-            _choicePanel.transform.position = tmpPos;
+            _choicePanel.transform.SetY(_headlinePosYs[_choose]);
         }
 
         _oldVertical = vertical;

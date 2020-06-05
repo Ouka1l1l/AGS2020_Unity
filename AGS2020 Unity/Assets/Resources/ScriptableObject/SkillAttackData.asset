@@ -16,6 +16,12 @@ MonoBehaviour:
   - name: "\u306A\u3057"
     icon: {fileID: 0}
     cost: 0
+    addAtk: 0
   - name: "\u56DE\u8EE2\u5207\u308A"
     icon: {fileID: 21300000, guid: 6c29d5e7513de534280aa1a6ce708565, type: 3}
     cost: 10
+    addAtk: 0
+  - name: "\u5F37\u5207\u308A"
+    icon: {fileID: 21300000, guid: b363adfa4fe4be74fba503888ee678e9, type: 3}
+    cost: 5
+    addAtk: 10

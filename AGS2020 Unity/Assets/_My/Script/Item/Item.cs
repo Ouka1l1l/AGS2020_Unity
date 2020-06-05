@@ -27,12 +27,12 @@ public abstract class Item : MonoBehaviour
     /// <summary>
     /// レンダラー
     /// </summary>
-    private Renderer _renderer;
+    private Renderer[] _renderers;
 
     // Start is called before the first frame update
     protected void Start()
     {
-        _renderer = GetComponentInChildren<Renderer>();
+        _renderers = GetComponentsInChildren<Renderer>();
     }
 
     /// <summary>
@@ -50,13 +50,16 @@ public abstract class Item : MonoBehaviour
     /// </summary>
     public void BePickedUp()
     {
-        var level = DungeonManager.instance._level;
+        var level = DungeonManager.instance._floor;
 
         Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
-        level.SetTerrainData(pos.x, pos.y, Level.TerrainType.Floor);
+        level.SetTerrainData(pos.x, pos.y, Floor.TerrainType.Floor);
         level.SetItemData(pos.x, pos.y, null);
 
-        _renderer.enabled = false;
+        foreach(var renderer in _renderers)
+        {
+            renderer.enabled = false;
+        }
     }
 
     /// <summary>
@@ -65,18 +68,21 @@ public abstract class Item : MonoBehaviour
     /// <param name="pos"></param> 座標
     public void Drop(Vector2Int pos)
     {
-        var level = DungeonManager.instance._level;
+        var level = DungeonManager.instance._floor;
 
         var surroundingTerrainData = level.GetSurroundingTerrainData(pos.x, pos.y, 1, 1);
 
         Func<Vector2Int, bool> DropCheck = (Vector2Int offset) =>
         {
-            if (surroundingTerrainData[offset] == Level.TerrainType.Floor)
+            if (surroundingTerrainData[offset] == Floor.TerrainType.Floor)
             {
                 SetPos(pos.x, pos.y);
-                _renderer.enabled = true;
+                foreach (var renderer in _renderers)
+                {
+                    renderer.enabled = true;
+                }
                 StartCoroutine(DropMove(pos + offset));
-                level.SetTerrainData(pos + offset, Level.TerrainType.Item);
+                level.SetTerrainData(pos + offset, Floor.TerrainType.Item);
                 level.SetItemData(pos + offset, this);
 
                 return true;

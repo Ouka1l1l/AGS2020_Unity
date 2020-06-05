@@ -30,7 +30,7 @@ public class Stairs : Event
 
         if (result)
         {
-            DungeonManager.instance.NextLevel();
+            DungeonManager.instance.NextFloor();
         }
     }
 }

@@ -24,8 +24,6 @@ public class ItemMenu : Menu
     {
         base.Start();
 
-        _offset = 23;
-
         foreach(var name in _itemNames)
         {
             name.text = "";

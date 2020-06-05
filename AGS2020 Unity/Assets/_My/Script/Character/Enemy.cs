@@ -137,7 +137,7 @@ public abstract class Enemy : Character
                 }
                 else
                 {
-                    if (_dungeonManager._level.GetTerrainData(transform.position.x, transform.position.z) == Level.TerrainType.Road)
+                    if (_dungeonManager._floor.GetTerrainData(transform.position.x, transform.position.z) == Floor.TerrainType.Road)
                     {
                         //道の途中
                         Vector2Int vec2Int = GetFrontPosition();
@@ -162,7 +162,7 @@ public abstract class Enemy : Character
                         if (Random.Range(0, 100) < 5)
                         {
                             //別の部屋へ
-                            var roadStartList = _dungeonManager._level._sections[_roomNo]._roadStartList;
+                            var roadStartList = _dungeonManager._floor._sections[_roomNo]._roadStartList;
 
                             _targetPos = roadStartList[Random.Range(0, roadStartList.Count)];
                             if (TowardsTarget())
@@ -200,7 +200,7 @@ public abstract class Enemy : Character
     /// <returns></returns> true 検知した
     protected bool PlayerDetection(Vector2Int detectionRange)
     {
-        var SurroundingCharacterData = _dungeonManager._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, detectionRange.x, detectionRange.y);
+        var SurroundingCharacterData = _dungeonManager._floor.GetSurroundingCharacterData(transform.position.x, transform.position.z, detectionRange.x, detectionRange.y);
 
         bool ret = false;
         foreach(var characterID in SurroundingCharacterData.Values)
@@ -281,6 +281,13 @@ public abstract class Enemy : Character
                 }
                 break;
 
+            case Item.ItemType.CP_RecoveryAgents:
+                if (_cp > 0)
+                {
+                    useFlag = true;
+                }
+                break;
+
             default:
                 Debug.LogError("敵アイテムエラー" + _itam._type);
                 break;
@@ -309,7 +316,7 @@ public abstract class Enemy : Character
     {
         base.Death();
 
-        _dungeonManager._level.SetCharacterData(transform.position.x, transform.position.z, -1);
+        _dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, -1);
 
         if(_itam != null)
         {

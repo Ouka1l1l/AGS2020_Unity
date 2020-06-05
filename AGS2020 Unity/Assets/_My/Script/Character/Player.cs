@@ -14,7 +14,7 @@ public class Player : Character
     /// <summary>
     /// アイテムの所持上限
     /// </summary>
-    private int _itamMax = 1;
+    private int _itamMax = 11;
 
     public int _cpLimit { get; private set; }
 
@@ -48,8 +48,10 @@ public class Player : Character
         _skillAttackSlot = new SkillAttackType[4];
 
         UIManager.instance.GetSkillMenu().SetSkill(1, (int)SkillAttackType.RotaryAttack);
+        UIManager.instance.GetSkillMenu().SetSkill(2, (int)SkillAttackType.HeavyAttack);
 
         _skillAttackSlot[1] = SkillAttackType.RotaryAttack;
+        _skillAttackSlot[2] = SkillAttackType.HeavyAttack;
 
         _visibleRect = new Rect(2, 2, 2, 2);
 
@@ -142,7 +144,7 @@ public class Player : Character
     {
         if(base.Move())
         {
-            var level = _dungeonManager._level;
+            var level = _dungeonManager._floor;
             if (_roomNo == -1)
             {
                 level.UpdateMiniMap((int)transform.position.x, (int)transform.position.z);
@@ -153,22 +155,22 @@ public class Player : Character
 
                 for (int i = 1; i <= 2; i++)
                 {
-                    if(level.GetTerrainData(playerPos.x + i,playerPos.y) == Level.TerrainType.Road)
+                    if(level.GetTerrainData(playerPos.x + i,playerPos.y) == Floor.TerrainType.Road)
                     {
                         _visibleRect.right = playerPos.x + i;
                     }
 
-                    if (level.GetTerrainData(playerPos.x - i, playerPos.y) == Level.TerrainType.Road)
+                    if (level.GetTerrainData(playerPos.x - i, playerPos.y) == Floor.TerrainType.Road)
                     {
                         _visibleRect.left = playerPos.x - i;
                     }
 
-                    if (level.GetTerrainData(playerPos.x, playerPos.y + i) == Level.TerrainType.Road)
+                    if (level.GetTerrainData(playerPos.x, playerPos.y + i) == Floor.TerrainType.Road)
                     {
                         _visibleRect.bottom = playerPos.y + i;
                     }
 
-                    if (level.GetTerrainData(playerPos.x, playerPos.y - i) == Level.TerrainType.Road)
+                    if (level.GetTerrainData(playerPos.x, playerPos.y - i) == Floor.TerrainType.Road)
                     {
                         _visibleRect.top = playerPos.y - i;
                     }
@@ -198,8 +200,12 @@ public class Player : Character
               {
                   switch(skillAttackType)
                   {
-                      case Player.SkillAttackType.RotaryAttack:
+                      case SkillAttackType.RotaryAttack:
                           SkillAttack = RotaryAttack;
+                          break;
+
+                      case SkillAttackType.HeavyAttack:
+                          SkillAttack = HeavyAttack;
                           break;
 
                       default:
@@ -279,7 +285,7 @@ public class Player : Character
     private void LevelUp()
     {
         _level++;
-        UIManager.instance.AddText(_name + "は、" + _level + "になった");
+        UIManager.instance.AddText(_name + "は、レベル" + _level + "になった");
 
         _maxHp += 10;
         _nextLevelExp += 10;
@@ -291,20 +297,20 @@ public class Player : Character
     {
         base.Spawn();
 
-        _dungeonManager._level.SetCharacterData(transform.position.x, transform.position.z, -1);
+        _dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, -1);
 
-        /////////デバック
-        Vector2Int pos = _dungeonManager._level.staisPos;
-        pos.x++;
+        ///////////デバック
+        //Vector2Int pos = _dungeonManager._floor.staisPos;
+        //pos.x++;
 
-        transform.position = new Vector3(pos.x, 0, pos.y);
-        _destination = transform.position;
+        //transform.position = new Vector3(pos.x, 0, pos.y);
+        //_destination = transform.position;
 
-        _dungeonManager._level.SetCharacterData(transform.position.x, transform.position.z, _id);
-        _roomNo = _dungeonManager._level.GetRoomNo(transform.position.x, transform.position.z);
-        ////////
+        //_dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, _id);
+        //_roomNo = _dungeonManager._floor.GetRoomNo(transform.position.x, transform.position.z);
+        //////////
 
-        _dungeonManager._level.UpdateMiniMap(_roomNo);
+        _dungeonManager._floor.UpdateMiniMap(_roomNo);
 
         Camera.main.GetComponent<FollowCamera>().SetTarget(this);
     }
@@ -394,7 +400,7 @@ public class Player : Character
     /// <returns></returns>
     public bool VisibilityCheck(Vector3 pos)
     {
-        var level = _dungeonManager._level;
+        var level = _dungeonManager._floor;
 
         bool ret = false;
 
@@ -415,7 +421,7 @@ public class Player : Character
                     x++;
                 }
 
-                if (level.GetTerrainData(pos.x + x, pos.z) == Level.TerrainType.Road)
+                if (level.GetTerrainData(pos.x + x, pos.z) == Floor.TerrainType.Road)
                 {
                     ret = true;
                 }
@@ -432,13 +438,13 @@ public class Player : Character
                         y++;
                     }
 
-                    if (level.GetTerrainData(pos.x, pos.z + y) == Level.TerrainType.Road)
+                    if (level.GetTerrainData(pos.x, pos.z + y) == Floor.TerrainType.Road)
                     {
                         ret = true;
                     }
                     else
                     {
-                        if (level.GetTerrainData(pos.x + x, pos.z + y) == Level.TerrainType.Road)
+                        if (level.GetTerrainData(pos.x + x, pos.z + y) == Floor.TerrainType.Road)
                         {
                             ret = true;
                         }
@@ -448,7 +454,7 @@ public class Player : Character
         }
         else
         {
-            var room = _dungeonManager._level._sections[_roomNo]._roomData;
+            var room = _dungeonManager._floor._sections[_roomNo]._roomData;
 
             if (room.left - 1 <= pos.x && pos.x <= room.right + 1
                 && room.top - 1 <= -pos.z && -pos.z <= room.bottom + 1)

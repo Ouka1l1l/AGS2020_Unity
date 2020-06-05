@@ -208,7 +208,8 @@ public abstract class Character : MonoBehaviour
     public enum SkillAttackType
     {
         Non,
-        RotaryAttack
+        RotaryAttack,
+        HeavyAttack
     }
 
     /// <summary>
@@ -353,16 +354,16 @@ public abstract class Character : MonoBehaviour
         _dir = dir;
         Vector2Int tmpDestination = GetFrontPosition();
 
-        var level = _dungeonManager._level;
+        var level = _dungeonManager._floor;
 
         transform.rotation = Quaternion.Euler(0, (float)dir, 0);
-        if (level.GetTerrainData(tmpDestination) != Level.TerrainType.Wall)
+        if (level.GetTerrainData(tmpDestination) != Floor.TerrainType.Wall)
         {
             if (level.GetCharacterData(tmpDestination) == -1)
             {
                 _destination = new Vector3(tmpDestination.x, _destination.y, tmpDestination.y);
                 level.SetCharacterData(transform.position.x, transform.position.z, -1);
-                _dungeonManager._level.SetCharacterData(tmpDestination.x, tmpDestination.y, _id);
+                _dungeonManager._floor.SetCharacterData(tmpDestination.x, tmpDestination.y, _id);
 
                 _action = Action.Move;
 
@@ -385,7 +386,7 @@ public abstract class Character : MonoBehaviour
         {
             _animator.SetBool("MoveFlag", false);
 
-            _roomNo = _dungeonManager._level.GetRoomNo(transform.position.x, transform.position.z);
+            _roomNo = _dungeonManager._floor.GetRoomNo(transform.position.x, transform.position.z);
             FootExecution();
 
             return true;
@@ -419,7 +420,7 @@ public abstract class Character : MonoBehaviour
         UIManager.instance.AddText(_name + "の攻撃");
 
         Vector2Int frontPos = GetFrontPosition();
-        var characterNo = _dungeonManager._level.GetCharacterData(frontPos);
+        var characterNo = _dungeonManager._floor.GetCharacterData(frontPos);
         if(characterNo != -1)
         {
             Character target;
@@ -429,10 +430,45 @@ public abstract class Character : MonoBehaviour
             }
             else
             {
-                target = _dungeonManager._level._enemies[characterNo - 1];
+                target = _dungeonManager._floor._enemies[characterNo - 1];
             }
-            int damage = DamageCalculation(target._def);
-            if(target.Damage(damage))
+            if(target.Damage(_atk, target._def))
+            {
+                return target._exp;
+            }
+        }
+
+        return 0;
+    }
+
+    protected int HeavyAttack()
+    {
+        _action = Action.SkillAttack;
+
+        transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
+
+        _animator.SetTrigger("HeavyAttackTrigger");
+
+        var heavyAttackData = _skillAttackData[(int)SkillAttackType.HeavyAttack];
+
+        UIManager.instance.AddText(_name + "の" + heavyAttackData.name);
+
+        CpAdd(heavyAttackData.cost);
+
+        Vector2Int frontPos = GetFrontPosition();
+        var characterNo = _dungeonManager._floor.GetCharacterData(frontPos);
+        if (characterNo != -1)
+        {
+            Character target;
+            if (characterNo == 0)
+            {
+                target = _dungeonManager._player;
+            }
+            else
+            {
+                target = _dungeonManager._floor._enemies[characterNo - 1];
+            }
+            if (target.Damage(_atk + heavyAttackData.addAtk, target._def))
             {
                 return target._exp;
             }
@@ -447,13 +483,15 @@ public abstract class Character : MonoBehaviour
 
         _animator.SetTrigger("RotaryAttackTrigger");
 
-        UIManager.instance.AddText(_name + "の回転切り");
+        var rotaryAttackData = _skillAttackData[(int)SkillAttackType.RotaryAttack];
 
-        CpAdd(_skillAttackData[(int)SkillAttackType.RotaryAttack].cost);
+        UIManager.instance.AddText(_name + "の" + rotaryAttackData.name);
+
+        CpAdd(rotaryAttackData.cost);
 
         int ret = 0;
 
-        var characterData = _dungeonManager._level.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
+        var characterData = _dungeonManager._floor.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
         foreach(var charData in characterData)
         {
             if (charData.Value != -1)
@@ -463,7 +501,7 @@ public abstract class Character : MonoBehaviour
                 {
                     if (charData.Value > 0)
                     {
-                        target = _dungeonManager._level._enemies[charData.Value - 1];
+                        target = _dungeonManager._floor._enemies[charData.Value - 1];
                     }
                 }
                 else
@@ -476,8 +514,7 @@ public abstract class Character : MonoBehaviour
 
                 if (target != null)
                 {
-                    int damage = DamageCalculation(target._def);
-                    if (target.Damage(damage))
+                    if (target.Damage(_atk + rotaryAttackData.addAtk, target._def))
                     {
                         ret += target._exp;
                     }
@@ -491,11 +528,12 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// ダメージ計算
     /// </summary>
-    /// <param name="def"></param>
+    /// <param name="atk"></param> 攻撃力
+    /// <param name="def"></param> 防御力
     /// <returns></returns>
-    private int DamageCalculation(int def)
+    private int DamageCalculation(int atk, int def)
     {
-        int ret = _atk - def;
+        int ret = atk - def;
         if(ret <= 0)
         {
             ret = 1;
@@ -507,9 +545,12 @@ public abstract class Character : MonoBehaviour
     /// ダメージを受ける
     /// </summary>
     /// <param name="damage"></param> ダメージ量
+    /// <param name="def"></param> ダメージに対する抵抗デフォルトは0
     /// <returns></returns> trueなら死亡
-    public bool Damage(int damage)
+    public bool Damage(int damage,int def = 0)
     {
+        damage = DamageCalculation(damage, def);
+
         _hp -= damage;
 
         string str = string.Format(_name + "は、{0:d}ダメージを受けた", damage);
@@ -598,12 +639,12 @@ public abstract class Character : MonoBehaviour
     {
         Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
 
-        var terrain = _dungeonManager._level.GetTerrainData(pos.x, pos.y);
-        if (terrain == Level.TerrainType.Event)
+        var terrain = _dungeonManager._floor.GetTerrainData(pos.x, pos.y);
+        if (terrain == Floor.TerrainType.Event)
         {
-            _dungeonManager._level.EventExecution(pos.x, pos.y, this);
+            _dungeonManager._floor.EventExecution(pos.x, pos.y, this);
         }
-        else if(terrain == Level.TerrainType.Item)
+        else if(terrain == Floor.TerrainType.Item)
         {
             PickUpItem(pos);
         }
@@ -616,7 +657,7 @@ public abstract class Character : MonoBehaviour
     {
         if (_itam == null)
         {
-            _itam = _dungeonManager._level.GetItemData(pos);
+            _itam = _dungeonManager._floor.GetItemData(pos);
             _itam.BePickedUp();
 
             UIManager.instance.AddText(_name + "は、" + _itam._name + "を拾った");
@@ -635,15 +676,15 @@ public abstract class Character : MonoBehaviour
         int sectionNo;
         do
         {
-            var sections = _dungeonManager._level._sections;
+            var sections = _dungeonManager._floor._sections;
             sectionNo = Random.Range(0, sections.Count);
             var room = sections[sectionNo]._roomData;
 
             pos = new Vector2Int(Random.Range(room.left, room.right + 1), -Random.Range(room.top, room.bottom + 1));
 
-            if (_dungeonManager._level.GetTerrainData(pos) == Level.TerrainType.Floor)
+            if (_dungeonManager._floor.GetTerrainData(pos) == Floor.TerrainType.Floor)
             {
-                if (_dungeonManager._level.GetCharacterData(pos) == -1)
+                if (_dungeonManager._floor.GetCharacterData(pos) == -1)
                 {
                     flag = false;
                 }
@@ -658,6 +699,6 @@ public abstract class Character : MonoBehaviour
         _action = Action.Non;
         _actEnd = false;
 
-        _dungeonManager._level.SetCharacterData(transform.position.x, transform.position.z, _id);
+        _dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, _id);
     }
 }

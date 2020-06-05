@@ -8,7 +8,7 @@ public class DungeonManager : Singleton<DungeonManager>
     /// <summary>
     /// 階層
     /// </summary>
-    public Level _level { get; private set; }
+    public Floor _floor { get; private set; }
 
     /// <summary>
     /// 何階層目か
@@ -49,8 +49,8 @@ public class DungeonManager : Singleton<DungeonManager>
         _pause = 0;
         _turnCount = 1;
         _player = Instantiate((GameObject)Resources.Load("Player")).GetComponent<Player>();
-        _level = Instantiate((GameObject)Resources.Load("Level")).GetComponent<Level>();
-        NextLevel();
+        _floor = Instantiate((GameObject)Resources.Load("Level")).GetComponent<Floor>();
+        NextFloor();
     }
 
     // Update is called once per frame
@@ -89,7 +89,7 @@ public class DungeonManager : Singleton<DungeonManager>
             //敵思考中
             case TurnControl.enemyThink:
                 bool thinkEnd = true;
-                foreach (var enemy in _level._enemies)
+                foreach (var enemy in _floor._enemies)
                 {
                     if (enemy != null)
                     {
@@ -110,7 +110,7 @@ public class DungeonManager : Singleton<DungeonManager>
             case TurnControl.enemyAct:
 
                 bool actEnd = true;
-                foreach (var enemy in _level._enemies)
+                foreach (var enemy in _floor._enemies)
                 {
                     if (enemy != null)
                     {
@@ -125,7 +125,7 @@ public class DungeonManager : Singleton<DungeonManager>
                 {
                     if (_turnCount % 5 == 0)
                     {
-                        _level.EnemyIncrease();
+                        _floor.EnemyIncrease();
                     }
 
                     _turnControl = TurnControl.playerThink;
@@ -142,10 +142,10 @@ public class DungeonManager : Singleton<DungeonManager>
     /// <summary>
     /// 次の階に進む
     /// </summary>
-    public void NextLevel()
+    public void NextFloor()
     {
         _hierarchy++;
-        _level.CreateLevel(new Vector2Int(50, 50), 10);
+        _floor.CreateFloor(new Vector2Int(50, 50), 10);
         _player.Spawn();
         _turnControl = TurnControl.playerThink;
 
