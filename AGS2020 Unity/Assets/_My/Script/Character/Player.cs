@@ -95,6 +95,11 @@ public class Player : Character
             return false;
         }
 
+        if (Input.GetButtonUp("L_Shoulder"))
+        {
+            UIManager.instance.GetSkillMenu().gameObject.SetActive(false);
+        }
+
         if (Input.GetButtonDown("Y_Button"))
         {
             UIManager.instance.OpenMenu();
@@ -291,6 +296,38 @@ public class Player : Character
         _nextLevelExp += 10;
         _atk++;
         _def++;
+
+        UIManager.instance.OpenLevelUpBonusPanel();
+    }
+
+    public void LevelUpBonus(LevelUpBonus bonus)
+    {
+        switch(bonus._bonusType)
+        {
+            case LevelUpBonusType.HpUp:
+                _maxHp += bonus._val;
+                break;
+            case LevelUpBonusType.CpUp:
+                _cpLimit += bonus._val;
+                break;
+            case LevelUpBonusType.AtkUp:
+                _atk += bonus._val;
+                break;
+            case LevelUpBonusType.DefUp:
+                _def += bonus._val;
+                break;
+            case LevelUpBonusType.Skill:
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void SetSkillSlot(int slotNo,int skillNo)
+    {
+        UIManager.instance.GetSkillMenu().SetSkill(slotNo, skillNo);
+        _skillAttackSlot[slotNo] = (SkillAttackType)skillNo;
+
     }
 
     new public void Spawn()

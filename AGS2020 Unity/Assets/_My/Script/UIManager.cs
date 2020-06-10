@@ -43,6 +43,9 @@ public class UIManager : Singleton<UIManager>
     [SerializeField]
     private SkillMenu _skillMenu;
 
+    [SerializeField]
+    private LevelUpBonu _levelUpBonus;
+
     private Stack<Menu> _menus;
 
     /// <summary>
@@ -93,6 +96,11 @@ public class UIManager : Singleton<UIManager>
     public void TextClear()
     {
         _texts = new Queue<string>();
+    }
+
+    public void OpenLevelUpBonusPanel()
+    {
+        _levelUpBonus.gameObject.SetActive(true);
     }
 
     /// <summary>
