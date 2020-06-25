@@ -29,7 +29,11 @@ MonoBehaviour:
       _val: 10
     - _bonusType: 2
       _val: 1
+    - _bonusType: 2
+      _val: 2
     - _bonusType: 3
       _val: 1
+    - _bonusType: 3
+      _val: 2
     - _bonusType: 4
       _val: 1

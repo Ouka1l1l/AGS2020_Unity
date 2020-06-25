@@ -115,9 +115,9 @@ public class Floor : MonoBehaviour
     /// <summary>
     /// 現在の部屋の区画番号を取得
     /// </summary>
-    /// <param name="x"></param> X座標
-    /// <param name="y"></param> Y座標
-    /// <returns></returns> 現在の部屋の区画番号 部屋の中ではない場合は-1
+    /// <param name="x"> X座標</param>
+    /// <param name="y"> Y座標</param>
+    /// <returns> 現在の部屋の区画番号 部屋の中ではない場合は-1</returns>
     public int GetRoomNo(int x,int y)
     {
         Vector2Int grid = DungeonManager.instance.GetGrid(x, y);
@@ -138,11 +138,11 @@ public class Floor : MonoBehaviour
     /// <summary>
     /// T型のデータを取得
     /// </summary>
-    /// <typeparam name="T"></typeparam> 取得したいデータの型
-    /// <param name="x"></param> 横の座標
-    /// <param name="y"></param> 縦の座標
-    /// <param name="dataList"></param> 取得したいデータの配列
-    /// <returns></returns> T型のデータ
+    /// <typeparam name="T"> 取得したいデータの型</typeparam>
+    /// <param name="x"> 横の座標</param>
+    /// <param name="y"> 縦の座標</param>
+    /// <param name="dataList"> 取得したいデータの配列</param>
+    /// <returns> T型のデータ</returns>
     private T GetData<T>(int x,int y,T[,] dataList)
     {
         var grid = DungeonManager.instance.GetGrid(x, y);
@@ -152,9 +152,9 @@ public class Floor : MonoBehaviour
     /// <summary>
     /// 地形情報を取得
     /// </summary>
-    /// <param name="x"></param> 横の座標
-    /// <param name="z"></param> 縦の座標
-    /// <returns></returns> 地形情報
+    /// <param name="x"> 横の座標</param>
+    /// <param name="z"> 縦の座標</param>
+    /// <returns> 地形情報</returns>
     public TerrainType GetTerrainData(int x,int y)
     {
         return GetData(x, y, _terrainData);

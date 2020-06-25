@@ -13,7 +13,7 @@ public class CP_RecoveryAgents : Item
 
         _type = ItemType.CP_RecoveryAgents;
         _name = "CP回復薬";
-        healValue = 10;
+        healValue = 30;
     }
 
     public override void Use(Character character)

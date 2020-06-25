@@ -7,16 +7,7 @@ using UnityEngine.UI;
 public class SkillMenu : MonoBehaviour
 {
     [SerializeField]
-    private Image[] _skillPanels = new Image[4];
-
-    [SerializeField]
-    private TextMeshProUGUI[] _skillNames = new TextMeshProUGUI[4];
-
-    [SerializeField]
-    private Image[] _skillIcons = new Image[4];
-
-    [SerializeField]
-    private TextMeshProUGUI[] _skillCosts = new TextMeshProUGUI[4];
+    private SkillPanel[] _skillPanels = new SkillPanel[4];
 
     private List<SkillAttack> _data;
 
@@ -43,9 +34,7 @@ public class SkillMenu : MonoBehaviour
         if (skillId > 0 && 4 > slotNo && slotNo >= 0)
         {
             _skillPanels[slotNo].gameObject.SetActive(true);
-            _skillNames[slotNo].text = _data[skillId].name;
-            _skillIcons[slotNo].sprite = _data[skillId].icon;
-            _skillCosts[slotNo].text = _data[skillId].cost.ToString();
+            _skillPanels[slotNo].SetSkill(_data[skillId]);
         }
         else
         {

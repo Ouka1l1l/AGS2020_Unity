@@ -47,11 +47,15 @@ public class Player : Character
 
         _skillAttackSlot = new SkillAttackType[4];
 
+        UIManager.instance.GetSkillMenu().SetSkill(0, (int)SkillAttackType.ThrustAttack);
         UIManager.instance.GetSkillMenu().SetSkill(1, (int)SkillAttackType.RotaryAttack);
         UIManager.instance.GetSkillMenu().SetSkill(2, (int)SkillAttackType.HeavyAttack);
+        UIManager.instance.GetSkillMenu().SetSkill(3, (int)SkillAttackType.MowDownAttack);
 
+        _skillAttackSlot[0] = SkillAttackType.ThrustAttack;
         _skillAttackSlot[1] = SkillAttackType.RotaryAttack;
         _skillAttackSlot[2] = SkillAttackType.HeavyAttack;
+        _skillAttackSlot[3] = SkillAttackType.MowDownAttack;
 
         _visibleRect = new Rect(2, 2, 2, 2);
 
@@ -213,6 +217,14 @@ public class Player : Character
                           SkillAttack = HeavyAttack;
                           break;
 
+                      case SkillAttackType.ThrustAttack:
+                          SkillAttack = ThrustAttack;
+                          break;
+
+                      case SkillAttackType.MowDownAttack:
+                          SkillAttack = MowDownAttack;
+                          break;
+
                       default:
                           Debug.LogError("技選択エラー" + skillAttackType);
                           break;
@@ -246,6 +258,8 @@ public class Player : Character
             {
                 ExpUp(exp);
             }
+
+            UIManager.instance.GetSkillMenu().gameObject.SetActive(false);
         }
     }
 
@@ -292,8 +306,9 @@ public class Player : Character
         _level++;
         UIManager.instance.AddText(_name + "は、レベル" + _level + "になった");
 
-        _maxHp += 10;
         _nextLevelExp += 10;
+        _maxHp += 10;
+        _cpLimit += 10;
         _atk++;
         _def++;
 
@@ -334,9 +349,9 @@ public class Player : Character
     {
         base.Spawn();
 
-        _dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, -1);
-
         ///////////デバック
+        ///_dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, -1);
+        //
         //Vector2Int pos = _dungeonManager._floor.staisPos;
         //pos.x++;
 

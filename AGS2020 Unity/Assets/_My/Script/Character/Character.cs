@@ -186,6 +186,9 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     public int _exp { get; protected set; } = 0;
 
+    /// <summary>
+    /// レベルアップに必要な経験値
+    /// </summary>
     public int _nextLevelExp { get; protected set; } = 100;
 
     /// <summary>
@@ -209,7 +212,9 @@ public abstract class Character : MonoBehaviour
     {
         Non,
         RotaryAttack,
-        HeavyAttack
+        HeavyAttack,
+        ThrustAttack,
+        MowDownAttack
     }
 
     /// <summary>
@@ -225,7 +230,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 待機アニメーションのハッシュ値
     /// </summary>
-    private int _idleHash;
+    protected int _idleHash;
 
     protected DungeonManager _dungeonManager;
 
@@ -441,88 +446,95 @@ public abstract class Character : MonoBehaviour
         return 0;
     }
 
-    protected int HeavyAttack()
+    private int SkillAttack(SkillAttackType skillType, List<Vector2Int> attackPosList)
     {
         _action = Action.SkillAttack;
 
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
 
-        _animator.SetTrigger("HeavyAttackTrigger");
+        var data = _skillAttackData[(int)skillType];
 
-        var heavyAttackData = _skillAttackData[(int)SkillAttackType.HeavyAttack];
+        UIManager.instance.AddText(_name + "の" + data.name);
 
-        UIManager.instance.AddText(_name + "の" + heavyAttackData.name);
-
-        CpAdd(heavyAttackData.cost);
-
-        Vector2Int frontPos = GetFrontPosition();
-        var characterNo = _dungeonManager._floor.GetCharacterData(frontPos);
-        if (characterNo != -1)
-        {
-            Character target;
-            if (characterNo == 0)
-            {
-                target = _dungeonManager._player;
-            }
-            else
-            {
-                target = _dungeonManager._floor._enemies[characterNo - 1];
-            }
-            if (target.Damage(_atk + heavyAttackData.addAtk, target._def))
-            {
-                return target._exp;
-            }
-        }
-
-        return 0;
-    }
-
-    protected int RotaryAttack()
-    {
-        _action = Action.SkillAttack;
-
-        _animator.SetTrigger("RotaryAttackTrigger");
-
-        var rotaryAttackData = _skillAttackData[(int)SkillAttackType.RotaryAttack];
-
-        UIManager.instance.AddText(_name + "の" + rotaryAttackData.name);
-
-        CpAdd(rotaryAttackData.cost);
+        CpAdd(data.cost);
 
         int ret = 0;
-
-        var characterData = _dungeonManager._floor.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);
-        foreach(var charData in characterData)
+        foreach (var attackPos in attackPosList)
         {
-            if (charData.Value != -1)
+            var characterNo = _dungeonManager._floor.GetCharacterData(attackPos);
+            if (characterNo != -1)
             {
-                Character target = null;
-                if (_id == 0)
+                Character target;
+                if (characterNo == 0)
                 {
-                    if (charData.Value > 0)
-                    {
-                        target = _dungeonManager._floor._enemies[charData.Value - 1];
-                    }
+                    target = _dungeonManager._player;
                 }
                 else
                 {
-                    if (charData.Value == 0)
-                    {
-                        target = _dungeonManager._player;
-                    }
+                    target = _dungeonManager._floor._enemies[characterNo - 1];
                 }
-
-                if (target != null)
+                if (target.Damage(_atk + data.addAtk, target._def))
                 {
-                    if (target.Damage(_atk + rotaryAttackData.addAtk, target._def))
-                    {
-                        ret += target._exp;
-                    }
+                    ret += target._exp;
                 }
             }
         }
 
         return ret;
+    }
+
+    protected int HeavyAttack()
+    {
+        _animator.SetTrigger("HeavyAttackTrigger");
+
+        List<Vector2Int> attackPosList = new List<Vector2Int>();
+        attackPosList.Add(GetFrontPosition());
+
+        return SkillAttack(SkillAttackType.HeavyAttack, attackPosList);
+    }
+
+    protected int RotaryAttack()
+    {
+        _animator.SetTrigger("RotaryAttackTrigger");
+
+        Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
+
+        List<Vector2Int> attackPosList = new List<Vector2Int>();
+        var dir = _dir;
+        for (int i = 0; i < _dir.Max(); i++)
+        {
+            attackPosList.Add(pos + dir.ToVector2Int());
+            dir = dir.Addition();
+        }
+
+        return SkillAttack(SkillAttackType.RotaryAttack, attackPosList);
+    }
+
+    protected int ThrustAttack()
+    {
+        _animator.SetTrigger("HeavyAttackTrigger");
+
+        Vector2Int frontPos = GetFrontPosition();
+
+        List<Vector2Int> attackPosList = new List<Vector2Int>();
+        attackPosList.Add(frontPos);
+        attackPosList.Add(frontPos + _dir.ToVector2Int());
+
+        return SkillAttack(SkillAttackType.ThrustAttack, attackPosList);
+    }
+
+    protected int MowDownAttack()
+    {
+        _animator.SetTrigger("HeavyAttackTrigger");
+
+        Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
+
+        List<Vector2Int> attackPosList = new List<Vector2Int>();
+        attackPosList.Add(pos + _dir.Subtraction().ToVector2Int());
+        attackPosList.Add(GetFrontPosition());
+        attackPosList.Add(pos + _dir.Addition().ToVector2Int());
+
+        return SkillAttack(SkillAttackType.MowDownAttack, attackPosList);
     }
 
     /// <summary>

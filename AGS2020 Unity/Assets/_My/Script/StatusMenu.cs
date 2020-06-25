@@ -7,35 +7,38 @@ using UnityEngine.UI;
 public class StatusMenu : Menu
 {
     [SerializeField]
-    private TextMeshProUGUI _levelText;
-
-    [SerializeField]
-    private TextMeshProUGUI _expText;
-
-    [SerializeField]
-    private Slider _expSlider;
-
-    [SerializeField]
     private TextMeshProUGUI _AtkText;
 
     [SerializeField]
     private TextMeshProUGUI _DefText;
 
+    [SerializeField]
+    private List<SkillPanel> _skillPanels = new List<SkillPanel>(4);
+
+    private List<SkillAttack> _data;
+
+    private void Awake()
+    {
+        _data = Resources.Load<SkillAttackData>("ScriptableObject/SkillAttackData").skillAttackData;
+    }
+
     // Start is called before the first frame update
     new void Start()
     {
-        _expSlider.minValue = 0;
-
-        _levelText.text = "";
-        _expText.text = "";
         _AtkText.text = "";
         _DefText.text = "";
-
     }
 
     new protected void OnEnable()
     {
         DungeonManager.instance.PauseStart();
+
+        var player = DungeonManager.instance._player;
+
+        for (int i = 0; i < _skillPanels.Count; i++)
+        {
+            _skillPanels[i].SetSkill(_data[(int)player._skillAttackSlot[i]]);
+        }
     }
 
     // Update is called once per frame
@@ -47,13 +50,6 @@ public class StatusMenu : Menu
         }
 
         var player = DungeonManager.instance._player;
-
-        _levelText.text = player._level.ToString();
-
-        _expText.text = player._exp.ToString();
-
-        _expSlider.maxValue = player._nextLevelExp;
-        _expSlider.value = player._exp;
 
         _AtkText.text = player._atk.ToString();
 

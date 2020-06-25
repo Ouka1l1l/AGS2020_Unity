@@ -91,6 +91,11 @@ public abstract class Enemy : Character
             return true;
         }
 
+        if(_idleHash != _animator.GetCurrentAnimatorStateInfo(0).fullPathHash)
+        {
+            return false;
+        }
+
         if (_itam != null)
         {
             if (Random.Range(0, 100) < 20)

@@ -25,13 +25,26 @@ public class LevelUpBonu : MonoBehaviour
 
     private int _level;
 
-    private bool skillSet;
+    private bool _skillSet;
 
+    [SerializeField]
+    private SkillPanel _skillPanel;
+
+    /// <summary>
+    /// レベルアップボーナスのテーブル
+    /// </summary>
     private List<LevelUpBonusData> _levelUpBonusTable;
+
+    /// <summary>
+    /// スキル攻撃のデータ
+    /// </summary>
+    private List<SkillAttack> _skillData;
 
     private void Awake()
     {
         _levelUpBonusTable = Resources.Load<LevelUpBonusTable>("ScriptableObject/LevelUpBonusTable").levelUpBonusTable;
+
+        _skillData = Resources.Load<SkillAttackData>("ScriptableObject/SkillAttackData").skillAttackData;
 
         _level = 1;
     }
@@ -47,14 +60,15 @@ public class LevelUpBonu : MonoBehaviour
 
         _level++;
 
-        skillSet = false;
+        _skillSet = false;
+        _skillPanel.gameObject.SetActive(false);
 
         _oldHorizontal = Input.GetAxis("Horizontal");
         _choice = 0;
 
         _levelUpBonus = new List<LevelUpBonus>();
 
-        var levelUpBonusData = _levelUpBonusTable[(_level / 5)].levelUpBonus;
+        var levelUpBonusData = ChoiceLevelUpBonus();
         for (int i = 0; i < _texts.Count; i++)
         {
             int r;
@@ -65,9 +79,24 @@ public class LevelUpBonu : MonoBehaviour
                 r = Random.Range(0, levelUpBonusData.Count);
                 foreach (var l in _levelUpBonus)
                 {
-                    if (l._bonusType == levelUpBonusData[r]._bonusType)
+                    var data = levelUpBonusData[r];
+                    if (l._bonusType == data._bonusType)
                     {
                         flag = true;
+                    }
+                    else
+                    {
+                        if(data._bonusType == LevelUpBonusType.Skill)
+                        {
+                            foreach(var slot in _player._skillAttackSlot)
+                            {
+                                if(data._val == (int)slot)
+                                {
+                                    flag = true;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -76,6 +105,16 @@ public class LevelUpBonu : MonoBehaviour
             _levelUpBonus.Add(levelUpBonusData[r]);
             _texts[i].text = BonusText(levelUpBonusData[r]);
         }
+    }
+
+    private List<LevelUpBonus> ChoiceLevelUpBonus()
+    {
+        int index = _level / 5;
+        if (index >= _levelUpBonusTable.Count)
+        {
+            index = _levelUpBonusTable.Count - 1;
+        }
+        return _levelUpBonusTable[index].levelUpBonus;
     }
 
     private void OnDisable()
@@ -106,6 +145,7 @@ public class LevelUpBonu : MonoBehaviour
                 text = "防御力\n";
                 break;
             case LevelUpBonusType.Skill:
+                text = _skillData[levelUpBonus._val].name;
                 break;
             default:
                 break;
@@ -122,7 +162,7 @@ public class LevelUpBonu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(skillSet)
+        if(_skillSet)
         {
             SkillSet();
             return;
@@ -167,8 +207,10 @@ public class LevelUpBonu : MonoBehaviour
         }
         else
         {
-            UIManager.instance.GetSkillMenu().gameObject.SetActive(false);
-            skillSet = true;
+            UIManager.instance.GetSkillMenu().gameObject.SetActive(true);
+            _skillPanel.gameObject.SetActive(true);
+            _skillPanel.SetSkill(_skillData[_levelUpBonus[_choice]._val]);
+            _skillSet = true;
         }
     }
 
@@ -195,6 +237,8 @@ public class LevelUpBonu : MonoBehaviour
         if(slotNo != -1)
         {
             _player.SetSkillSlot(slotNo, _levelUpBonus[_choice]._val);
+            UIManager.instance.GetSkillMenu().gameObject.SetActive(false);
+            _skillPanel.gameObject.SetActive(false);
             gameObject.SetActive(false);
         }
     }
