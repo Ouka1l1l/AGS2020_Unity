@@ -7,7 +7,7 @@ public class MedicalBox : Item
     private int healValue;
 
     // Start is called before the first frame update
-    new void Start()
+    protected override void Start()
     {
         base.Start();
 

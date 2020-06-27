@@ -21,7 +21,7 @@ public static class DirEnumExtension
 {
     public static Vector2Int ToVector2Int(this Dir dir)
     {
-        Vector2Int ret = new Vector2Int(); ;
+        Vector2Int ret = new Vector2Int();
         switch (dir)
         {
             case Dir.Top:
@@ -164,7 +164,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 自身の向き
     /// </summary>
-    protected Dir _dir;
+    public Dir _dir { get; protected set; }
 
     /// <summary>
     /// 体力

@@ -184,7 +184,7 @@ public class Floor : MonoBehaviour
     }
     public int GetCharacterData(float x, float y)
     {
-        return GetData((int)y, (int)x, _characterData);
+        return GetData((int)x, (int)y, _characterData);
     }
 
     /// <summary>
@@ -792,15 +792,14 @@ public class Floor : MonoBehaviour
             Item.SetPos(pos.x, pos.y);
             _itemData[grid.y, grid.x] = Item;
         }
-        //int roomNo;
-        //var pos = GetRandomFloorPos(out roomNo);
-        //pos = new Vector2Int(staisPos.x, staisPos.y - 1);
-        //var grid = DungeonManager.instance.GetGrid(pos);
 
-        //_terrainData[grid.y, grid.x] = TerrainType.Item;
-        //var Portion = Instantiate((GameObject)Resources.Load("CP")).GetComponent<Item>();
-        //Portion.SetPos(pos.x, pos.y);
-        //_itemData[grid.y, grid.x] = Portion;
+        var tpos = new Vector2Int(staisPos.x, staisPos.y - 1);
+        var tgrid = DungeonManager.instance.GetGrid(tpos);
+
+        _terrainData[tgrid.y, tgrid.x] = TerrainType.Item;
+        var Portion = Instantiate((GameObject)Resources.Load("WoodNeedle")).GetComponent<Item>();
+        Portion.SetPos(tpos.x, tpos.y);
+        _itemData[tgrid.y, tgrid.x] = Portion;
     }
 
     /// <summary>

@@ -11,7 +11,8 @@ public abstract class Item : MonoBehaviour
     public enum ItemType
     {
         MedicalBox,
-        CP_RecoveryAgents
+        CP_RecoveryAgents,
+        WoodNeedle
     }
 
     /// <summary>
@@ -27,10 +28,10 @@ public abstract class Item : MonoBehaviour
     /// <summary>
     /// レンダラー
     /// </summary>
-    private Renderer[] _renderers;
+    protected Renderer[] _renderers;
 
     // Start is called before the first frame update
-    protected void Start()
+    protected virtual void Start()
     {
         _renderers = GetComponentsInChildren<Renderer>();
     }
@@ -68,9 +69,9 @@ public abstract class Item : MonoBehaviour
     /// <param name="pos"></param> 座標
     public void Drop(Vector2Int pos)
     {
-        var level = DungeonManager.instance._floor;
+        var floor = DungeonManager.instance._floor;
 
-        var surroundingTerrainData = level.GetSurroundingTerrainData(pos.x, pos.y, 1, 1);
+        var surroundingTerrainData = floor.GetSurroundingTerrainData(pos.x, pos.y, 1, 1);
 
         Func<Vector2Int, bool> DropCheck = (Vector2Int offset) =>
         {
@@ -81,9 +82,12 @@ public abstract class Item : MonoBehaviour
                 {
                     renderer.enabled = true;
                 }
-                StartCoroutine(DropMove(pos + offset));
-                level.SetTerrainData(pos + offset, Floor.TerrainType.Item);
-                level.SetItemData(pos + offset, this);
+                if (offset != Vector2Int.zero)
+                {
+                    StartCoroutine(DropMove(pos + offset));
+                }
+                floor.SetTerrainData(pos + offset, Floor.TerrainType.Item);
+                floor.SetItemData(pos + offset, this);
 
                 return true;
             }
