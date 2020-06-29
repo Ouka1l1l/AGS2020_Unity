@@ -30,6 +30,6 @@ MonoBehaviour:
     cost: 10
     addAtk: 5
   - name: "\u8599\u304E\u6255\u3044"
-    icon: {fileID: 21300000, guid: b363adfa4fe4be74fba503888ee678e9, type: 3}
+    icon: {fileID: 21300000, guid: b27bcc55849d1ff4db445d55330dacbd, type: 3}
     cost: 10
     addAtk: 5
