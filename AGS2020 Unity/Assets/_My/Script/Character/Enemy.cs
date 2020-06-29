@@ -9,7 +9,7 @@ public abstract class Enemy : Character
     /// </summary>
     public enum EnemyType
     {
-        TestEnemy,
+        Slime,
         Max
     }
 
@@ -58,7 +58,7 @@ public abstract class Enemy : Character
         _renderers = GetComponentsInChildren<Renderer>();
 
         var enemyStatus = Resources.Load<EnemyData>("ScriptableObject/EnemyData").enemyData[(int)_enemyType];
-        _name = enemyStatus.name;
+        _name = "<color=#0000ff>" + enemyStatus.name + "</color>";
         _hp = _maxHp = enemyStatus.maxHp;
         _atk = enemyStatus.atk;
         _def = enemyStatus.def;

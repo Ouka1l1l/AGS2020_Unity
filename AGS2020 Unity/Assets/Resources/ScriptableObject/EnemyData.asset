@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EnemyData
   m_EditorClassIdentifier: 
   enemyData:
-  - name: "\u6575"
+  - name: "\u30B9\u30E9\u30A4\u30E0"
     maxHp: 100
     atk: 10
     def: 5

@@ -39,7 +39,7 @@ public class Player : Character
 
         _type = CharacterType.Player;
         _id = 0;
-        _name = "プレイヤー";
+        _name = "<color=#ffff00>プレイヤー</color>";
 
         _itemList = new List<Item>();
 

@@ -4,12 +4,21 @@ using UnityEngine;
 
 public abstract class ThrowingItem : Item
 {
+    private Quaternion _defRotation;
+
     private const int _throwingDistance = 5;
 
     /// <summary>
     /// ダメージ量
     /// </summary>
     protected int _damageVal;
+
+    protected override void Start()
+    {
+        _defRotation = transform.rotation;
+
+        base.Start();
+    }
 
     public override void Use(Character character)
     {
@@ -111,6 +120,8 @@ public abstract class ThrowingItem : Item
         {
             //地面に落とす
             Drop(transform.position.x, transform.position.z);
+
+            transform.rotation = _defRotation;
         }
 
         DungeonManager.instance.PauseEnd();

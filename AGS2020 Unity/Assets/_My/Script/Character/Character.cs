@@ -565,7 +565,7 @@ public abstract class Character : MonoBehaviour
 
         _hp -= damage;
 
-        string str = string.Format(_name + "は、{0:d}ダメージを受けた", damage);
+        string str = string.Format(_name + "は、<color=#ff0000>{0:d}ダメージ</color>を受けた", damage);
         UIManager.instance.AddText(str);
 
         _animator.SetTrigger("DamageTrigger");
