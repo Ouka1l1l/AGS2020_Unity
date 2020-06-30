@@ -149,7 +149,7 @@ public class Player : Character
         }
     }
 
-    protected override bool Move()
+    public override bool Move()
     {
         if(base.Move())
         {

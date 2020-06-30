@@ -149,8 +149,6 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected Action _action;
 
-    protected bool _actEnd;
-
     /// <summary>
     /// 現在いるの部屋の区画番号 部屋にいない場合は-1
     /// </summary>
@@ -273,49 +271,18 @@ public abstract class Character : MonoBehaviour
     /// <returns></returns> true 行動終了
     public bool Act()
     {
-        if (_actEnd)
+        if (_idleHash == _animator.GetCurrentAnimatorStateInfo(0).fullPathHash)
         {
-            if (_idleHash == _animator.GetCurrentAnimatorStateInfo(0).fullPathHash)
+            _action = Action.Non;
+
+            if (_trailRenderer != null)
             {
-                _action = Action.Non;
-                _actEnd = false;
-
-                if (_trailRenderer != null)
-                {
-                    _trailRenderer.emitting = false;
-                }
-
-                return true;
+                _trailRenderer.emitting = false;
             }
 
-            return false;
+            return true;
         }
 
-        switch(_action)
-        {
-            case Action.Wait:
-                _actEnd = true;
-                break;
-
-            case Action.Move:
-                _actEnd = Move();
-                break;
-
-            case Action.Attack:
-            case Action.SkillAttack:
-                _actEnd = true;
-                break;
-
-            case Action.Item:
-                _actEnd = true;
-                break;
-
-            default:
-                Debug.LogError(_name + "Actエラー" + _action);
-                _actEnd = true;
-                break;
-        }
-        
         return false;
     }
 
@@ -379,9 +346,15 @@ public abstract class Character : MonoBehaviour
         {
             if (level.GetCharacterData(tmpDestination) == -1)
             {
+                //移動先を設定
                 _destination = new Vector3(tmpDestination.x, _destination.y, tmpDestination.y);
+
+                //キャラの配置データを更新
                 level.SetCharacterData(transform.position.x, transform.position.z, -1);
                 _dungeonManager._floor.SetCharacterData(tmpDestination.x, tmpDestination.y, _id);
+
+                //現在の部屋番号を更新
+                _roomNo = _dungeonManager._floor.GetRoomNo(tmpDestination.x, tmpDestination.y);
 
                 _action = Action.Move;
 
@@ -397,14 +370,19 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 移動する
     /// </summary>
-    protected virtual bool Move()
+    public virtual bool Move()
     {
+        if(!_animator.GetBool("MoveFlag"))
+        {
+            return true;
+        }
+
         transform.position = Vector3.MoveTowards(transform.position, _destination, Time.deltaTime * 5.0f);
         if (_destination == transform.position)
         {
             _animator.SetBool("MoveFlag", false);
 
-            _roomNo = _dungeonManager._floor.GetRoomNo(transform.position.x, transform.position.z);
+            //足元のイベントを実行
             FootExecution();
 
             return true;
@@ -727,7 +705,6 @@ public abstract class Character : MonoBehaviour
         _roomNo = sectionNo;
 
         _action = Action.Non;
-        _actEnd = false;
 
         _dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, _id);
     }

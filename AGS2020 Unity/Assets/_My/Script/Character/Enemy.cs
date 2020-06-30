@@ -24,11 +24,6 @@ public abstract class Enemy : Character
     protected bool _thinkEnd;
 
     /// <summary>
-    /// 行動終了フラグ
-    /// </summary>
-    protected bool _actEnd;
-
-    /// <summary>
     /// 検知範囲
     /// </summary>
     protected Vector2Int _detectionRange;
@@ -53,7 +48,6 @@ public abstract class Enemy : Character
         _type = CharacterType.Enemy;
 
         _thinkEnd = false;
-        _actEnd = false;
 
         _renderers = GetComponentsInChildren<Renderer>();
 
@@ -195,7 +189,6 @@ public abstract class Enemy : Character
     protected void ThinkEnd()
     {
         _thinkEnd = true;
-        _actEnd = false;
     }
 
     /// <summary>
@@ -254,11 +247,6 @@ public abstract class Enemy : Character
 
     new public bool Act()
     {
-        if(_actEnd)
-        {
-            return true;
-        }
-
         if(base.Act())
         {
             ActEnd();
@@ -270,7 +258,6 @@ public abstract class Enemy : Character
 
     private void ActEnd()
     {
-        _actEnd = true;
         _thinkEnd = false;
     }
 

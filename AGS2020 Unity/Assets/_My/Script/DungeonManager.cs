@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -23,20 +24,14 @@ public class DungeonManager : Singleton<DungeonManager>
     public int _turnCount { get; private set; }
 
     /// <summary>
-    /// ターン制御用enum
+    /// ターン制御用
     /// </summary>
-    enum TurnControl
-    {
-        playerThink,
-        playetAct,
-        enemyThink,
-        enemyAct
-    }
+    Action TurncController;
 
     /// <summary>
-    /// ターン制御用変数
+    /// 行動中の敵
     /// </summary>
-    TurnControl _turnControl;
+    int _actingEnemyNo = 0;
 
     /// <summary>
     /// ポーズフラグ
@@ -67,76 +62,116 @@ public class DungeonManager : Singleton<DungeonManager>
         }
 
         //ターン制御
-        switch(_turnControl)
+        TurncController();
+    }
+
+    /// <summary>
+    /// プレイヤー行動決定
+    /// </summary>
+    private void PlayerThink()
+    {
+        if(_player.Think())
         {
-            //プレイヤー思考待ち
-            case TurnControl.playerThink:
-                if(_player.Think())
-                {
-                    _turnControl = TurnControl.playetAct;
-                }
-                break;
-
-            //プレイヤー行動中
-            case TurnControl.playetAct:
-                if(_player.Act())
-                {
-                    _player.ActEnd(_turnCount);
-                    _turnControl = TurnControl.enemyThink;
-                }
-                break;
-
-            //敵思考中
-            case TurnControl.enemyThink:
-                bool thinkEnd = true;
-                foreach (var enemy in _floor._enemies)
-                {
-                    if (enemy != null)
-                    {
-                        if (!enemy.Think())
-                        {
-                            thinkEnd = false;
-                        }
-                    }
-                }
-
-                if (thinkEnd)
-                {
-                    _turnControl = TurnControl.enemyAct;
-                }
-                break;
-
-            //敵行動中
-            case TurnControl.enemyAct:
-
-                bool actEnd = true;
-                foreach (var enemy in _floor._enemies)
-                {
-                    if (enemy != null)
-                    {
-                        if (!enemy.Act())
-                        {
-                            actEnd = false;
-                        }
-                    }
-                }
-
-                if(actEnd)
-                {
-                    if (_turnCount % 5 == 0)
-                    {
-                        _floor.EnemyIncrease();
-                    }
-
-                    _turnControl = TurnControl.playerThink;
-                    _turnCount++;
-                }
-                break;
-
-            default:
-                Debug.LogError("ターンエラー" + _turnControl);
-                break;
+            TurncController = EnemyThink;
         }
+    }
+
+    /// <summary>
+    /// 敵行動決定
+    /// </summary>
+    private void EnemyThink()
+    {
+        bool thinkEnd = true;
+        foreach (var enemy in _floor._enemies)
+        {
+            if (enemy != null)
+            {
+                if (!enemy.Think())
+                {
+                    thinkEnd = false;
+                }
+            }
+        }
+
+        if(thinkEnd)
+        {
+            TurncController = Move;
+            _actingEnemyNo = 0;
+        }
+    }
+
+    /// <summary>
+    /// 移動
+    /// </summary>
+    private void Move()
+    {
+        bool moveEnd;
+        moveEnd = _player.Move();
+        foreach (var enemy in _floor._enemies)
+        {
+            if (enemy != null)
+            {
+                if (!enemy.Move())
+                {
+                    moveEnd = false;
+                }
+            }
+        }
+
+        if(moveEnd)
+        {
+            TurncController = PlayerAct;
+        }
+    }
+
+    /// <summary>
+    /// プレイヤーの行動
+    /// </summary>
+    private void PlayerAct()
+    {
+        if(_player.Act())
+        {
+            TurncController = EnemyAct;
+        }
+    }
+
+    /// <summary>
+    /// 敵の行動
+    /// </summary>
+    private void EnemyAct()
+    {
+        var enemies = _floor._enemies;
+        if (enemies[_actingEnemyNo] != null)
+        {
+            if(enemies[_actingEnemyNo].Act())
+            {
+                _actingEnemyNo++;
+            }
+        }
+        else
+        {
+            _actingEnemyNo++;
+        }
+
+        if(_actingEnemyNo >= enemies.Count)
+        {
+            TurncController = TurnEnd;
+        }
+    }
+
+    /// <summary>
+    /// ターン終了時の処理
+    /// </summary>
+    private void TurnEnd()
+    {
+        if (_turnCount % 5 == 0)
+        {
+            _floor.EnemyIncrease();
+        }
+
+        _turnCount++;
+
+        TurncController = PlayerThink;
     }
 
     /// <summary>
@@ -147,7 +182,7 @@ public class DungeonManager : Singleton<DungeonManager>
         _hierarchy++;
         _floor.CreateFloor(new Vector2Int(50, 50), 10);
         _player.Spawn();
-        _turnControl = TurnControl.playerThink;
+        TurncController = PlayerThink;
 
         UIManager.instance.WhatFloor(_hierarchy);
         UIManager.instance.TextClear();
