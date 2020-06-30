@@ -228,6 +228,11 @@ public abstract class Character : MonoBehaviour
     protected Animator _animator;
 
     /// <summary>
+    /// スキル攻撃エフェクト
+    /// </summary>
+    private TrailRenderer _trailRenderer;
+
+    /// <summary>
     /// 待機アニメーションのハッシュ値
     /// </summary>
     protected int _idleHash;
@@ -251,6 +256,8 @@ public abstract class Character : MonoBehaviour
 
         _animator = GetComponent<Animator>();
 
+        _trailRenderer = transform.GetComponentInChildren<TrailRenderer>();
+
         _idleHash = Animator.StringToHash("Base Layer.アーマチュア|Idle");
     }
 
@@ -272,6 +279,12 @@ public abstract class Character : MonoBehaviour
             {
                 _action = Action.Non;
                 _actEnd = false;
+
+                if (_trailRenderer != null)
+                {
+                    _trailRenderer.emitting = false;
+                }
+
                 return true;
             }
 
@@ -448,6 +461,11 @@ public abstract class Character : MonoBehaviour
 
     private int SkillAttack(SkillAttackType skillType, List<Vector2Int> attackPosList)
     {
+        if (_trailRenderer != null)
+        {
+            _trailRenderer.emitting = true;
+        }
+
         _action = Action.SkillAttack;
 
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
