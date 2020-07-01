@@ -245,18 +245,7 @@ public abstract class Enemy : Character
         return false;
     }
 
-    new public bool Act()
-    {
-        if(base.Act())
-        {
-            ActEnd();
-            return true;
-        }
-
-        return false;
-    }
-
-    private void ActEnd()
+    protected override void ActEnd()
     {
         _thinkEnd = false;
     }

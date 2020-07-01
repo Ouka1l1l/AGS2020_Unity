@@ -71,6 +71,7 @@ public class Player : Character
 
         if (Input.GetButton("R_Shoulder"))
         {
+            //移動せずに方向だけ変更
             _arrow.SetActive(true);
             Dir dir;
             if (GetInputDir(out dir))
@@ -90,28 +91,33 @@ public class Player : Character
 
         if (Input.GetButtonDown("L_Shoulder"))
         {
+            //スキル攻撃メニューを表示
             UIManager.instance.GetSkillMenu().gameObject.SetActive(true);
         }
 
         if(Input.GetButton("L_Shoulder"))
         {
+            //スキル攻撃
             SkillAttackChoice();
             return false;
         }
 
         if (Input.GetButtonUp("L_Shoulder"))
         {
+            //スキル攻撃メニューを非表示
             UIManager.instance.GetSkillMenu().gameObject.SetActive(false);
         }
 
         if (Input.GetButtonDown("Y_Button"))
         {
+            //メニューを開く
             UIManager.instance.OpenMenu();
             return false;
         }
 
         if (Input.GetButtonDown("B_Button"))
         {
+            //攻撃
             int exp = Attack();
             if (exp > 0)
             {
@@ -121,9 +127,11 @@ public class Player : Character
         }
         else
         {
+            //移動方向の入力
             Dir dir;
             if (GetInputDir(out dir))
             {
+                //移動先の設定
                 SetDestination(dir);
             }
         }
@@ -131,17 +139,9 @@ public class Player : Character
         return false;
     }
 
-    new public bool Act()
+    protected override void ActEnd()
     {
-        return base.Act();
-    }
-
-    public void ActEnd(int turnCount)
-    {
-        if((turnCount % 1) == 0)
-        {
-            CpAdd(1);
-        }
+        CpAdd(1);
 
         if(_cp < _cpLimit)
         {
@@ -278,7 +278,7 @@ public class Player : Character
     /// <summary>
     /// アイテムを使用
     /// </summary>
-    /// <param name="index"></param> 使用するアイテムの番号
+    /// <param name="index"> 使用するアイテムの番号</param>
     public void UseItem(int index)
     {
         _itemList[index].Use(this);
@@ -291,6 +291,10 @@ public class Player : Character
         _action = Action.Move;
     }
 
+    /// <summary>
+    /// 経験値を増加
+    /// </summary>
+    /// <param name="exp"></param>
     private void ExpUp(int exp)
     {
         _exp += exp;

@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 /// <summary>
 /// 方向
@@ -268,12 +270,14 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 行動を実行する
     /// </summary>
-    /// <returns></returns> true 行動終了
+    /// <returns> true 行動終了</returns>
     public bool Act()
     {
         if (_idleHash == _animator.GetCurrentAnimatorStateInfo(0).fullPathHash)
         {
             _action = Action.Non;
+
+            ActEnd();
 
             if (_trailRenderer != null)
             {
@@ -287,9 +291,14 @@ public abstract class Character : MonoBehaviour
     }
 
     /// <summary>
+    /// 行動終了時の処理
+    /// </summary>
+    protected abstract void ActEnd();
+
+    /// <summary>
     /// 正面の座標を取得
     /// </summary>
-    /// <returns></returns> 正面の座標
+    /// <returns> 正面の座標</returns>
     protected Vector2Int GetFrontPosition()
     {
         Vector2Int ret = new Vector2Int((int)transform.position.x, (int)transform.position.z);
@@ -302,8 +311,8 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 自身から見てターゲットはどの方向にいるか
     /// </summary>
-    /// <param name="targetPos"></param> ターゲットの座標
-    /// <returns></returns> 自身から見たターゲットの方向
+    /// <param name="targetPos"> ターゲットの座標</param>
+    /// <returns> 自身から見たターゲットの方向</returns>
     protected Dir GetTargetDir(Vector3 targetPos)
     {
         Vector2Int vec = new Vector2Int((int)(targetPos.x - transform.position.x), (int)(targetPos.z - transform.position.z));
@@ -333,25 +342,25 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 移動先の設定
     /// </summary>
-    /// <param name="dir"></param> 移動方向
+    /// <param name="dir"> 移動方向</param>
     protected bool SetDestination(Dir dir)
     {
         _dir = dir;
         Vector2Int tmpDestination = GetFrontPosition();
 
-        var level = _dungeonManager._floor;
+        var floor = _dungeonManager._floor;
 
         transform.rotation = Quaternion.Euler(0, (float)dir, 0);
-        if (level.GetTerrainData(tmpDestination) != Floor.TerrainType.Wall)
+        if (floor.GetTerrainData(tmpDestination) != Floor.TerrainType.Wall)
         {
-            if (level.GetCharacterData(tmpDestination) == -1)
+            if (floor.GetCharacterData(tmpDestination) == -1)
             {
                 //移動先を設定
                 _destination = new Vector3(tmpDestination.x, _destination.y, tmpDestination.y);
 
                 //キャラの配置データを更新
-                level.SetCharacterData(transform.position.x, transform.position.z, -1);
-                _dungeonManager._floor.SetCharacterData(tmpDestination.x, tmpDestination.y, _id);
+                floor.SetCharacterData(transform.position.x, transform.position.z, -1);
+                floor.SetCharacterData(tmpDestination.x, tmpDestination.y, _id);
 
                 //現在の部屋番号を更新
                 _roomNo = _dungeonManager._floor.GetRoomNo(tmpDestination.x, tmpDestination.y);
@@ -394,7 +403,6 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// アイテムを使う
     /// </summary>
-    /// <returns></returns>
     protected void UseItem()
     {
         _itam.Use(this);
@@ -404,7 +412,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 攻撃する
     /// </summary>
-    /// <returns></returns> 経験値
+    /// <returns> 獲得経験値</returns>
     protected int Attack()
     {
         _action = Action.Attack;
@@ -437,6 +445,12 @@ public abstract class Character : MonoBehaviour
         return 0;
     }
 
+    /// <summary>
+    /// スキル攻撃
+    /// </summary>
+    /// <param name="skillType"> スキル攻撃のタイプ</param>
+    /// <param name="attackPosList"> 攻撃範囲</param>
+    /// <returns> 獲得経験値</returns>
     private int SkillAttack(SkillAttackType skillType, List<Vector2Int> attackPosList)
     {
         if (_trailRenderer != null)
@@ -479,6 +493,10 @@ public abstract class Character : MonoBehaviour
         return ret;
     }
 
+    /// <summary>
+    /// 強攻撃
+    /// </summary>
+    /// <returns> 獲得経験値</returns>
     protected int HeavyAttack()
     {
         _animator.SetTrigger("HeavyAttackTrigger");
@@ -489,6 +507,10 @@ public abstract class Character : MonoBehaviour
         return SkillAttack(SkillAttackType.HeavyAttack, attackPosList);
     }
 
+    /// <summary>
+    /// 回転攻撃
+    /// </summary>
+    /// <returns> 獲得経験値</returns>
     protected int RotaryAttack()
     {
         _animator.SetTrigger("RotaryAttackTrigger");
@@ -506,6 +528,10 @@ public abstract class Character : MonoBehaviour
         return SkillAttack(SkillAttackType.RotaryAttack, attackPosList);
     }
 
+    /// <summary>
+    /// 突き攻撃
+    /// </summary>
+    /// <returns> 獲得経験値</returns>
     protected int ThrustAttack()
     {
         _animator.SetTrigger("HeavyAttackTrigger");
@@ -519,6 +545,10 @@ public abstract class Character : MonoBehaviour
         return SkillAttack(SkillAttackType.ThrustAttack, attackPosList);
     }
 
+    /// <summary>
+    /// 薙ぎ払い攻撃
+    /// </summary>
+    /// <returns> 獲得経験値</returns>
     protected int MowDownAttack()
     {
         _animator.SetTrigger("HeavyAttackTrigger");
@@ -536,9 +566,9 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// ダメージ計算
     /// </summary>
-    /// <param name="atk"></param> 攻撃力
-    /// <param name="def"></param> 防御力
-    /// <returns></returns>
+    /// <param name="atk"> 攻撃力</param>
+    /// <param name="def"> 防御力</param>
+    /// <returns> ダメージ量</returns>
     private int DamageCalculation(int atk, int def)
     {
         int ret = atk - def;
@@ -552,9 +582,9 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// ダメージを受ける
     /// </summary>
-    /// <param name="damage"></param> ダメージ量
-    /// <param name="def"></param> ダメージに対する抵抗デフォルトは0
-    /// <returns></returns> trueなら死亡
+    /// <param name="damage"> ダメージ量</param>
+    /// <param name="def"> ダメージに対する抵抗デフォルトは0</param>
+    /// <returns> trueなら死亡</returns>
     public bool Damage(int damage,int def = 0)
     {
         damage = DamageCalculation(damage, def);
