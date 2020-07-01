@@ -72,12 +72,34 @@ public class DungeonManager : Singleton<DungeonManager>
     {
         if(_player.Think())
         {
+            TurncController = PlayerMove;
+        }
+    }
+
+    /// <summary>
+    /// プレイヤーの移動
+    /// </summary>
+    private void PlayerMove()
+    {
+        if (_player.Move())
+        {
+            TurncController = PlayerAct;
+        }
+    }
+
+    /// <summary>
+    /// プレイヤーの行動
+    /// </summary>
+    private void PlayerAct()
+    {
+        if (_player.Act())
+        {
             TurncController = EnemyThink;
         }
     }
 
     /// <summary>
-    /// 敵行動決定
+    /// 敵の行動決定
     /// </summary>
     private void EnemyThink()
     {
@@ -95,18 +117,17 @@ public class DungeonManager : Singleton<DungeonManager>
 
         if(thinkEnd)
         {
-            TurncController = Move;
+            TurncController = EnemyMove;
             _actingEnemyNo = 0;
         }
     }
 
     /// <summary>
-    /// 移動
+    /// 敵の移動
     /// </summary>
-    private void Move()
+    private void EnemyMove()
     {
-        bool moveEnd;
-        moveEnd = _player.Move();
+        bool moveEnd = true;
         foreach (var enemy in _floor._enemies)
         {
             if (enemy != null)
@@ -119,17 +140,6 @@ public class DungeonManager : Singleton<DungeonManager>
         }
 
         if(moveEnd)
-        {
-            TurncController = PlayerAct;
-        }
-    }
-
-    /// <summary>
-    /// プレイヤーの行動
-    /// </summary>
-    private void PlayerAct()
-    {
-        if(_player.Act())
         {
             TurncController = EnemyAct;
         }

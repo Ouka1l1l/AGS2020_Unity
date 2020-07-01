@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3726992651745979548}
   - component: {fileID: 8927323030974460719}
   m_Layer: 0
-  m_Name: TestEnemy
+  m_Name: Slime
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67,6 +67,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _roomNo: 0
   _itam: {fileID: 0}
+  _ItemUsePercentage: 50
+  _attackPercentage: 90
+  _movePercentage: 90
+  _anotherRoomPercentage: 50
 --- !u!1 &8756047020752619614
 GameObject:
   m_ObjectHideFlags: 0

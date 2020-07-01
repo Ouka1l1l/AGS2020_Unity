@@ -131,25 +131,9 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 移動先
     /// </summary>
-    protected Vector3 _destination;
+    public Vector3 _destination { get; protected set; }
 
-    /// <summary>
-    /// 行動enum
-    /// </summary>
-    protected enum Action
-    {
-        Non,
-        Wait,
-        Move,
-        Attack,
-        SkillAttack,
-        Item
-    }
-
-    /// <summary>
-    /// 行う行動
-    /// </summary>
-    protected Action _action;
+    protected bool _thinkEnd;
 
     /// <summary>
     /// 現在いるの部屋の区画番号 部屋にいない場合は-1
@@ -237,6 +221,21 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected int _idleHash;
 
+    /// <summary>
+    /// ActFuncをターン中に１階だけ呼び出すようフラグ
+    /// </summary>
+    private bool _actFuncOnce = false;
+
+    /// <summary>
+    /// Actで実行する関数
+    /// </summary>
+    protected Action ActFunc;
+
+    /// <summary>
+    /// SkillAttackActionで実行する関数
+    /// </summary>
+    protected Func<int> SkillAttackFunc;
+
     protected DungeonManager _dungeonManager;
 
     // Start is called before the first frame update
@@ -262,10 +261,29 @@ public abstract class Character : MonoBehaviour
     }
 
     /// <summary>
+    /// アニメーションが待機かどうか
+    /// </summary>
+    /// <returns> 待機アニメーションか</returns>
+    private bool AnimationIdleDetection()
+    {
+        return _idleHash == _animator.GetCurrentAnimatorStateInfo(0).fullPathHash;
+    }
+
+    /// <summary>
     /// 行動を決定する
     /// </summary>
     /// <returns></returns> true 行動決定
     public abstract bool Think();
+
+    /// <summary>
+    /// ActFuncに行動関数をセット
+    /// </summary>
+    /// <param name="func">　セットする関数</param>
+    protected void SetActFunc(Action func)
+    {
+        ActFunc = func;
+        _thinkEnd = true;
+    }
 
     /// <summary>
     /// 行動を実行する
@@ -273,18 +291,25 @@ public abstract class Character : MonoBehaviour
     /// <returns> true 行動終了</returns>
     public bool Act()
     {
-        if (_idleHash == _animator.GetCurrentAnimatorStateInfo(0).fullPathHash)
+        if (AnimationIdleDetection())
         {
-            _action = Action.Non;
-
-            ActEnd();
-
-            if (_trailRenderer != null)
+            if (!_actFuncOnce)
             {
-                _trailRenderer.emitting = false;
+                ActFunc?.Invoke();
+                ActFunc = null;
+                _actFuncOnce = true;
             }
+            else
+            {
+                ActEnd();
 
-            return true;
+                if (_trailRenderer != null)
+                {
+                    _trailRenderer.emitting = false;
+                }
+
+                return true;
+            }
         }
 
         return false;
@@ -293,7 +318,11 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 行動終了時の処理
     /// </summary>
-    protected abstract void ActEnd();
+    protected virtual void ActEnd()
+    {
+        _thinkEnd = false;
+        _actFuncOnce = false;
+    }
 
     /// <summary>
     /// 正面の座標を取得
@@ -365,9 +394,9 @@ public abstract class Character : MonoBehaviour
                 //現在の部屋番号を更新
                 _roomNo = _dungeonManager._floor.GetRoomNo(tmpDestination.x, tmpDestination.y);
 
-                _action = Action.Move;
-
                 _animator.SetBool("MoveFlag", true);
+
+                _thinkEnd = true;
 
                 return true;
             }
@@ -403,10 +432,14 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// アイテムを使う
     /// </summary>
-    protected void UseItem()
+    protected void ItemAction()
     {
         _itam.Use(this);
-        _action = Action.Item;
+    }
+
+    protected virtual void AttackAction()
+    {
+        Attack();
     }
 
     /// <summary>
@@ -415,8 +448,6 @@ public abstract class Character : MonoBehaviour
     /// <returns> 獲得経験値</returns>
     protected int Attack()
     {
-        _action = Action.Attack;
-
         _animator.SetTrigger("AttackTrigger");
 
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
@@ -445,6 +476,12 @@ public abstract class Character : MonoBehaviour
         return 0;
     }
 
+    protected virtual void SkillAttackAction()
+    {
+        SkillAttackFunc();
+        SkillAttackFunc = null;
+    }
+
     /// <summary>
     /// スキル攻撃
     /// </summary>
@@ -458,7 +495,7 @@ public abstract class Character : MonoBehaviour
             _trailRenderer.emitting = true;
         }
 
-        _action = Action.SkillAttack;
+        _thinkEnd = true;
 
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
 
@@ -673,7 +710,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 足元のイベントを実行
     /// </summary>
-    private void FootExecution()
+    protected void FootExecution()
     {
         Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
 
@@ -734,7 +771,8 @@ public abstract class Character : MonoBehaviour
         _destination = transform.position;
         _roomNo = sectionNo;
 
-        _action = Action.Non;
+        _thinkEnd = false;
+        _actFuncOnce = false;
 
         _dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, _id);
     }

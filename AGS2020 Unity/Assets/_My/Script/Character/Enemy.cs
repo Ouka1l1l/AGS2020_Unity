@@ -19,15 +19,38 @@ public abstract class Enemy : Character
     public EnemyType _enemyType { get; protected set; }
 
     /// <summary>
-    /// 思考終了フラグ
-    /// </summary>
-    protected bool _thinkEnd;
-
-    /// <summary>
     /// 検知範囲
     /// </summary>
     protected Vector2Int _detectionRange;
 
+    /// <summary>
+    /// アイテムを使う
+    /// </summary>
+    [SerializeField]
+    [Range(0, 100)]
+    private int _ItemUsePercentage = 50;
+
+    /// <summary>
+    /// 攻撃する確率
+    /// </summary>
+    [SerializeField]
+    [Range(0, 100)]
+    private int _attackPercentage = 80;
+
+    /// <summary>
+    /// 移動する確率
+    /// </summary>
+    [SerializeField]
+    [Range(0,100)]
+    private int _movePercentage = 90;
+
+    /// <summary>
+    /// 別の部屋に行く確率
+    /// </summary>
+    [SerializeField]
+    [Range(0, 100)]
+    private int _anotherRoomPercentage = 50;
+    
     /// <summary>
     /// レンダー
     /// </summary>
@@ -79,123 +102,138 @@ public abstract class Enemy : Character
             return true;
         }
 
-        if(_action != Action.Non)
-        {
-            ThinkEnd();
-            return true;
-        }
-
-        if(_idleHash != _animator.GetCurrentAnimatorStateInfo(0).fullPathHash)
-        {
-            return false;
-        }
-
         if (_itam != null)
         {
-            if (Random.Range(0, 100) < 20)
+            if (Random.Range(0, 100) < _ItemUsePercentage)
             {
-                if (UseItem())
+                if (CheckUseItem())
                 {
+                    //アイテムを使った
                     return false;
                 }
             }
         }
 
-        if (Random.Range(0, 100) > 10)
+        if (Random.Range(0, 100) < _attackPercentage)
         {
             if (PlayerDetection(new Vector2Int(1, 1)))
             {
                 //攻撃
-                _dir = GetTargetDir(_player.transform.position);
-                Attack();
+                _dir = GetTargetDir(_player._destination);
+                SetActFunc(AttackAction);
                 return false;
             }
         }
 
-        if (Random.Range(0, 100) > 20)
+        if (Random.Range(0, 100) < _movePercentage)
         {
-            if (PlayerDetection(_detectionRange))
+            MoveThink();
+        }
+
+        _thinkEnd = true;
+        return false;
+    }
+
+    /// <summary>
+    /// 移動するか
+    /// </summary>
+    /// <returns> 移動したか</returns>
+    protected bool MoveThink()
+    {
+        //プレイヤーが周辺にいるか
+        if (PlayerDetection(_detectionRange))
+        {
+            //プレイヤーが周辺にいる
+            _targetPos = _player.transform.position;
+            if (TowardsTarget())
             {
+                //プレイヤーを追いかける
+                return true;
+            }
+        }
+        else
+        {
+            if ((_roomNo == _player._roomNo) && (_roomNo != -1) && (_player._roomNo != -1))
+            {
+                //プレイヤーが同じ部屋にいる
                 _targetPos = _player.transform.position;
-                //プレイヤーが周辺にいる
                 if (TowardsTarget())
                 {
-                    return false;
+                    //プレイヤーを追いかける
+                    return true;
                 }
             }
             else
             {
-                if ((_roomNo == _player._roomNo) && (_roomNo != -1) && (_player._roomNo != -1))
+                //プレイヤーが違う部屋にいる
+
+                if(GoingToAnotherRoom())
                 {
-                    //プレイヤーが同じ部屋にいる
-                    _targetPos = _player.transform.position;
-                    if (TowardsTarget())
-                    {
-                        return false;
-                    }
+                    return true;
                 }
-                else
+
+                //ランダム移動
+                int d = Random.Range(0, _dir.Max());
+                if (SetDestination((Dir)(d * _dir.One())))
                 {
-                    if (_dungeonManager._floor.GetTerrainData(transform.position.x, transform.position.z) == Floor.TerrainType.Road)
-                    {
-                        //道の途中
-                        Vector2Int vec2Int = GetFrontPosition();
-                        _targetPos = new Vector3(vec2Int.x, transform.position.y, vec2Int.y);
-                        if (TowardsTarget())
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
-
-                        if (_targetPos != transform.position)
-                        {
-                            //目的地まで到達した
-                            if (TowardsTarget())
-                            {
-                                return false;
-                            }
-                        }
-
-                        if (Random.Range(0, 100) < 5)
-                        {
-                            //別の部屋へ
-                            var roadStartList = _dungeonManager._floor._sections[_roomNo]._roadStartList;
-
-                            _targetPos = roadStartList[Random.Range(0, roadStartList.Count)];
-                            if (TowardsTarget())
-                            {
-                                return false;
-                            }
-                        }
-                    }
-
-                    //ランダム移動
-                    int d = Random.Range(0, _dir.Max());
-                    if (SetDestination((Dir)(d * _dir.One())))
-                    {
-                        _targetPos = _destination;
-                        return false;
-                    }
+                    _targetPos = _destination;
+                    return true;
                 }
             }
         }
 
-        _action = Action.Wait;
         return false;
     }
 
-    protected void ThinkEnd()
+    /// <summary>
+    /// 別の部屋に行く
+    /// </summary>
+    /// <returns> 移動したか</returns>
+    protected bool GoingToAnotherRoom()
     {
-        _thinkEnd = true;
+        //今いる場所が道か
+        if (_dungeonManager._floor.GetTerrainData(transform.position.x, transform.position.z) == Floor.TerrainType.Road)
+        {
+            //今いる場所が道
+            Vector2Int vec2Int = GetFrontPosition();
+            _targetPos = new Vector3(vec2Int.x, transform.position.y, vec2Int.y);
+            if (TowardsTarget())
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (_targetPos != transform.position)
+            {
+                //目的地まで到達した
+                if (TowardsTarget())
+                {
+                    return true;
+                }
+            }
+
+            if (Random.Range(0, 100) < _anotherRoomPercentage)
+            {
+                //別の部屋へ
+                var roadStartList = _dungeonManager._floor._sections[_roomNo]._roadStartList;
+
+                _targetPos = roadStartList[Random.Range(0, roadStartList.Count)];
+                if (TowardsTarget())
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
     /// プレイヤー検知
     /// </summary>
-    /// <param name="detectionRange"></param> 検知範囲
-    /// <returns></returns> true 検知した
+    /// <param name="detectionRange"> 検知範囲</param>
+    /// <returns> 検知したか</returns>
     protected bool PlayerDetection(Vector2Int detectionRange)
     {
         var SurroundingCharacterData = _dungeonManager._floor.GetSurroundingCharacterData(transform.position.x, transform.position.z, detectionRange.x, detectionRange.y);
@@ -213,6 +251,10 @@ public abstract class Enemy : Character
         return ret;
     }
 
+    /// <summary>
+    /// ターゲットに近づく
+    /// </summary>
+    /// <returns> 移動したか</returns>
     protected bool TowardsTarget()
     {
         var dir = GetTargetDir(_targetPos);
@@ -245,12 +287,11 @@ public abstract class Enemy : Character
         return false;
     }
 
-    protected override void ActEnd()
-    {
-        _thinkEnd = false;
-    }
-
-    new protected bool UseItem()
+    /// <summary>
+    /// アイテムが使えるかチェック
+    /// </summary>
+    /// <returns> アイテムを使うか</returns>
+    protected bool CheckUseItem()
     {
         bool useFlag = false;
         switch (_itam._type)
@@ -276,7 +317,7 @@ public abstract class Enemy : Character
 
         if (useFlag)
         {
-            base.UseItem();
+            SetActFunc(ItemAction);
             return true;
         }
 

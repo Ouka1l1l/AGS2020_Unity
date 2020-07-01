@@ -873,7 +873,7 @@ public class Floor : MonoBehaviour
         {
             if (_enemies[i] == null)
             {
-                Enemy enemy = Instantiate((GameObject)Resources.Load("TestEnemy")).GetComponent<Enemy>();
+                Enemy enemy = Instantiate((GameObject)Resources.Load("Slime")).GetComponent<Enemy>();
                 do
                 {
                     enemy.Spawn(0, i + 1);
@@ -907,7 +907,7 @@ public class Floor : MonoBehaviour
         int enemyCount = Random.Range(_enemyMin, _enemyMax + 1);
         for (int e = 1; e <= enemyCount; e++)
         {
-            Enemy enemy = Instantiate((GameObject)Resources.Load("TestEnemy")).GetComponent<Enemy>();
+            Enemy enemy = Instantiate((GameObject)Resources.Load("Slime")).GetComponent<Enemy>();
             enemy.Spawn(0, e);
             _enemies.Add(enemy);
         }

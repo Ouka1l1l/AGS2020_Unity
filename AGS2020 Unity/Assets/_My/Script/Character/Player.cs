@@ -64,7 +64,7 @@ public class Player : Character
 
     public override bool Think()
     {
-        if(_action != Action.Non)
+        if(_thinkEnd)
         {
             return true;
         }
@@ -118,11 +118,7 @@ public class Player : Character
         if (Input.GetButtonDown("B_Button"))
         {
             //攻撃
-            int exp = Attack();
-            if (exp > 0)
-            {
-                ExpUp(exp);
-            }
+            SetActFunc(AttackAction);
             return false;
         }
         else
@@ -139,8 +135,19 @@ public class Player : Character
         return false;
     }
 
+    protected override void AttackAction()
+    {
+        int exp = Attack();
+        if (exp > 0)
+        {
+            ExpUp(exp);
+        }
+    }
+
     protected override void ActEnd()
     {
+        base.ActEnd();
+
         CpAdd(1);
 
         if(_cp < _cpLimit)
@@ -200,67 +207,76 @@ public class Player : Character
 
     private void SkillAttackChoice()
     {
-        Func<int> SkillAttack = null;
-
         Func<int, bool> SlotChoice = (int slotNo) =>
           {
               var skillAttackType = _skillAttackSlot[slotNo];
-              if (_skillAttackData[(int)skillAttackType].cost > 0)
+
+              if (skillAttackType == SkillAttackType.Non)
               {
-                  switch(skillAttackType)
-                  {
-                      case SkillAttackType.RotaryAttack:
-                          SkillAttack = RotaryAttack;
-                          break;
-
-                      case SkillAttackType.HeavyAttack:
-                          SkillAttack = HeavyAttack;
-                          break;
-
-                      case SkillAttackType.ThrustAttack:
-                          SkillAttack = ThrustAttack;
-                          break;
-
-                      case SkillAttackType.MowDownAttack:
-                          SkillAttack = MowDownAttack;
-                          break;
-
-                      default:
-                          Debug.LogError("技選択エラー" + skillAttackType);
-                          break;
-                  }
+                  return false;
               }
 
-              return false;
+              switch (skillAttackType)
+              {
+                  case SkillAttackType.RotaryAttack:
+                      SkillAttackFunc = RotaryAttack;
+                      break;
+
+                  case SkillAttackType.HeavyAttack:
+                      SkillAttackFunc = HeavyAttack;
+                      break;
+
+                  case SkillAttackType.ThrustAttack:
+                      SkillAttackFunc = ThrustAttack;
+                      break;
+
+                  case SkillAttackType.MowDownAttack:
+                      SkillAttackFunc = MowDownAttack;
+                      break;
+
+                  default:
+                      Debug.LogError("技選択エラー" + skillAttackType);
+                      break;
+              }
+
+              return true;
           };
 
+        bool flag = false;
         if(Input.GetButtonDown("Y_Button"))
         {
-            SlotChoice(0);
+            flag = SlotChoice(0);
         }
         else if(Input.GetButtonDown("B_Button"))
         {
-            SlotChoice(1);
+            flag = SlotChoice(1);
         }
         else if(Input.GetButtonDown("A_Button"))
         {
-            SlotChoice(2);
+            flag = SlotChoice(2);
         }
         else if(Input.GetButtonDown("X_Button"))
         {
-            SlotChoice(3);
+            flag = SlotChoice(3);
         }
 
-        if (SkillAttack != null)
+        if(flag)
         {
-            int exp = SkillAttack();
-            if (exp > 0)
-            {
-                ExpUp(exp);
-            }
+            SetActFunc(SkillAttackAction);
 
             UIManager.instance.GetSkillMenu().gameObject.SetActive(false);
         }
+    }
+
+    protected override void SkillAttackAction()
+    {
+        int exp = SkillAttackFunc();
+        if (exp > 0)
+        {
+            ExpUp(exp);
+        }
+
+        SkillAttackFunc = null;
     }
 
     protected override void PickUpItem(Vector2Int pos)
@@ -283,12 +299,14 @@ public class Player : Character
     {
         _itemList[index].Use(this);
         _itemList.RemoveAt(index);
-        _action = Action.Item;
+
+        _thinkEnd = true;
     }
 
     public void FootEvent()
     {
-        _action = Action.Move;
+        FootExecution();
+        _thinkEnd = true;
     }
 
     /// <summary>
