@@ -80,6 +80,10 @@ public class Floor : MonoBehaviour
     /// </summary>
     private int _eventMax = 20;
 
+    private int _itemMin = 5;
+
+    private int _itemMax = 8;
+
     [SerializeField]
     private GameObject _maskCube;
 
@@ -87,15 +91,17 @@ public class Floor : MonoBehaviour
 
     public Vector2Int staisPos;
 
+    private FloorDatas _floorDatas;
+
     private void Awake()
     {
-
+        _floorDatas = Resources.Load<FloorDatas>("ScriptableObject/FloorData");
     }
 
     // Start is called before the first frame update
     void Start()
     {
-
+        
     }
 
     // Update is called once per frame
@@ -726,7 +732,7 @@ public class Floor : MonoBehaviour
             int roomNo;
             var pos = GetRandomFloorPos(out roomNo);
             var grid = DungeonManager.instance.GetGrid(pos);
-            var needleFloor = Instantiate((GameObject)Resources.Load("NeedleFloor")).GetComponent<NeedleFloor>();
+            var needleFloor = Instantiate(_floorDatas.GetLotteryTrap(0)).GetComponent<NeedleFloor>();
             needleFloor.Init(pos.x, pos.y, roomNo);
             _terrainData[grid.y, grid.x] = TerrainType.Event;
             _eventData[grid.y, grid.x] = needleFloor;
@@ -772,7 +778,7 @@ public class Floor : MonoBehaviour
         }
         _itemData = new Item[mapSize.y, mapSize.x];
 
-        int itemMax = Random.Range(1, 6);
+        int itemMax = Random.Range(_itemMin, _itemMax + 1);
         for (int i = 0; i < itemMax; i++)
         {
             int roomNo;
@@ -780,19 +786,12 @@ public class Floor : MonoBehaviour
             var grid = DungeonManager.instance.GetGrid(pos);
 
             _terrainData[grid.y, grid.x] = TerrainType.Item;
-            Item Item;
-            if (Random.Range(0, 2) == 0)
-            {
-                Item = Instantiate((GameObject)Resources.Load("MedicalBox")).GetComponent<Item>();
-            }
-            else
-            {
-                Item = Instantiate((GameObject)Resources.Load("CP")).GetComponent<Item>();
-            }
+            Item Item = Instantiate(_floorDatas.GetLotteryItem(0)).GetComponent<Item>();
             Item.SetPos(pos.x, pos.y);
             _itemData[grid.y, grid.x] = Item;
         }
 
+        ////
         var tpos = new Vector2Int(staisPos.x, staisPos.y - 1);
         var tgrid = DungeonManager.instance.GetGrid(tpos);
 
@@ -800,6 +799,7 @@ public class Floor : MonoBehaviour
         var Portion = Instantiate((GameObject)Resources.Load("WoodNeedle")).GetComponent<Item>();
         Portion.SetPos(tpos.x, tpos.y);
         _itemData[tgrid.y, tgrid.x] = Portion;
+        ////
     }
 
     /// <summary>
@@ -873,7 +873,7 @@ public class Floor : MonoBehaviour
         {
             if (_enemies[i] == null)
             {
-                Enemy enemy = Instantiate((GameObject)Resources.Load("Slime")).GetComponent<Enemy>();
+                Enemy enemy = Instantiate(_floorDatas.GetLotteryEnemy(0)).GetComponent<Enemy>();
                 do
                 {
                     enemy.Spawn(0, i + 1);
@@ -907,7 +907,7 @@ public class Floor : MonoBehaviour
         int enemyCount = Random.Range(_enemyMin, _enemyMax + 1);
         for (int e = 1; e <= enemyCount; e++)
         {
-            Enemy enemy = Instantiate((GameObject)Resources.Load("Slime")).GetComponent<Enemy>();
+            Enemy enemy = Instantiate(_floorDatas.GetLotteryEnemy(0)).GetComponent<Enemy>();
             enemy.Spawn(0, e);
             _enemies.Add(enemy);
         }
