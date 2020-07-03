@@ -93,6 +93,8 @@ public class Floor : MonoBehaviour
 
     private FloorDatas _floorDatas;
 
+    private Vector2Int _floorSize;
+
     private void Awake()
     {
         _floorDatas = Resources.Load<FloorDatas>("ScriptableObject/FloorData");
@@ -152,6 +154,13 @@ public class Floor : MonoBehaviour
     private T GetData<T>(int x,int y,T[,] dataList)
     {
         var grid = DungeonManager.instance.GetGrid(x, y);
+
+        if (grid.x < 0 || grid.x >= _floorSize.x || grid.y < 0 || grid.y >= _floorSize.y)
+        {
+            //マップ範囲外
+            return dataList[0, 0];
+        }
+
         return dataList[grid.y, grid.x];
     }
 
@@ -809,6 +818,8 @@ public class Floor : MonoBehaviour
     /// <param name="divisionNum"></param> 部屋の数
     public void CreateFloor(Vector2Int mapSize, int divisionNum)
     {
+        _floorSize = mapSize;
+
         UIManager.instance.SetMiniMapCamera(mapSize);
 
         foreach (Transform child in transform)

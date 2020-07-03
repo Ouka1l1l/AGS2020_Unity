@@ -10271,7 +10271,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 100
+  far clip plane: 30
   field of view: 60
   orthographic: 1
   orthographic size: 25
@@ -10283,8 +10283,8 @@ Camera:
   m_TargetTexture: {fileID: 8600000, guid: 7d8fab04126ff4944bd3feab82ded3fa, type: 2}
   m_TargetDisplay: 0
   m_TargetEye: 3
-  m_HDR: 1
-  m_AllowMSAA: 1
+  m_HDR: 0
+  m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
@@ -12174,7 +12174,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 100
+  far clip plane: 30
   field of view: 60
   orthographic: 1
   orthographic size: 25
@@ -12186,8 +12186,8 @@ Camera:
   m_TargetTexture: {fileID: 8600000, guid: bf841ae2b6dea2d4ebeafd77d2d94ea2, type: 2}
   m_TargetDisplay: 0
   m_TargetEye: 3
-  m_HDR: 1
-  m_AllowMSAA: 1
+  m_HDR: 0
+  m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
