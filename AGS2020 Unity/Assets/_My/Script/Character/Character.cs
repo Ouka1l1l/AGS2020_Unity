@@ -437,6 +437,9 @@ public abstract class Character : MonoBehaviour
         _itam.Use(this);
     }
 
+    /// <summary>
+    /// 攻撃の行動
+    /// </summary>
     protected virtual void AttackAction()
     {
         Attack();
@@ -476,10 +479,45 @@ public abstract class Character : MonoBehaviour
         return 0;
     }
 
+    /// <summary>
+    /// スキル攻撃の行動
+    /// </summary>
     protected virtual void SkillAttackAction()
     {
         SkillAttackFunc();
         SkillAttackFunc = null;
+    }
+
+    /// <summary>
+    /// このターンの行動をスキル攻撃に決定
+    /// </summary>
+    /// <param name="skillAttackType"> セットするスキル攻撃のタイプ</param>
+    protected void SetSkillAttackAction(SkillAttackType skillAttackType)
+    {
+        switch (skillAttackType)
+        {
+            case SkillAttackType.RotaryAttack:
+                SkillAttackFunc = RotaryAttack;
+                break;
+
+            case SkillAttackType.HeavyAttack:
+                SkillAttackFunc = HeavyAttack;
+                break;
+
+            case SkillAttackType.ThrustAttack:
+                SkillAttackFunc = ThrustAttack;
+                break;
+
+            case SkillAttackType.MowDownAttack:
+                SkillAttackFunc = MowDownAttack;
+                break;
+
+            default:
+                Debug.LogError("技選択エラー" + skillAttackType);
+                break;
+        }
+
+        SetActFunc(SkillAttackAction);
     }
 
     /// <summary>
@@ -687,6 +725,11 @@ public abstract class Character : MonoBehaviour
         HpAdd(_regeneration);
     }
 
+    /// <summary>
+    /// CP増加
+    /// </summary>
+    /// <param name="value"> 増加値</param>
+    /// <returns></returns>
     public virtual int CpAdd(int value)
     {
         _cp += value;
@@ -694,6 +737,11 @@ public abstract class Character : MonoBehaviour
         return value;
     }
 
+    /// <summary>
+    /// CP減少
+    /// </summary>
+    /// <param name="value"> 減少値</param>
+    /// <returns></returns>
     public int CpSub(int value)
     {
         _cp -= value;

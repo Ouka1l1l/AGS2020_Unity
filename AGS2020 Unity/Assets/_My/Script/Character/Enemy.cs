@@ -10,6 +10,9 @@ public abstract class Enemy : Character
     public enum EnemyType
     {
         Slime,
+        Zombie,
+        Skeleton,
+        Gargoyle,
         Max
     }
 
@@ -38,6 +41,13 @@ public abstract class Enemy : Character
     private int _attackPercentage = 80;
 
     /// <summary>
+    /// スキル攻撃する確率
+    /// </summary>
+    [SerializeField]
+    [Range(0, 100)]
+    private int _skillAttackPercentage = 80;
+
+    /// <summary>
     /// 移動する確率
     /// </summary>
     [SerializeField]
@@ -55,6 +65,11 @@ public abstract class Enemy : Character
     /// レンダー
     /// </summary>
     protected Renderer[] _renderers;
+
+    /// <summary>
+    /// 使えるスキル攻撃
+    /// </summary>
+    private List<SkillAttackType> _skillAttacks;
 
     /// <summary>
     /// プレイヤー
@@ -80,6 +95,7 @@ public abstract class Enemy : Character
         _atk = enemyStatus.atk;
         _def = enemyStatus.def;
         _exp = enemyStatus.exp;
+        _skillAttacks = enemyStatus.skillAttacks;
 
         _detectionRange = new Vector2Int(3, 3);
 
@@ -102,10 +118,13 @@ public abstract class Enemy : Character
             return true;
         }
 
+        //アイテムを持っているか
         if (_itam != null)
         {
+            //アイテムを使うか
             if (Random.Range(0, 100) < _ItemUsePercentage)
             {
+                //アイテムを使えるか
                 if (CheckUseItem())
                 {
                     //アイテムを使った
@@ -114,17 +133,28 @@ public abstract class Enemy : Character
             }
         }
 
+        //攻撃を行うか
         if (Random.Range(0, 100) < _attackPercentage)
         {
+            //スキル攻撃を行うか
+            if(Random.Range(0, 100) < _skillAttackPercentage)
+            {
+                if(SkillAttackChoice())
+                {
+                    return false;
+                }
+            }
+
             if (PlayerDetection(new Vector2Int(1, 1)))
             {
-                //攻撃
+                //通常攻撃
                 _dir = GetTargetDir(_player._destination);
                 SetActFunc(AttackAction);
                 return false;
             }
         }
 
+        //移動するか
         if (Random.Range(0, 100) < _movePercentage)
         {
             MoveThink();
@@ -322,6 +352,28 @@ public abstract class Enemy : Character
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// スキル攻撃を選択
+    /// </summary>
+    /// <returns> 選択したか</returns>
+    private bool SkillAttackChoice()
+    {
+        //使えるスキル攻撃があるか
+        //スキル攻撃がリキャスト中じゃないか
+        if((_skillAttacks.Count <= 0) || (_cp > 0))
+        {
+            return false;
+        }
+
+        /////////////スキルごとの範囲チェック
+
+        int r = Random.Range(0, _skillAttacks.Count);
+
+        SetSkillAttackAction(_skillAttacks[r]);
+
+        return true;
     }
 
     public void Spawn(int level,int id)

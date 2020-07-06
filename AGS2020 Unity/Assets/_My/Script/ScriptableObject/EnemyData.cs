@@ -19,4 +19,5 @@ public struct EnemyStatus
     public int atk;
     public int def;
     public int exp;
+    public List<Character.SkillAttackType> skillAttacks;
 }

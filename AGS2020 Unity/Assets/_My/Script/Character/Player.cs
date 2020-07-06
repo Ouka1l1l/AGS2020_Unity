@@ -205,6 +205,9 @@ public class Player : Character
         return false;
     }
 
+    /// <summary>
+    /// スキル攻撃を選択
+    /// </summary>
     private void SkillAttackChoice()
     {
         Func<int, bool> SlotChoice = (int slotNo) =>
@@ -216,28 +219,7 @@ public class Player : Character
                   return false;
               }
 
-              switch (skillAttackType)
-              {
-                  case SkillAttackType.RotaryAttack:
-                      SkillAttackFunc = RotaryAttack;
-                      break;
-
-                  case SkillAttackType.HeavyAttack:
-                      SkillAttackFunc = HeavyAttack;
-                      break;
-
-                  case SkillAttackType.ThrustAttack:
-                      SkillAttackFunc = ThrustAttack;
-                      break;
-
-                  case SkillAttackType.MowDownAttack:
-                      SkillAttackFunc = MowDownAttack;
-                      break;
-
-                  default:
-                      Debug.LogError("技選択エラー" + skillAttackType);
-                      break;
-              }
+              SetSkillAttackAction(skillAttackType);
 
               return true;
           };
@@ -262,8 +244,6 @@ public class Player : Character
 
         if(flag)
         {
-            SetActFunc(SkillAttackAction);
-
             UIManager.instance.GetSkillMenu().gameObject.SetActive(false);
         }
     }
