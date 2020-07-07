@@ -526,7 +526,7 @@ public abstract class Character : MonoBehaviour
     /// <param name="skillType"> スキル攻撃のタイプ</param>
     /// <param name="attackPosList"> 攻撃範囲</param>
     /// <returns> 獲得経験値</returns>
-    private int SkillAttack(SkillAttackType skillType, List<Vector2Int> attackPosList)
+    private int SkillAttack(SkillAttackType skillType)
     {
         if (_trailRenderer != null)
         {
@@ -542,6 +542,8 @@ public abstract class Character : MonoBehaviour
         UIManager.instance.AddText(_name + "の" + data.name);
 
         CpAdd(data.cost);
+
+        var attackPosList = GetSkillAttackRange(skillType);
 
         int ret = 0;
         foreach (var attackPos in attackPosList)
@@ -569,6 +571,41 @@ public abstract class Character : MonoBehaviour
     }
 
     /// <summary>
+    /// スキル攻撃の攻撃範囲を取得
+    /// </summary>
+    /// <param name="skillAttackType"> スキル攻撃のタイプ</param>
+    /// <returns> 攻撃範囲</returns>
+    protected List<Vector2Int> GetSkillAttackRange(SkillAttackType skillAttackType)
+    {
+        List<Vector2Int> ret = new List<Vector2Int>();
+
+        switch(skillAttackType)
+        {
+            case SkillAttackType.HeavyAttack:
+                ret = GetHeavyAttackRange();
+                break;
+
+            case SkillAttackType.RotaryAttack:
+                ret = GetRotaryAttackRange();
+                break;
+
+            case SkillAttackType.ThrustAttack:
+                ret = GetThrustAttackRange();
+                break;
+
+            case SkillAttackType.MowDownAttack:
+                ret = GetMowDownAttackRange();
+                break;
+
+            default:
+                Debug.LogError("攻撃範囲エラー" + skillAttackType);
+                break;
+        }
+
+        return ret;
+    }
+
+    /// <summary>
     /// 強攻撃
     /// </summary>
     /// <returns> 獲得経験値</returns>
@@ -576,10 +613,18 @@ public abstract class Character : MonoBehaviour
     {
         _animator.SetTrigger("HeavyAttackTrigger");
 
-        List<Vector2Int> attackPosList = new List<Vector2Int>();
-        attackPosList.Add(GetFrontPosition());
+        return SkillAttack(SkillAttackType.HeavyAttack);
+    }
 
-        return SkillAttack(SkillAttackType.HeavyAttack, attackPosList);
+    /// <summary>
+    /// 強攻撃の攻撃範囲を取得
+    /// </summary>
+    /// <returns> 攻撃範囲</returns>
+    private List<Vector2Int> GetHeavyAttackRange()
+    {
+        List<Vector2Int> ret = new List<Vector2Int>();
+        ret.Add(GetFrontPosition());
+        return ret;
     }
 
     /// <summary>
@@ -590,17 +635,27 @@ public abstract class Character : MonoBehaviour
     {
         _animator.SetTrigger("RotaryAttackTrigger");
 
-        Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
+        return SkillAttack(SkillAttackType.RotaryAttack);
+    }
 
-        List<Vector2Int> attackPosList = new List<Vector2Int>();
+    /// <summary>
+    /// 回転攻撃の攻撃範囲を取得
+    /// </summary>
+    /// <returns> 攻撃範囲</returns>
+    private List<Vector2Int> GetRotaryAttackRange()
+    {
+        List<Vector2Int> ret = new List<Vector2Int>();
+
+        Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
         var dir = _dir;
+
         for (int i = 0; i < _dir.Max(); i++)
         {
-            attackPosList.Add(pos + dir.ToVector2Int());
+            ret.Add(pos + dir.ToVector2Int());
             dir = dir.Addition();
         }
 
-        return SkillAttack(SkillAttackType.RotaryAttack, attackPosList);
+        return ret;
     }
 
     /// <summary>
@@ -611,13 +666,23 @@ public abstract class Character : MonoBehaviour
     {
         _animator.SetTrigger("HeavyAttackTrigger");
 
+        return SkillAttack(SkillAttackType.ThrustAttack);
+    }
+
+    /// <summary>
+    /// 突き攻撃の攻撃範囲を取得
+    /// </summary>
+    /// <returns> 攻撃範囲</returns>
+    private List<Vector2Int> GetThrustAttackRange()
+    {
+        List<Vector2Int> ret = new List<Vector2Int>();
+
         Vector2Int frontPos = GetFrontPosition();
 
-        List<Vector2Int> attackPosList = new List<Vector2Int>();
-        attackPosList.Add(frontPos);
-        attackPosList.Add(frontPos + _dir.ToVector2Int());
+        ret.Add(frontPos);
+        ret.Add(frontPos + _dir.ToVector2Int());
 
-        return SkillAttack(SkillAttackType.ThrustAttack, attackPosList);
+        return ret;
     }
 
     /// <summary>
@@ -628,14 +693,24 @@ public abstract class Character : MonoBehaviour
     {
         _animator.SetTrigger("HeavyAttackTrigger");
 
+        return SkillAttack(SkillAttackType.MowDownAttack);
+    }
+
+    /// <summary>
+    /// 薙ぎ払い攻撃の攻撃範囲を取得
+    /// </summary>
+    /// <returns> 攻撃範囲</returns>
+    private List<Vector2Int> GetMowDownAttackRange()
+    {
+        List<Vector2Int> ret = new List<Vector2Int>();
+
         Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
 
-        List<Vector2Int> attackPosList = new List<Vector2Int>();
-        attackPosList.Add(pos + _dir.Subtraction().ToVector2Int());
-        attackPosList.Add(GetFrontPosition());
-        attackPosList.Add(pos + _dir.Addition().ToVector2Int());
+        ret.Add(pos + _dir.Subtraction().ToVector2Int());
+        ret.Add(GetFrontPosition());
+        ret.Add(pos + _dir.Addition().ToVector2Int());
 
-        return SkillAttack(SkillAttackType.MowDownAttack, attackPosList);
+        return ret;
     }
 
     /// <summary>

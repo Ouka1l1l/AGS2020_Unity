@@ -69,6 +69,7 @@ MonoBehaviour:
   _itam: {fileID: 0}
   _ItemUsePercentage: 50
   _attackPercentage: 90
+  _skillAttackPercentage: 50
   _movePercentage: 90
   _anotherRoomPercentage: 50
 --- !u!1 &8756047020752619614

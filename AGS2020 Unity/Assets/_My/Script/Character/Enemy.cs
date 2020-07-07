@@ -60,7 +60,13 @@ public abstract class Enemy : Character
     [SerializeField]
     [Range(0, 100)]
     private int _anotherRoomPercentage = 50;
-    
+
+    /// <summary>
+    /// 1ターンでのcp減少値
+    /// </summary>
+    [SerializeField]
+    private int _cpDecreaseValue = 1;
+
     /// <summary>
     /// レンダー
     /// </summary>
@@ -367,13 +373,42 @@ public abstract class Enemy : Character
             return false;
         }
 
-        /////////////スキルごとの範囲チェック
+        //攻撃範囲内にプレイヤーがいるスキル攻撃の配列番号リスト
+        List<int> availableNo = new List<int>();
 
-        int r = Random.Range(0, _skillAttacks.Count);
+        //スキルごとの範囲チェック
+        for(int i = 0; i < _skillAttacks.Count;i++)
+        {
+            var skillAttackRange = GetSkillAttackRange(_skillAttacks[i]);
+            foreach(var attackPos in skillAttackRange)
+            {
+                if(_dungeonManager._floor.GetCharacterData(attackPos) == _player._id)
+                {
+                    //攻撃範囲内にプレイヤーがいる
+                    availableNo.Add(i);
+                    break;
+                }
+            }
+        }
 
-        SetSkillAttackAction(_skillAttacks[r]);
+        if(availableNo.Count <= 0)
+        {
+            //攻撃範囲内にプレイヤーがいるスキル攻撃がない
+            return false;
+        }
+
+        //攻撃範囲内にプレイヤーがいるスキル攻撃の中から
+        //ランダムで選択
+        int useNo = availableNo[Random.Range(0, availableNo.Count)];
+        SetSkillAttackAction(_skillAttacks[useNo]);
 
         return true;
+    }
+
+    protected override void ActEnd()
+    {
+        CpSub(_cpDecreaseValue);
+        base.ActEnd();
     }
 
     public void Spawn(int level,int id)
