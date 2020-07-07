@@ -138,7 +138,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// 現在いるの部屋の区画番号 部屋にいない場合は-1
     /// </summary>
-    public int _roomNo;
+    public int _roomNo { get; protected set; }
 
     /// <summary>
     /// 持っているアイテム
@@ -253,7 +253,7 @@ public abstract class Character : MonoBehaviour
 
         _skillAttackData = Resources.Load<SkillAttackData>("ScriptableObject/SkillAttackData").skillAttackData;
 
-        _animator = GetComponent<Animator>();
+        _animator = GetComponentInChildren<Animator>();
 
         _trailRenderer = transform.GetComponentInChildren<TrailRenderer>();
 
