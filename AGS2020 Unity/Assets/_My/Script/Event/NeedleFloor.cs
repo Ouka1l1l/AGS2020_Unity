@@ -5,7 +5,7 @@ using UnityEngine;
 public class NeedleFloor : Event
 {
     // Start is called before the first frame update
-    new private void Start()
+    protected override void Start()
     {
         base.Start();
         _type = EventType.NeedleFloor;

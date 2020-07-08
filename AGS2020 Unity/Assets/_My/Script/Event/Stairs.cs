@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class Stairs : Event
 {
-    new private void Start()
+    protected override void Start()
     {
         _type = EventType.Stairs;
     }

@@ -12,6 +12,7 @@ public abstract class Event : MonoBehaviour
         Non,    //なし
         Stairs, //階段
         NeedleFloor, //トゲ床
+        ExplosionFloor, //爆発床
         Max
     }
 
@@ -37,7 +38,7 @@ public abstract class Event : MonoBehaviour
 
     protected Renderer _iconRenderer;
 
-    protected void Start()
+    protected virtual void Start()
     {
         _renderer = GetComponentInChildren<Renderer>();
         if (_renderer != null)
