@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 82e0b523200111346b867b818a7ab346
 ModelImporter:
-  serializedVersion: 19300
+  serializedVersion: 19301
   internalIDToNameTable:
   - first:
       74: 6396828155121186910
@@ -33,6 +33,9 @@ ModelImporter:
   - first:
       74: 7664508460192171019
     second: "\u30A2\u30FC\u30DE\u30C1\u30E5\u30A2|HeavyAttack"
+  - first:
+      74: 8613765314939908604
+    second: "\u30A2\u30FC\u30DE\u30C1\u30E5\u30A2|MowDownAttack"
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -221,7 +224,7 @@ ModelImporter:
       takeName: "\u30A2\u30FC\u30DE\u30C1\u30E5\u30A2|HeavyAttack"
       internalID: 0
       firstFrame: 0
-      lastFrame: 35
+      lastFrame: 29
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -257,6 +260,7 @@ ModelImporter:
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
