@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MonsterTrap : Event
 {
+    [SerializeField]
     private Vector2Int _range = new Vector2Int(2, 2);
 
     protected override void Start()
@@ -25,5 +26,9 @@ public class MonsterTrap : Event
         base.Execution(character);
 
         dungeonManager._floor.SpawnEnemiesAround(transform.position, _range);
+
+        dungeonManager._floor.SetTerrainData((int)transform.position.x, (int)transform.position.z, Floor.TerrainType.Floor);
+
+        Destroy(gameObject);
     }
 }

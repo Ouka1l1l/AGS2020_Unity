@@ -13,7 +13,7 @@ public class ExplosionFloor : Event
         _type = EventType.ExplosionFloor;
         _name = "爆発トラップ";
 
-        _explosion = GetComponent<ParticleSystem>();
+        _explosion = GetComponentInChildren<ParticleSystem>();
     }
 
     // Update is called once per frame
@@ -34,7 +34,7 @@ public class ExplosionFloor : Event
             }
             if(characterNo > 0)
             {
-                dungeonManager._floor._enemies[characterNo].Damage(10);
+                dungeonManager._floor._enemies[characterNo - 1].Damage(10);
             }
 
         }

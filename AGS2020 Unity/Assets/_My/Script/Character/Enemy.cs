@@ -410,6 +410,7 @@ public abstract class Enemy : Character
         var ret = base.SkillAttack(skillType);
 
         _dir = GetTargetDir(_player.transform.position);
+        transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
 
         return ret;
     }
@@ -439,7 +440,7 @@ public abstract class Enemy : Character
         _id = id;
         _level = level;
 
-        int roomNo = _dungeonManager._floor.GetRoomNo(x, z);
+        int roomNo = DungeonManager.instance._floor.GetRoomNo(x, z);
 
         Init(new Vector2Int(x, z), roomNo);
     }

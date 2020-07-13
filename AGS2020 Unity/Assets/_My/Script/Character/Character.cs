@@ -903,6 +903,6 @@ public abstract class Character : MonoBehaviour
         _thinkEnd = false;
         _actFuncOnce = false;
 
-        _dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, _id);
+        DungeonManager.instance._floor.SetCharacterData(transform.position.x, transform.position.z, _id);
     }
 }

@@ -7,6 +7,10 @@ using Random = UnityEngine.Random;
 [ExecuteInEditMode]
 public class Floor : MonoBehaviour
 {
+    ////////
+    public GameObject _testTrap;
+    ////////
+
     /// <summary>
     /// 地形情報
     /// </summary>
@@ -746,6 +750,16 @@ public class Floor : MonoBehaviour
             _terrainData[grid.y, grid.x] = TerrainType.Event;
             _eventData[grid.y, grid.x] = needleFloor;
         }
+
+        //////////////
+        var tpos = new Vector2Int(staisPos.x + 1, staisPos.y - 1);
+        var tgrid = DungeonManager.instance.GetGrid(tpos);
+
+        _terrainData[tgrid.y, tgrid.x] = TerrainType.Event;
+        var testTrap = Instantiate(_testTrap).GetComponent<Event>();
+        testTrap.Init(tpos.x, tpos.y, GetRoomNo(tpos.x, tpos.y));
+        _eventData[tgrid.y, tgrid.x] = testTrap;
+        //////////////
     }
 
     /// <summary>
@@ -883,8 +897,20 @@ public class Floor : MonoBehaviour
         int i = 0;
         foreach (var key in terrainData.Keys)
         {
-            if (terrainData[key] == Floor.TerrainType.Wall
+            if (terrainData[key] == TerrainType.Wall
             || characterData[key] != -1)
+            {
+                continue;
+            }
+
+            int percent = 50;
+
+            if(key.x > 1 || key.y > 1)
+            {
+                percent = 20;
+            }
+
+            if(Random.Range(0,100) >= percent)
             {
                 continue;
             }
@@ -895,7 +921,7 @@ public class Floor : MonoBehaviour
                 if (_enemies[i] == null)
                 {
                     Enemy enemy = Instantiate(_floorDatas.GetLotteryEnemy(0)).GetComponent<Enemy>();
-                    enemy.SpawnSetPosition((int)pos.x, (int)pos.z, 0, i + 1);
+                    enemy.SpawnSetPosition((int)pos.x + key.x, (int)pos.z + key.y, 0, i + 1);
                     _enemies[i] = enemy;
 
                     i++;
@@ -904,10 +930,10 @@ public class Floor : MonoBehaviour
             }
 
             //空きがなかったら敵配列を追加
-            if(i > _enemies.Count)
+            if(i >= _enemies.Count)
             {
                 Enemy enemy = Instantiate(_floorDatas.GetLotteryEnemy(0)).GetComponent<Enemy>();
-                enemy.SpawnSetPosition((int)pos.x, (int)pos.z, 0, i + 1);
+                enemy.SpawnSetPosition((int)pos.x + key.x, (int)pos.z + key.y, 0, i + 1);
                 _enemies.Add(enemy);
                 i++;
             }
