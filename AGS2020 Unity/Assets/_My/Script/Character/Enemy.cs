@@ -405,10 +405,43 @@ public abstract class Enemy : Character
         return true;
     }
 
+    protected override int SkillAttack(SkillAttackType skillType)
+    {
+        var ret = base.SkillAttack(skillType);
+
+        _dir = GetTargetDir(_player.transform.position);
+
+        return ret;
+    }
+
     protected override void ActEnd()
     {
         CpSub(_cpDecreaseValue);
         base.ActEnd();
+    }
+
+    protected override void Init(Vector2Int pos, int roomNo)
+    {
+        base.Init(pos, roomNo);
+
+        _targetPos = transform.position;
+    }
+
+    /// <summary>
+    /// 座標を指定してスポーン
+    /// </summary>
+    /// <param name="x"> X座標</param>
+    /// <param name="z"> Z座標</param>
+    /// <param name="level"> 敵のレベル</param>
+    /// <param name="id"> キャラ番号</param>
+    public void SpawnSetPosition(int x, int z, int level, int id)
+    {
+        _id = id;
+        _level = level;
+
+        int roomNo = _dungeonManager._floor.GetRoomNo(x, z);
+
+        Init(new Vector2Int(x, z), roomNo);
     }
 
     public void Spawn(int level,int id)
@@ -417,8 +450,6 @@ public abstract class Enemy : Character
         _level = level;
 
         base.Spawn();
-
-        _targetPos = transform.position;
     }
 
     protected override void Death()

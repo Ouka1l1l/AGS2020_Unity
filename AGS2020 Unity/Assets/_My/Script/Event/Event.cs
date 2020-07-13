@@ -13,6 +13,7 @@ public abstract class Event : MonoBehaviour
         Stairs, //階段
         NeedleFloor, //トゲ床
         ExplosionFloor, //爆発床
+        MonsterTrap,    //モンスター呼び寄せ
         Max
     }
 

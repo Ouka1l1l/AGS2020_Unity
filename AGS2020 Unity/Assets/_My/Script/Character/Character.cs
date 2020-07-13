@@ -217,11 +217,6 @@ public abstract class Character : MonoBehaviour
     private TrailRenderer _trailRenderer;
 
     /// <summary>
-    /// 待機アニメーションのハッシュ値
-    /// </summary>
-    protected int _idleHash;
-
-    /// <summary>
     /// ActFuncをターン中に１階だけ呼び出すようフラグ
     /// </summary>
     private bool _actFuncOnce = false;
@@ -256,8 +251,6 @@ public abstract class Character : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
 
         _trailRenderer = transform.GetComponentInChildren<TrailRenderer>();
-
-        _idleHash = Animator.StringToHash("Base Layer.アーマチュア|Idle");
     }
 
     /// <summary>
@@ -266,7 +259,7 @@ public abstract class Character : MonoBehaviour
     /// <returns> 待機アニメーションか</returns>
     private bool AnimationIdleDetection()
     {
-        return _idleHash == _animator.GetCurrentAnimatorStateInfo(0).fullPathHash;
+        return _animator.GetCurrentAnimatorStateInfo(0).IsName("アーマチュア|Idle") && !_animator.IsInTransition(0);
     }
 
     /// <summary>
@@ -526,7 +519,7 @@ public abstract class Character : MonoBehaviour
     /// <param name="skillType"> スキル攻撃のタイプ</param>
     /// <param name="attackPosList"> 攻撃範囲</param>
     /// <returns> 獲得経験値</returns>
-    private int SkillAttack(SkillAttackType skillType)
+    protected virtual int SkillAttack(SkillAttackType skillType)
     {
         if (_trailRenderer != null)
         {
@@ -558,8 +551,14 @@ public abstract class Character : MonoBehaviour
                 }
                 else
                 {
+                    if(_id != 0)
+                    {
+                        continue;
+                    }
+
                     target = _dungeonManager._floor._enemies[characterNo - 1];
                 }
+
                 if (target.Damage(_atk + data.addAtk, target._def))
                 {
                     ret += target._exp;
@@ -664,7 +663,7 @@ public abstract class Character : MonoBehaviour
     /// <returns> 獲得経験値</returns>
     protected int ThrustAttack()
     {
-        _animator.SetTrigger("HeavyAttackTrigger");
+        _animator.SetTrigger("ThrustAttackTrigger");
 
         return SkillAttack(SkillAttackType.ThrustAttack);
     }
@@ -691,7 +690,7 @@ public abstract class Character : MonoBehaviour
     /// <returns> 獲得経験値</returns>
     protected int MowDownAttack()
     {
-        _animator.SetTrigger("HeavyAttackTrigger");
+        _animator.SetTrigger("MowDownAttackTrigger");
 
         return SkillAttack(SkillAttackType.MowDownAttack);
     }
@@ -890,9 +889,16 @@ public abstract class Character : MonoBehaviour
 
         } while (flag);
 
+        Init(pos, sectionNo);
+    }
+
+    protected virtual void Init(Vector2Int pos, int roomNo)
+    {
         transform.position = new Vector3(pos.x, 0, pos.y);
+
+        _roomNo = roomNo;
+
         _destination = transform.position;
-        _roomNo = sectionNo;
 
         _thinkEnd = false;
         _actFuncOnce = false;

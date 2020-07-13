@@ -875,12 +875,52 @@ public class Floor : MonoBehaviour
         EnemysSpawn();
     }
 
+    public void SpawnEnemiesAround(Vector3 pos,Vector2Int range)
+    {
+        var terrainData = GetSurroundingTerrainData((int)pos.x, (int)pos.z, range.x, range.y);
+        var characterData = GetSurroundingCharacterData((int)pos.x, (int)pos.z, range.x, range.y);
+
+        int i = 0;
+        foreach (var key in terrainData.Keys)
+        {
+            if (terrainData[key] == Floor.TerrainType.Wall
+            || characterData[key] != -1)
+            {
+                continue;
+            }
+
+            //敵配列に空きがあったらそこに入れる
+            for (; i < _enemies.Count; i++)
+            {
+                if (_enemies[i] == null)
+                {
+                    Enemy enemy = Instantiate(_floorDatas.GetLotteryEnemy(0)).GetComponent<Enemy>();
+                    enemy.SpawnSetPosition((int)pos.x, (int)pos.z, 0, i + 1);
+                    _enemies[i] = enemy;
+
+                    i++;
+                    break;
+                }
+            }
+
+            //空きがなかったら敵配列を追加
+            if(i > _enemies.Count)
+            {
+                Enemy enemy = Instantiate(_floorDatas.GetLotteryEnemy(0)).GetComponent<Enemy>();
+                enemy.SpawnSetPosition((int)pos.x, (int)pos.z, 0, i + 1);
+                _enemies.Add(enemy);
+                i++;
+            }
+        }
+    }
+
     /// <summary>
     /// 敵を増員
     /// </summary>
     public void EnemyIncrease()
     {
-        for (int i = 0; i < _enemies.Count; i++)
+        int enemyMax = Mathf.Min(_enemies.Count, _enemyMax);
+        for (int i = 0; i < enemyMax; i++)
         {
             if (_enemies[i] == null)
             {
@@ -967,7 +1007,7 @@ public class Floor : MonoBehaviour
 
         int maskLayer = LayerMask.NameToLayer("MiniMapMask");
 
-        if(_miniMapMask[room.height / 2, room.width / 2].layer == maskLayer)
+        if(_miniMapMask[room.top + (room.height / 2), room.left + (room.width / 2)].layer == maskLayer)
         {
             return;
         }
