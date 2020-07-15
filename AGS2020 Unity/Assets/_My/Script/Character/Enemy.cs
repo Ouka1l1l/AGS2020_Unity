@@ -428,6 +428,28 @@ public abstract class Enemy : Character
         _targetPos = transform.position;
     }
 
+    private IEnumerator Appearance()
+    {
+        DungeonManager.instance.PauseStart();
+
+        transform.SetY(5.0f);
+
+        Vector3 ground = transform.position;
+        ground.y = 0.0f;
+
+        while (transform.position.y > 0)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, ground, Time.deltaTime * 7.0f);
+            transform.Rotate(Vector3.up, 5);
+            yield return null;
+        }
+
+        transform.SetY(0.0f);
+        transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
+
+        DungeonManager.instance.PauseEnd();
+    }
+
     /// <summary>
     /// 座標を指定してスポーン
     /// </summary>
@@ -443,6 +465,8 @@ public abstract class Enemy : Character
         int roomNo = DungeonManager.instance._floor.GetRoomNo(x, z);
 
         Init(new Vector2Int(x, z), roomNo);
+
+        StartCoroutine(Appearance());
     }
 
     public void Spawn(int level,int id)

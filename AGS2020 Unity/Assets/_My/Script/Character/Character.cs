@@ -242,7 +242,7 @@ public abstract class Character : MonoBehaviour
 
         _cp = 0;
 
-        _destination = transform.position;
+        //_destination = transform.position;
         _dir = Dir.Bottom;
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
 
@@ -406,6 +406,11 @@ public abstract class Character : MonoBehaviour
         if(!_animator.GetBool("MoveFlag"))
         {
             return true;
+        }
+
+        if(!_animator.GetCurrentAnimatorStateInfo(0).IsName("アーマチュア|Move") && _animator.IsInTransition(0))
+        {
+            return false;
         }
 
         transform.position = Vector3.MoveTowards(transform.position, _destination, Time.deltaTime * 5.0f);
