@@ -428,7 +428,7 @@ public class Player : Character
     {
         base.Death();
 
-        StartCoroutine(_dungeonManager.ReStart());
+        _dungeonManager.GameOver();
     }
 
     public override int CpAdd(int value)

@@ -6,6 +6,9 @@ using UnityEngine.SceneManagement;
 
 public class DungeonManager : Singleton<DungeonManager>
 {
+    [SerializeField]
+    private GameOver _gameOver;
+
     /// <summary>
     /// 階層
     /// </summary>
@@ -233,30 +236,8 @@ public class DungeonManager : Singleton<DungeonManager>
         _pause--;
     }
 
-    public IEnumerator ReStart()
+    public void GameOver()
     {
-        bool result = false;
-
-        var question = UIManager.instance.Question("再挑戦しますか?").Selection(r => result = r);
-
-        yield return StartCoroutine(question);
-
-        if (result)
-        {
-            SceneManager.LoadScene(0);
-        }
-        else
-        {
-            GameQuit();
-        }
-    }
-
-    public void GameQuit()
-    {
-        #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-        #else
-                Application.Quit();
-        #endif
+        _gameOver.gameObject.SetActive(true);
     }
 }

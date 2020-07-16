@@ -162,7 +162,7 @@ public class Menu : MonoBehaviour
 
         if (result)
         {
-            DungeonManager.instance.GameQuit();
+            DungeonManager.instance.GameOver();
         }
         else
         {
