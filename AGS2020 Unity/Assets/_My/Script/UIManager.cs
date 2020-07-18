@@ -98,9 +98,11 @@ public class UIManager : Singleton<UIManager>
         _texts = new Queue<string>();
     }
 
-    public void OpenLevelUpBonusPanel()
+    public IEnumerator OpenLevelUpBonusPanel()
     {
         _levelUpBonus.gameObject.SetActive(true);
+
+        yield return StartCoroutine(_levelUpBonus.LevelUpBonus());
     }
 
     /// <summary>

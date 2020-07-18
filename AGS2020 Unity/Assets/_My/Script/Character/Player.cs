@@ -64,7 +64,12 @@ public class Player : Character
 
     public override bool Think()
     {
-        if(_thinkEnd)
+        if(Input.GetKeyDown("4"))
+        {
+            StartCoroutine(ExpUp(300));
+        }
+
+        if (_thinkEnd)
         {
             return true;
         }
@@ -140,7 +145,7 @@ public class Player : Character
         int exp = Attack();
         if (exp > 0)
         {
-            ExpUp(exp);
+            StartCoroutine(ExpUp(exp));
         }
     }
 
@@ -253,7 +258,7 @@ public class Player : Character
         int exp = SkillAttackFunc();
         if (exp > 0)
         {
-            ExpUp(exp);
+            StartCoroutine(ExpUp(exp));
         }
 
         SkillAttackFunc = null;
@@ -293,14 +298,21 @@ public class Player : Character
     /// 経験値を増加
     /// </summary>
     /// <param name="exp"></param>
-    private void ExpUp(int exp)
+    /// <returns></returns>
+    private IEnumerator ExpUp(int exp)
     {
+        DungeonManager.instance.PauseStart();
+
         _exp += exp;
-        while(_exp >= _nextLevelExp)
+        while (_exp >= _nextLevelExp)
         {
             _exp -= _nextLevelExp;
             LevelUp();
+
+            yield return StartCoroutine(UIManager.instance.OpenLevelUpBonusPanel());
         }
+
+        DungeonManager.instance.PauseEnd();
     }
 
     private void LevelUp()
@@ -313,8 +325,6 @@ public class Player : Character
         _cpLimit += 10;
         _atk++;
         _def++;
-
-        UIManager.instance.OpenLevelUpBonusPanel();
     }
 
     public void LevelUpBonus(LevelUpBonus bonus)
