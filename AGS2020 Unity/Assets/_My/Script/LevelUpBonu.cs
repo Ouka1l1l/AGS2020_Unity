@@ -49,6 +49,9 @@ public class LevelUpBonu : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _levelText;
 
+    [SerializeField]
+    private SkillMenu _skillMenu;
+
     /// <summary>
     /// 覚えるスキル表示用スキルパネル
     /// </summary>
@@ -275,7 +278,14 @@ public class LevelUpBonu : MonoBehaviour
         }
         else
         {
-            UIManager.instance.GetSkillMenu().gameObject.SetActive(true);
+            ///////////
+            _skillMenu.gameObject.SetActive(true);
+            for (int i = 0; i < _player._skillAttackSlot.Length; i++)
+            {
+                _skillMenu.SetSkill(i, (int)_player._skillAttackSlot[i]);
+            }
+            //////////
+
             _skillPanel.gameObject.SetActive(true);
             _skillPanel.SetSkill(_skillData[_levelUpBonus[_choice]._val]);
 
@@ -310,7 +320,8 @@ public class LevelUpBonu : MonoBehaviour
         {
             _player.SetSkillSlot(slotNo, _levelUpBonus[_choice]._val);
 
-            UIManager.instance.GetSkillMenu().gameObject.SetActive(false);
+            _skillMenu.gameObject.SetActive(false);
+
             _skillPanel.gameObject.SetActive(false);
 
             LevelUpEnd();

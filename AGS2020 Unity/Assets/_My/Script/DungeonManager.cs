@@ -192,6 +192,12 @@ public class DungeonManager : Singleton<DungeonManager>
     /// </summary>
     public void NextFloor()
     {
+        if (_hierarchy >= 10)
+        {
+            SceneManager.LoadScene("Clear");
+            return;
+        }
+
         _hierarchy++;
         _floor.CreateFloor(new Vector2Int(50, 50), 10);
         _player.Spawn();
