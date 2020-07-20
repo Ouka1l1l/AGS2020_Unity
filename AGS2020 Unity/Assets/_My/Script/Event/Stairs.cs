@@ -22,6 +22,8 @@ public class Stairs : Event
 
     private IEnumerator NextLevel()
     {
+        DungeonManager.instance.PauseStart();
+
         bool result = false;
 
         var question = UIManager.instance.Question("次の階に進みますか?").Selection(r => result = r);
@@ -32,5 +34,7 @@ public class Stairs : Event
         {
             DungeonManager.instance.NextFloor();
         }
+
+        DungeonManager.instance.PauseEnd();
     }
 }

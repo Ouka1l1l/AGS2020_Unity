@@ -30,6 +30,8 @@ public class GameOver : MonoBehaviour
 
     public IEnumerator ReStart()
     {
+        DungeonManager.instance.PauseStart();
+
         bool result = false;
 
         var question = UIManager.instance.Question("再挑戦しますか?").Selection(r => result = r);
@@ -44,6 +46,8 @@ public class GameOver : MonoBehaviour
         {
             GameQuit();
         }
+
+        DungeonManager.instance.PauseEnd();
     }
 
     public void GameQuit()

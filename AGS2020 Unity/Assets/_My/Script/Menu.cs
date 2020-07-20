@@ -154,6 +154,8 @@ public class Menu : MonoBehaviour
 
     private IEnumerator GiveUp()
     {
+        DungeonManager.instance.PauseStart();
+
         bool result = false;
 
         var question = UIManager.instance.Question("あきらめますか?").Selection(r => result = r);
@@ -168,6 +170,8 @@ public class Menu : MonoBehaviour
         {
             PauseEnd();
         }
+
+        DungeonManager.instance.PauseEnd();
     }
 
     public void PauseStart()

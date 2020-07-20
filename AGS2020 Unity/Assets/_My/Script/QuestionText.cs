@@ -29,7 +29,6 @@ public class QuestionText : MonoBehaviour
         _yes = false;
         _yesPanel.SetAlpha(0);
         _noPanel.SetAlpha(0.5f);
-        DungeonManager.instance.PauseStart();
     }
 
     public IEnumerator Selection(Action<bool> CallBack)
@@ -77,7 +76,6 @@ public class QuestionText : MonoBehaviour
     private void Submit(Action<bool> CallBack)
     {
         CallBack(_yes);
-        DungeonManager.instance.PauseEnd();
         gameObject.SetActive(false);
     }
 

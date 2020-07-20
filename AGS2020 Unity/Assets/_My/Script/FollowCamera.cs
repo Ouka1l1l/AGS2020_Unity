@@ -7,7 +7,7 @@ public class FollowCamera : MonoBehaviour
     /// <summary>
     /// ターゲット
     /// </summary>
-    private Player _target;
+    private GameObject _target;
 
     /// <summary>
     /// プレイヤーとカメラとの距離
@@ -31,7 +31,7 @@ public class FollowCamera : MonoBehaviour
     /// フォローするターゲットをセット
     /// </summary>
     /// <param name="target"></param> フォローするターゲット
-    public void SetTarget(Player target)
+    public void SetTarget(GameObject target)
     {
         _target = target;
         transform.position = _target.transform.position + _offset;

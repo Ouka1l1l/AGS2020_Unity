@@ -376,7 +376,7 @@ public class Player : Character
 
         _dungeonManager._floor.UpdateMiniMap(_roomNo);
 
-        Camera.main.GetComponent<FollowCamera>().SetTarget(this);
+        Camera.main.GetComponent<FollowCamera>().SetTarget(gameObject);
     }
 
     /// <summary>
