@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class StartingPoint : MonoBehaviour
+public class ColdSleep : MonoBehaviour
 {
     [SerializeField]
     private QuestionText _questionText;
@@ -21,24 +21,23 @@ public class StartingPoint : MonoBehaviour
         var player = other.gameObject.GetComponent<HubPlayer>();
         player.Stop();
 
-        StartCoroutine(Departure(player));
-        
+        StartCoroutine(Sleep(player));
     }
 
-    private IEnumerator Departure(HubPlayer player)
+    private IEnumerator Sleep(HubPlayer player)
     {
         bool result = false;
 
-        _questionText.SetQuestionText("ダンジョンに挑戦しますか？");
+        _questionText.SetQuestionText("タイトルに戻りますか？");
         yield return StartCoroutine(_questionText.Selection(r => result = r));
 
         if (result)
         {
-            SceneManager.LoadScene("Dungeon");
+            SceneManager.LoadScene("Title");
         }
         else
         {
-            player.ReturnRoom(Vector3.left);
+            player.ReturnRoom(Vector3.back);
         }
     }
 }
