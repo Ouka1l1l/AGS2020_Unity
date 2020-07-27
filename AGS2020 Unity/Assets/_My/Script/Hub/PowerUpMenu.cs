@@ -3,9 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class PowerUpMenu : MonoBehaviour
 {
+    [SerializeField]
+    private Button _button;
+
     [SerializeField]
     private EventTrigger _eventTrigger;
 
@@ -22,22 +26,29 @@ public class PowerUpMenu : MonoBehaviour
 
     public void Test()
     {
-        foreach(var trigger in _eventTrigger.triggers)
+        for (int i = 0; i < _eventTrigger.triggers.Count; i++)
         {
-            if(trigger.eventID != EventTriggerType.Select)
+            if(_eventTrigger.triggers[i].eventID != EventTriggerType.Submit)
             {
                 continue;
             }
 
             EventTrigger.Entry entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.Select;
+            entry.eventID = EventTriggerType.Submit;
+            entry.callback.AddListener((x) => OnSubmit());
 
             ////////////////呼ぶ関数を切り替えて
+            _eventTrigger.triggers[i] = entry;
         }
     }
 
-    private void OnSelect()
+    public void OnSubmit1()
     {
-        Debug.Log("決定");
+        Debug.Log("決定1");
+    }
+
+    private void OnSubmit()
+    {
+        Debug.Log("決定2");
     }
 }
