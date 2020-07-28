@@ -122,10 +122,6 @@ public class UIManager : Singleton<UIManager>
     public void CloseMenu()
     {
         _menus.Pop().gameObject.SetActive(false);
-        if(_menus.Count > 0)
-        {
-            _menus.Peek().PauseEnd();
-        }
     }
 
     /// <summary>

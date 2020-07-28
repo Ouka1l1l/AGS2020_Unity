@@ -7,6 +7,15 @@ using UnityEngine.EventSystems;
 
 public class Menu : BaseMenu
 {
+    private bool _pause;
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
+        _pause = false;
+    }
+
     public void SubmitFootButton()
     {
         DungeonManager.instance._player.FootEvent();
@@ -39,5 +48,15 @@ public class Menu : BaseMenu
         }
 
         DungeonManager.instance.PauseEnd();
+    }
+
+    private void PauseStart()
+    {
+        _pause = true;
+    }
+
+    private void PauseEnd()
+    {
+        _pause = false;
     }
 }

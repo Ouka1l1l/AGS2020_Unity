@@ -6,45 +6,45 @@ using UnityEngine.UI;
 
 public class ItemMenu : BaseMenu
 {
-    //[SerializeField]
-    //private List<TextMeshProUGUI> _itemNames;
+    [SerializeField]
+    private List<Button> _itemButtons;
 
-    //[SerializeField]
-    //private Image _leftImage;
+    [SerializeField]
+    private List<TextMeshProUGUI> _itemNames;
 
-    //[SerializeField]
-    //private Image _rightImage;
+    [SerializeField]
+    private Button _backButton;
 
-    //private float _oldHorizontal;
+    [SerializeField]
+    private Button _nextButton;
 
-    //private int _indexOffset;
+    private int _indexOffset;
 
-    //// Start is called before the first frame update
-    //new private void Start()
-    //{
-    //    base.Start();
+    // Start is called before the first frame update
+    private void Start()
+    {
+        foreach (var name in _itemNames)
+        {
+            name.text = "";
+        }
+    }
 
-    //    foreach(var name in _itemNames)
-    //    {
-    //        name.text = "";
-    //    }
+    protected override void OnEnable()
+    {
+        base.OnEnable();
 
-    //    _rightImage.SetAlpha(0.2f);
-    //    _leftImage.SetAlpha(0.2f);
-    //}
+        _indexOffset = 0;
+    }
 
-    //new private void OnEnable()
-    //{
-    //    base.OnEnable();
+    public override void Init()
+    {
+        base.Init();
+        ItemTextUpdate();
+    }
 
-    //    _oldHorizontal = Input.GetAxis("Horizontal");
-    //    _indexOffset = 0;
-    //}
-
-    //// Update is called once per frame
+    // Update is called once per frame
     //void Update()
     //{
-    //    var horizontal = Input.GetAxis("Horizontal");
     //    var itemList = DungeonManager.instance._player._itemList;
 
     //    int textMax = _itemNames.Count;
@@ -76,7 +76,7 @@ public class ItemMenu : BaseMenu
     //        _rightImage.SetAlpha(0.2f);
     //    }
 
-    //    for(int i = 0; i < textMax; i++)
+    //    for (int i = 0; i < textMax; i++)
     //    {
     //        if (i + _indexOffset < itemMax)
     //        {
@@ -88,7 +88,7 @@ public class ItemMenu : BaseMenu
     //        }
     //    }
 
-    //    if(_indexOffset + textMax < itemMax)
+    //    if (_indexOffset + textMax < itemMax)
     //    {
     //        Choose(textMax);
     //    }
@@ -109,9 +109,49 @@ public class ItemMenu : BaseMenu
     //    _oldHorizontal = horizontal;
     //}
 
-    //protected override void Submit()
-    //{
-    //    DungeonManager.instance._player.UseItem(_choose + _indexOffset);
-    //    UIManager.instance.CloseMenuAll();
-    //}
+    public void Submit(int no)
+    {
+        DungeonManager.instance._player.UseItem(no + _indexOffset);
+        UIManager.instance.CloseMenuAll();
+    }
+
+    public void Select(bool isNext)
+    {
+        if (isNext)
+        {
+            _indexOffset += _itemNames.Count;
+        }
+        else
+        {
+            _indexOffset -= _itemNames.Count;
+        }
+        ItemTextUpdate();
+
+        _startSelectButton.Select();
+    }
+
+    private void ItemTextUpdate()
+    {
+        var itemList = DungeonManager.instance._player._itemList;
+
+        int textMax = _itemNames.Count;
+        int itemMax = itemList.Count;
+
+        for (int i = 0; i < textMax; i++)
+        {
+            bool flag = (i + _indexOffset < itemMax);
+            _itemButtons[i].interactable = flag;
+            if (flag)
+            {
+                _itemNames[i].text = itemList[i + _indexOffset]._name;
+            }
+            else
+            {
+                _itemNames[i].text = "";
+            }
+        }
+
+        _backButton.interactable = (_indexOffset > 0);
+        _nextButton.interactable = ((_indexOffset / textMax) < ((itemMax - 1) / textMax));
+    }
 }

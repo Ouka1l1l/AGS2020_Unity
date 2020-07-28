@@ -7,6 +7,9 @@ using UnityEngine.UI;
 public class StatusMenu : BaseMenu
 {
     [SerializeField]
+    private Button _statusButton;
+
+    [SerializeField]
     private TextMeshProUGUI _AtkText;
 
     [SerializeField]
@@ -29,9 +32,15 @@ public class StatusMenu : BaseMenu
         _DefText.text = "";
     }
 
-    new protected void OnEnable()
+    protected override void OnEnable()
     {
-        DungeonManager.instance.PauseStart();
+        base.OnEnable();
+
+        Color color = _statusButton.colors.normalColor;
+        color.a = _statusButton.colors.selectedColor.a;
+        var colorBlock = _statusButton.colors;
+        colorBlock.normalColor = color;
+        _statusButton.colors = colorBlock;
 
         var player = DungeonManager.instance._player;
 
@@ -43,6 +52,19 @@ public class StatusMenu : BaseMenu
         _AtkText.text = player._atk.ToString();
 
         _DefText.text = player._def.ToString();
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+
+        Color color = _statusButton.colors.normalColor;
+        color.a = 0;
+        var colorBlock = _statusButton.colors;
+        colorBlock.normalColor = color;
+        _statusButton.colors = colorBlock;
+
+        _statusButton.Select();
     }
 
     // Update is called once per frame
