@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class StatusMenu : Menu
+public class StatusMenu : BaseMenu
 {
     [SerializeField]
     private TextMeshProUGUI _AtkText;
@@ -23,7 +23,7 @@ public class StatusMenu : Menu
     }
 
     // Start is called before the first frame update
-    new void Start()
+    private void Start()
     {
         _AtkText.text = "";
         _DefText.text = "";
@@ -39,6 +39,10 @@ public class StatusMenu : Menu
         {
             _skillPanels[i].SetSkill(_data[(int)player._skillAttackSlot[i]]);
         }
+
+        _AtkText.text = player._atk.ToString();
+
+        _DefText.text = player._def.ToString();
     }
 
     // Update is called once per frame
@@ -48,11 +52,5 @@ public class StatusMenu : Menu
         {
             UIManager.instance.CloseMenu();
         }
-
-        var player = DungeonManager.instance._player;
-
-        _AtkText.text = player._atk.ToString();
-
-        _DefText.text = player._def.ToString();
     }
 }

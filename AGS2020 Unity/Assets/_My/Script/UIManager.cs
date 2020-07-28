@@ -32,12 +32,6 @@ public class UIManager : Singleton<UIManager>
     private Menu _menu;
 
     [SerializeField]
-    private ItemMenu _itemMenu;
-
-    [SerializeField]
-    private StatusMenu _statusMenu;
-
-    [SerializeField]
     private QuestionText _QuestionPanel;
 
     [SerializeField]
@@ -46,7 +40,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField]
     private LevelUpBonu _levelUpBonus;
 
-    private Stack<Menu> _menus;
+    private Stack<BaseMenu> _menus;
 
     /// <summary>
     /// ミニマップ用カメラ
@@ -63,7 +57,7 @@ public class UIManager : Singleton<UIManager>
     void Start()
     {
         _texts = new Queue<string>();
-        _menus = new Stack<Menu>();
+        _menus = new Stack<BaseMenu>();
     }
 
     // Update is called once per frame
@@ -112,24 +106,14 @@ public class UIManager : Singleton<UIManager>
     {
         _menus.Push(_menu);
         _menu.gameObject.SetActive(true);
+        _menu.Init();
     }
 
-    /// <summary>
-    /// アイテムメニューを開く
-    /// </summary>
-    public void OpenItemMenu()
+    public void OpenMenu(BaseMenu menu)
     {
-        _menus.Push(_itemMenu);
-        _itemMenu.gameObject.SetActive(true);
-    }
-
-    /// <summary>
-    /// ステータスメニューを開く
-    /// </summary>
-    public void OpenStatusMenu()
-    {
-        _menus.Push(_statusMenu);
-        _statusMenu.gameObject.SetActive(true);
+        _menus.Push(menu);
+        menu.gameObject.SetActive(true);
+        menu.Init();
     }
 
     /// <summary>
