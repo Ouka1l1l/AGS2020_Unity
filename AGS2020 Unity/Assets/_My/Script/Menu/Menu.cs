@@ -34,7 +34,7 @@ public class Menu : BaseMenu
 
         bool result = false;
 
-        var question = UIManager.instance.Question("あきらめますか?").Selection(r => result = r);
+        var question = UIManager.instance.Question("あきらめますか?").Question(r => result = r);
 
         yield return StartCoroutine(question);
 

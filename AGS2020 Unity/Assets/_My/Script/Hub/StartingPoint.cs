@@ -30,7 +30,7 @@ public class StartingPoint : MonoBehaviour
         bool result = false;
 
         _questionText.SetQuestionText("ダンジョンに挑戦しますか？");
-        yield return StartCoroutine(_questionText.Selection(r => result = r));
+        yield return StartCoroutine(_questionText.Question(r => result = r));
 
         if (result)
         {

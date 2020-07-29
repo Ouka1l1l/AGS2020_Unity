@@ -34,7 +34,7 @@ public class GameOver : MonoBehaviour
 
         bool result = false;
 
-        var question = UIManager.instance.Question("再挑戦しますか?").Selection(r => result = r);
+        var question = UIManager.instance.Question("再挑戦しますか?").Question(r => result = r);
 
         yield return StartCoroutine(question);
 

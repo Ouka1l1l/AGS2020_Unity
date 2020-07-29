@@ -11,12 +11,14 @@ public class QuestionText : MonoBehaviour
     private TextMeshProUGUI _question;
 
     [SerializeField]
-    private Image _yesPanel;
+    private Button _yesButton;
 
     [SerializeField]
-    private Image _noPanel;
+    private Button _noButton;
 
     private bool _yes;
+
+    private bool _isSubmit;
 
     // Start is called before the first frame update
     void Start()
@@ -26,57 +28,33 @@ public class QuestionText : MonoBehaviour
 
     void OnEnable()
     {
+        _isSubmit = false;
         _yes = false;
-        _yesPanel.SetAlpha(0);
-        _noPanel.SetAlpha(0.5f);
     }
 
-    public IEnumerator Selection(Action<bool> CallBack)
+    public IEnumerator Question(Action<bool> CallBack)
     {
-        yield return null;
+        _noButton.Select();
 
         //決定されるまで
-        while (!Input.GetButtonDown("Submit"))
+        while (!_isSubmit)
         {
-            if(Input.GetButtonDown("Cancel"))
-            {
-                _yes = false;
-                Submit(CallBack);
-                yield break;
-            }
-
-            var h = Input.GetAxis("Horizontal");
-
-            if (h < 0)
-            {
-                _yes = true;
-            }
-            if (h > 0)
-            {
-                _yes = false;
-            }
-
-            if (_yes)
-            {
-                _yesPanel.SetAlpha(0.5f);
-                _noPanel.SetAlpha(0);
-            }
-            else
-            {
-                _yesPanel.SetAlpha(0);
-                _noPanel.SetAlpha(0.5f);
-            }
-
             yield return null;
         }
 
-        Submit(CallBack);
+        Selection(CallBack);
     }
 
-    private void Submit(Action<bool> CallBack)
+    private void Selection(Action<bool> CallBack)
     {
         CallBack(_yes);
         gameObject.SetActive(false);
+    }
+
+    public void Submit(bool isYes)
+    {
+        _isSubmit = true;
+        _yes = isYes;
     }
 
     public void SetQuestionText(string str)

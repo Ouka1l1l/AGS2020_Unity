@@ -29,7 +29,7 @@ public class ColdSleep : MonoBehaviour
         bool result = false;
 
         _questionText.SetQuestionText("タイトルに戻りますか？");
-        yield return StartCoroutine(_questionText.Selection(r => result = r));
+        yield return StartCoroutine(_questionText.Question(r => result = r));
 
         if (result)
         {

@@ -7,6 +7,9 @@ using UnityEngine.UI;
 public class ItemMenu : BaseMenu
 {
     [SerializeField]
+    private Button _itemMenuButton;
+
+    [SerializeField]
     private List<Button> _itemButtons;
 
     [SerializeField]
@@ -20,14 +23,8 @@ public class ItemMenu : BaseMenu
 
     private int _indexOffset;
 
-    // Start is called before the first frame update
-    private void Start()
-    {
-        foreach (var name in _itemNames)
-        {
-            name.text = "";
-        }
-    }
+    [SerializeField]
+    private Button _exceptionButton;
 
     protected override void OnEnable()
     {
@@ -36,78 +33,25 @@ public class ItemMenu : BaseMenu
         _indexOffset = 0;
     }
 
-    public override void Init()
+    protected override void OnDisable()
     {
-        base.Init();
-        ItemTextUpdate();
+        _itemMenuButton.Select();
+
+        base.OnDisable();
     }
 
-    // Update is called once per frame
-    //void Update()
-    //{
-    //    var itemList = DungeonManager.instance._player._itemList;
+    public override void Init()
+    {
+        ItemTextUpdate();
 
-    //    int textMax = _itemNames.Count;
-    //    int itemMax = itemList.Count;
+        if (0 >=DungeonManager.instance._player._itemList.Count)
+        {
+            _exceptionButton.Select();
+            return;
+        }
 
-
-    //    if (_indexOffset > 0)
-    //    {
-    //        _leftImage.SetAlpha(0.5f);
-    //        if (horizontal < 0 && _oldHorizontal == 0)
-    //        {
-    //            _indexOffset -= textMax;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        _leftImage.SetAlpha(0.2f);
-    //    }
-    //    if ((_indexOffset / textMax) < ((itemMax - 1) / textMax))
-    //    {
-    //        _rightImage.SetAlpha(0.5f);
-    //        if (horizontal > 0 && _oldHorizontal == 0)
-    //        {
-    //            _indexOffset += textMax;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        _rightImage.SetAlpha(0.2f);
-    //    }
-
-    //    for (int i = 0; i < textMax; i++)
-    //    {
-    //        if (i + _indexOffset < itemMax)
-    //        {
-    //            _itemNames[i].text = itemList[i + _indexOffset]._name;
-    //        }
-    //        else
-    //        {
-    //            _itemNames[i].text = "";
-    //        }
-    //    }
-
-    //    if (_indexOffset + textMax < itemMax)
-    //    {
-    //        Choose(textMax);
-    //    }
-    //    else
-    //    {
-    //        int headlineMax = itemMax % textMax;
-
-    //        if (headlineMax == 0 && itemMax > 0)
-    //        {
-    //            Choose(textMax);
-    //        }
-    //        else
-    //        {
-    //            Choose(itemMax % textMax);
-    //        }
-    //    }
-
-    //    _oldHorizontal = horizontal;
-    //}
+        base.Init();
+    }
 
     public void Submit(int no)
     {
@@ -140,7 +84,8 @@ public class ItemMenu : BaseMenu
         for (int i = 0; i < textMax; i++)
         {
             bool flag = (i + _indexOffset < itemMax);
-            _itemButtons[i].interactable = flag;
+            _itemButtons[i].targetGraphic.enabled = flag;
+            _itemButtons[i].enabled = flag;
             if (flag)
             {
                 _itemNames[i].text = itemList[i + _indexOffset]._name;
@@ -151,7 +96,16 @@ public class ItemMenu : BaseMenu
             }
         }
 
-        _backButton.interactable = (_indexOffset > 0);
-        _nextButton.interactable = ((_indexOffset / textMax) < ((itemMax - 1) / textMax));
+        bool interactable = (_indexOffset > 0);
+        if(_backButton.enabled != interactable)
+        {
+            _backButton.enabled = interactable;
+        }
+
+        interactable = ((_indexOffset / textMax) < ((itemMax - 1) / textMax));
+        if(_nextButton.enabled != interactable)
+        {
+            _nextButton.enabled = interactable;
+        }
     }
 }
