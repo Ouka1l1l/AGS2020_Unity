@@ -16,6 +16,7 @@ public abstract class BaseMenu : MonoBehaviour
     public virtual void Init()
     {
         _startSelectButton.Select();
+        _startSelectButton.OnSelect(null);
     }
 
     protected virtual void OnDisable()

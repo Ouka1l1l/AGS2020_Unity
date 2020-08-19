@@ -8,47 +8,71 @@ using UnityEngine.UI;
 public class PowerUpMenu : MonoBehaviour
 {
     [SerializeField]
-    private Button _button;
+    private List<GameObject> _buttonList;
+
+    private int _currentButtonListIndex = 0;
 
     [SerializeField]
-    private EventTrigger _eventTrigger;
+    private Button _backButton;
+
+    [SerializeField]
+    private Button _nextButton;
+
+    [SerializeField]
+    private List<Button> _startSelectButtonList;
 
     // Start is called before the first frame update
     void Start()
     {
+
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Init()
     {
-        
+        _currentButtonListIndex = 0;
+
+        ButtonUpdate();
+
+        _startSelectButtonList[_currentButtonListIndex].Select();
     }
 
-    public void Test()
+    public void Cancel()
     {
-        for (int i = 0; i < _eventTrigger.triggers.Count; i++)
+        gameObject.SetActive(false);
+    }
+
+    public void Select(bool isNext)
+    {
+        _buttonList[_currentButtonListIndex].SetActive(false);
+
+        if (isNext)
         {
-            if(_eventTrigger.triggers[i].eventID != EventTriggerType.Submit)
-            {
-                continue;
-            }
-
-            EventTrigger.Entry entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.Submit;
-            entry.callback.AddListener((x) => OnSubmit());
-
-            ////////////////呼ぶ関数を切り替えて
-            _eventTrigger.triggers[i] = entry;
+            _currentButtonListIndex++;
         }
+        else
+        {
+            _currentButtonListIndex--;
+        }
+
+        _buttonList[_currentButtonListIndex].SetActive(true);
+        _startSelectButtonList[_currentButtonListIndex].Select();
+        _startSelectButtonList[_currentButtonListIndex].OnSelect(null);
+
+        ButtonUpdate();
     }
 
-    public void OnSubmit1()
+    private void ButtonUpdate()
     {
-        Debug.Log("決定1");
-    }
+        bool interactable = (_currentButtonListIndex > 0);
+        if (_backButton.enabled != interactable)
+        {
+            _backButton.enabled = interactable;
+        }
 
-    private void OnSubmit()
-    {
-        Debug.Log("決定2");
+        interactable = (_currentButtonListIndex < _buttonList.Count - 1);
+        if (_nextButton.enabled != interactable)
+        {
+            _nextButton.enabled = interactable;
+        }
     }
 }

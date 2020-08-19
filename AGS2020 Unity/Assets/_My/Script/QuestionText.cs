@@ -35,6 +35,7 @@ public class QuestionText : MonoBehaviour
     public IEnumerator Question(Action<bool> CallBack)
     {
         _noButton.Select();
+        _noButton.OnSelect(null);
 
         //決定されるまで
         while (!_isSubmit)

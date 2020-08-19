@@ -17,11 +17,13 @@ public class HubPlayer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _updetor = Normal;
+        _updetor = Wait;
 
         _animator = GetComponent<Animator>();
 
         Camera.main.GetComponent<FollowCamera>().SetTarget(gameObject);
+
+        StartCoroutine(StartMove());
     }
 
     // Update is called once per frame
@@ -72,6 +74,11 @@ public class HubPlayer : MonoBehaviour
         _animator.SetBool("MoveFlag", false);
     }
 
+    public void Movement()
+    {
+        _updetor = Normal;
+    }
+
     public void ReturnRoom(Vector3 direction)
     {
         _targetPos = transform.position + direction;
@@ -80,5 +87,12 @@ public class HubPlayer : MonoBehaviour
         _animator.SetBool("MoveFlag", true);
 
         _updetor = Return;
+    }
+
+    public IEnumerator StartMove()
+    {
+        yield return new WaitForSeconds(1);
+
+        ReturnRoom(Vector3.back * 2);
     }
 }

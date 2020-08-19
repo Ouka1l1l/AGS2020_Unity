@@ -1,17 +1,27 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
-public class SaveData : MonoBehaviour
+public class SaveData : Singleton<SaveData>
 {
     public PlayerData _playerData { get; private set; }
 
     // Start is called before the first frame update
     void Start()
     {
+        _playerData = new PlayerData();
+        CreateNewData();
+    }
 
+    public void CreateNewData()
+    {
+        foreach(PlayerData.Status s in Enum.GetValues(typeof(PlayerData.Status)))
+        {
+            _playerData.upCounts[s] = 0;
+        }
     }
 
     /// <summary>
@@ -86,12 +96,17 @@ public class SaveData : MonoBehaviour
 [System.Serializable]
 public class PlayerData
 {
-    public int hpUpCount = 0;
-    public int cpUpCount = 0;
-    public int atkUpCount = 0;
-    public int defUpCount = 0;
-    public int regeneUpCount = 0;
-    public int itemMaxUpCount = 0;
+    public enum Status
+    {
+        Hp,
+        Cp,
+        Atk,
+        Def,
+        Regene,
+        BagCapacity
+    }
+
+    public Dictionary<Status, int> upCounts = new Dictionary<Status, int>();
 
     public int parts = 0;
 }

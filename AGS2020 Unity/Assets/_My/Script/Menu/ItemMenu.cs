@@ -36,6 +36,7 @@ public class ItemMenu : BaseMenu
     protected override void OnDisable()
     {
         _itemMenuButton.Select();
+        _itemMenuButton.OnSelect(null);
 
         base.OnDisable();
     }
@@ -47,6 +48,7 @@ public class ItemMenu : BaseMenu
         if (0 >=DungeonManager.instance._player._itemList.Count)
         {
             _exceptionButton.Select();
+            _exceptionButton.OnSelect(null);
             return;
         }
 
@@ -72,6 +74,7 @@ public class ItemMenu : BaseMenu
         ItemTextUpdate();
 
         _startSelectButton.Select();
+        _startSelectButton.OnSelect(null);
     }
 
     private void ItemTextUpdate()

@@ -7,13 +7,12 @@ using UnityEngine.EventSystems;
 
 public class Menu : BaseMenu
 {
-    private bool _pause;
+    [SerializeField]
+    private Button _giveUpButton;
 
     protected override void OnEnable()
     {
         base.OnEnable();
-
-        _pause = false;
     }
 
     public void SubmitFootButton()
@@ -24,7 +23,6 @@ public class Menu : BaseMenu
 
     public void SubmitGiveUpButton()
     {
-        PauseStart();
         StartCoroutine(GiveUp());
     }
 
@@ -44,19 +42,10 @@ public class Menu : BaseMenu
         }
         else
         {
-            PauseEnd();
+            _giveUpButton.Select();
+            _giveUpButton.OnSelect(null);
         }
 
         DungeonManager.instance.PauseEnd();
-    }
-
-    private void PauseStart()
-    {
-        _pause = true;
-    }
-
-    private void PauseEnd()
-    {
-        _pause = false;
     }
 }

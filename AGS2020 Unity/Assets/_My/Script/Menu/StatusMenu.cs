@@ -65,6 +65,7 @@ public class StatusMenu : BaseMenu
         _statusButton.colors = colorBlock;
 
         _statusButton.Select();
+        _statusButton.OnSelect(null);
     }
 
     // Update is called once per frame

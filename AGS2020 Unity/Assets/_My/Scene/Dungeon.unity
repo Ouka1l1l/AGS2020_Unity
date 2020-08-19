@@ -3365,6 +3365,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startSelectButton: {fileID: 1340487934}
+  _giveUpButton: {fileID: 369768048}
 --- !u!114 &347631708
 MonoBehaviour:
   m_ObjectHideFlags: 0
