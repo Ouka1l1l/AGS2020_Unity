@@ -22,6 +22,8 @@ public class SaveData : Singleton<SaveData>
         {
             _playerData.upCounts[s] = 0;
         }
+
+        _playerData.parts = 0;
     }
 
     /// <summary>

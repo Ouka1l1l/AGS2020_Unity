@@ -7,47 +7,64 @@ using UnityEngine.SceneManagement;
 public class GameOver : MonoBehaviour
 {
     [SerializeField]
-    private TextMeshProUGUI _text;
+    private TextMeshProUGUI _arrivalFloorText;
+
+    [SerializeField]
+    private TextMeshProUGUI _conversionText;
+
+    [SerializeField]
+    private TextMeshProUGUI _partsText;
+
+    [SerializeField]
+    private TextMeshProUGUI _addPartsText;
 
     private void OnEnable()
     {
         DungeonManager.instance.PauseStart();
 
-        _text.text = string.Format("{0:d}階まで到達した", DungeonManager.instance._hierarchy);
+        _arrivalFloorText.text = string.Format("{0:d}階まで到達した", DungeonManager.instance._hierarchy);
+
+        _conversionText.gameObject.SetActive(false);
+        _partsText.gameObject.SetActive(false);
+        _addPartsText.gameObject.SetActive(false);
 
         StartCoroutine(GameOverFunc());
     }
 
     public IEnumerator GameOverFunc()
     {
-        while(!Input.GetButtonDown("Submit"))
-        {
-            yield return null;
-        }
+        yield return null;
 
-        StartCoroutine(ReStart());
-    }
+        yield return new WaitUntil(() => Input.GetButtonDown("Submit"));
 
-    public IEnumerator ReStart()
-    {
-        DungeonManager.instance.PauseStart();
+        _conversionText.gameObject.SetActive(true);
+        _partsText.gameObject.SetActive(true);
 
-        bool result = false;
+        _partsText.text = string.Format("パーツ {0:d}", SaveData.instance._playerData.parts);
 
-        var question = UIManager.instance.Question("再挑戦しますか?").Question(r => result = r);
+        var itemList = DungeonManager.instance._player._itemList;
 
-        yield return StartCoroutine(question);
+        int addParts = 5 * itemList.Count;
 
-        if (result)
-        {
-            SceneManager.LoadScene(0);
-        }
-        else
-        {
-            GameQuit();
-        }
+        _addPartsText.gameObject.SetActive(true);
 
-        DungeonManager.instance.PauseEnd();
+        _addPartsText.text = string.Format("+{0:d}", addParts);
+
+        yield return null;
+
+        yield return new WaitUntil(() => Input.GetButtonDown("Submit"));
+
+        _addPartsText.gameObject.SetActive(false);
+
+        SaveData.instance._playerData.parts += addParts;
+
+        _partsText.text = string.Format("パーツ {0:d}", SaveData.instance._playerData.parts);
+
+        yield return null;
+
+        yield return new WaitUntil(() => Input.GetButtonDown("Submit"));
+
+        SceneManager.LoadScene("Hub");
     }
 
     public void GameQuit()
