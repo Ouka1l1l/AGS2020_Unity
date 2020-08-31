@@ -38,6 +38,16 @@ public class ColdSleep : MonoBehaviour
     {
         bool result = false;
 
+        _questionText.SetQuestionText("セーブしますか？");
+        yield return StartCoroutine(_questionText.Question(r => result = r));
+
+        if (result)
+        {
+            SaveData.instance.Save();
+        }
+
+        _questionText.gameObject.SetActive(true);
+
         _questionText.SetQuestionText("タイトルに戻りますか？");
         yield return StartCoroutine(_questionText.Question(r => result = r));
 

@@ -9,9 +9,23 @@ public class SaveData : Singleton<SaveData>
 {
     public PlayerData _playerData { get; private set; }
 
+    /// <summary>
+    /// セーブデータフォルダへのパス
+    /// </summary>
+    private string directoryPath;
+
+    /// <summary>
+    /// セーブデータファイルへのパス
+    /// </summary>
+    private string filePath;
+
     // Start is called before the first frame update
     void Start()
     {
+        directoryPath = Path.Combine(Application.dataPath, @"SaveData");
+
+        filePath = Path.Combine(directoryPath, "Data.txt");
+
         _playerData = new PlayerData();
         CreateNewData();
     }
@@ -26,19 +40,26 @@ public class SaveData : Singleton<SaveData>
         _playerData.parts = 0;
     }
 
+    public bool DirectoryCheck()
+    {
+        return Directory.Exists(directoryPath);
+    }
+
+    public bool FileCheck()
+    {
+        return File.Exists(filePath);
+    }
+
     /// <summary>
     /// セーブする
     /// </summary>
-    /// <param name="playerData"></param>
-    public void Save(PlayerData playerData)
+    public void Save()
     {
-        var directoryPath = Path.Combine(Application.dataPath, @"SaveData");
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
         }
 
-        var filePath = Path.Combine(directoryPath, "Data.txt");
         if (!File.Exists(filePath))
         {
             File.Create(filePath);
@@ -53,7 +74,7 @@ public class SaveData : Singleton<SaveData>
         {
             //プレイヤデータをバイナリでシリアル化し
             //ファイルに書き込み
-            binaryFormatter.Serialize(file, playerData);
+            binaryFormatter.Serialize(file, _playerData);
         }
         finally
         {
@@ -67,13 +88,11 @@ public class SaveData : Singleton<SaveData>
     /// </summary>
     public void Load()
     {
-        var directoryPath = Path.Combine(Application.dataPath, @"SaveData");
         if (!Directory.Exists(directoryPath))
         {
             return;
         }
 
-        var filePath = Path.Combine(directoryPath, "Data.txt");
         if (!File.Exists(filePath))
         {
             return;
