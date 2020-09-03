@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5733768874693302176
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5733768874693302181}
+  - component: {fileID: 5733768874693302183}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5733768874693302181
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5733768874693302176}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5733768874693302183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5733768874693302176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc295b715c485a440ac7940cf9cc0d26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dontDestroyOnLoad: 1
+  _bgmVolume: 0.3
+  _bgmList:
+  - name: "\u30AF\u30EA\u30A2"
+    clip: {fileID: 8300000, guid: 412da8aca7f09994c872fea56fece88a, type: 3}
+  _seList:
+  - name: "\u6C7A\u5B9A"
+    clip: {fileID: 8300000, guid: 225e2f7142e61974da1286c0fc1351ca, type: 3}
+  - name: "\u30AD\u30E3\u30F3\u30BB\u30EB"
+    clip: {fileID: 8300000, guid: d78db046605b0534fb583bb0629ffadd, type: 3}
+  - name: "\u653B\u6483"
+    clip: {fileID: 8300000, guid: 7f7bdfd4bd2858740b1aa3a7add5b520, type: 3}
+  - name: "\u30C0\u30E1\u30FC\u30B8"
+    clip: {fileID: 8300000, guid: 36acd8bfb353b9f4e9dfc8c375d45038, type: 3}
+  - name: "\u968E\u6BB5"
+    clip: {fileID: 8300000, guid: ad4b9c70c39c971448ba21a11a5bb24d, type: 3}

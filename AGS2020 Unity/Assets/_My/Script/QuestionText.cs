@@ -54,6 +54,8 @@ public class QuestionText : MonoBehaviour
 
     public void Submit(bool isYes)
     {
+        SoundManager.instance.PlaySE("決定");
+
         _isSubmit = true;
         _yes = isYes;
     }

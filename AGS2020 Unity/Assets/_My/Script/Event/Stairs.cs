@@ -32,6 +32,7 @@ public class Stairs : Event
 
         if (result)
         {
+            SoundManager.instance.PlaySE("階段");
             DungeonManager.instance.NextFloor();
         }
 

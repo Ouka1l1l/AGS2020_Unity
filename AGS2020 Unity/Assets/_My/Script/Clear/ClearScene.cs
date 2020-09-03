@@ -21,6 +21,8 @@ public class ClearScene : MonoBehaviour
         _playableDirector = GetComponent<PlayableDirector>();
 
         _playableDirector.stopped += OnPlayableDirectorStopped;
+
+        SoundManager.instance.PlayBGM("クリア");
     }
 
     // Update is called once per frame
@@ -33,6 +35,7 @@ public class ClearScene : MonoBehaviour
 
         if(Input.GetButtonDown("Submit"))
         {
+            SoundManager.instance.StopBGM();
             SceneManager.LoadScene("Hub");
         }
     }

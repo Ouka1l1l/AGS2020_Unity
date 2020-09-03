@@ -89,9 +89,13 @@ public class Floor : MonoBehaviour
     private int _itemMax = 8;
 
     [SerializeField]
-    private GameObject _maskCube;
+    private GameObject _floorCube;
 
-    public Material material;
+    [SerializeField]
+    private GameObject _wallCube;
+
+    [SerializeField]
+    private GameObject _maskCube;
 
     public Vector2Int staisPos;
 
@@ -113,7 +117,6 @@ public class Floor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
 
     private void OnDestroy()
@@ -862,16 +865,15 @@ public class Floor : MonoBehaviour
                 maskCube.transform.SetParent(transform);
                 maskEvent.AddListener(maskCube.Visibility);
 
-                var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                var cube = Instantiate(_wallCube);
                 cube.transform.position = new Vector3(x, -1, -y);
                 cube.transform.SetParent(transform);
-                cube.GetComponent<Renderer>().material = material;
 
                 _miniMapMask[y, x] = cube;
 
                 if (_terrainData[y, x] == TerrainType.Wall)
                 {
-                    var Wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    var Wall = Instantiate(_wallCube);
                     Wall.transform.position = new Vector3(x, 0, -y);
                     Wall.transform.SetParent(cube.transform);
                 }
