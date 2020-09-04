@@ -31,6 +31,18 @@ public abstract class ThrowingItem : Item
 
         transform.rotation = Quaternion.Euler(0, (float)character._dir, 0);
 
+        var throwData = ThrowSimulation(character);
+
+        StartCoroutine(Throwing(throwData.Item2, throwData.Item1));
+    }
+
+    /// <summary>
+    /// 投擲したときに当るキャラクタの番号と目標地点を返す
+    /// </summary>
+    /// <param name="character"> 投擲するキャラクタ</param>
+    /// <returns> 当るキャラクタの番号と目標地点　:　キャラクタの番号が-1だった場合当たってない</returns>
+    private System.Tuple<int,Vector3> ThrowSimulation(Character character)
+    {
         var floor = DungeonManager.instance._floor;
 
         //正面ベクトル
@@ -76,7 +88,7 @@ public abstract class ThrowingItem : Item
             throwingPos = tmpPos;
         }
 
-        StartCoroutine(Throwing(throwingPos, characterNo));
+        return new System.Tuple<int, Vector3>(characterNo, throwingPos);
     }
 
     /// <summary>
@@ -96,11 +108,11 @@ public abstract class ThrowingItem : Item
             yield return null;
         }
 
-        if(characterNo != -1)
+        if (characterNo != -1)
         {
             //当たったキャラ
             Character target;
-            if(characterNo == 0)
+            if (characterNo == 0)
             {
                 //プレイヤーに当たった
                 target = DungeonManager.instance._player;
@@ -125,5 +137,15 @@ public abstract class ThrowingItem : Item
         }
 
         DungeonManager.instance.PauseEnd();
+    }
+
+    public override bool EnemyWhetherToUse(Enemy enemy)
+    {
+        if(ThrowSimulation(enemy).Item1 != -1)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

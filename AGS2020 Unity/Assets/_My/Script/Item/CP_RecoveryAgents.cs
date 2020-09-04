@@ -24,4 +24,14 @@ public class CP_RecoveryAgents : Item
 
         Destroy(gameObject);
     }
+
+    public override bool EnemyWhetherToUse(Enemy enemy)
+    {
+        if (enemy._cp > 0)
+        {
+            return true;
+        }
+
+        return false;
+    }
 }

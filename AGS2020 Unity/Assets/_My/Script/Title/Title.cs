@@ -12,10 +12,15 @@ public class Title : MonoBehaviour
     [SerializeField]
     private Button _continueButton;
 
+    [SerializeField]
+    private Fade _fade;
+
     // Start is called before the first frame update
     void Start()
     {
-        if(!SaveData.instance.FileCheck())
+        _fade.FadeIn();
+
+        if (!SaveData.instance.FileCheck())
         {
             _continueButton.gameObject.SetActive(false);
         }
@@ -32,6 +37,6 @@ public class Title : MonoBehaviour
 
     public void SceneTransition()
     {
-        SceneManager.LoadScene("Hub");
+        _fade.FadeOut(() => SceneManager.LoadScene("Hub"));
     }
 }

@@ -748,20 +748,20 @@ public class Floor : MonoBehaviour
             int roomNo;
             var pos = GetRandomFloorPos(out roomNo);
             var grid = DungeonManager.instance.GetGrid(pos);
-            var needleFloor = Instantiate(_floorDatas.GetLotteryTrap(0)).GetComponent<NeedleFloor>();
-            needleFloor.Init(pos.x, pos.y, roomNo);
+            var trap = Instantiate(_floorDatas.GetLotteryTrap(0)).GetComponent<Event>();
+            trap.Init(pos.x, pos.y, roomNo);
             _terrainData[grid.y, grid.x] = TerrainType.Event;
-            _eventData[grid.y, grid.x] = needleFloor;
+            _eventData[grid.y, grid.x] = trap;
         }
 
         //////////////
-        var tpos = new Vector2Int(staisPos.x + 1, staisPos.y - 1);
-        var tgrid = DungeonManager.instance.GetGrid(tpos);
+        //var tpos = new Vector2Int(staisPos.x + 1, staisPos.y - 1);
+        //var tgrid = DungeonManager.instance.GetGrid(tpos);
 
-        _terrainData[tgrid.y, tgrid.x] = TerrainType.Event;
-        var testTrap = Instantiate(_testTrap).GetComponent<Event>();
-        testTrap.Init(tpos.x, tpos.y, GetRoomNo(tpos.x, tpos.y));
-        _eventData[tgrid.y, tgrid.x] = testTrap;
+        //_terrainData[tgrid.y, tgrid.x] = TerrainType.Event;
+        //var testTrap = Instantiate(_testTrap).GetComponent<Event>();
+        //testTrap.Init(tpos.x, tpos.y, GetRoomNo(tpos.x, tpos.y));
+        //_eventData[tgrid.y, tgrid.x] = testTrap;
         //////////////
     }
 
@@ -818,13 +818,13 @@ public class Floor : MonoBehaviour
         }
 
         ////
-        var tpos = new Vector2Int(staisPos.x, staisPos.y - 1);
-        var tgrid = DungeonManager.instance.GetGrid(tpos);
+        //var tpos = new Vector2Int(staisPos.x, staisPos.y - 1);
+        //var tgrid = DungeonManager.instance.GetGrid(tpos);
 
-        _terrainData[tgrid.y, tgrid.x] = TerrainType.Item;
-        var Portion = Instantiate((GameObject)Resources.Load("WoodNeedle")).GetComponent<Item>();
-        Portion.SetPos(tpos.x, tpos.y);
-        _itemData[tgrid.y, tgrid.x] = Portion;
+        //_terrainData[tgrid.y, tgrid.x] = TerrainType.Item;
+        //var Portion = Instantiate((GameObject)Resources.Load("WoodNeedle")).GetComponent<Item>();
+        //Portion.SetPos(tpos.x, tpos.y);
+        //_itemData[tgrid.y, tgrid.x] = Portion;
         ////
     }
 

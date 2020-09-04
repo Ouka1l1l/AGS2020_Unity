@@ -1,5 +1,4 @@
-﻿using Packages.Rider.Editor.UnitTesting;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -33,6 +32,11 @@ public class PowerUpMenu : MonoBehaviour
 
         ButtonUpdate();
 
+        Invoke("DefaultButtonSelect", 0.5f);
+    }
+
+    private void DefaultButtonSelect()
+    {
         _startSelectButtonList[_currentButtonListIndex].Select();
     }
 

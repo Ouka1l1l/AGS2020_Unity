@@ -24,4 +24,14 @@ public class MedicalBox : Item
 
         Destroy(gameObject);
     }
+
+    public override bool EnemyWhetherToUse(Enemy enemy)
+    {
+        if (enemy._hp < (enemy._maxHp / 2))
+        {
+            return true;
+        }
+
+        return false;
+    }
 }

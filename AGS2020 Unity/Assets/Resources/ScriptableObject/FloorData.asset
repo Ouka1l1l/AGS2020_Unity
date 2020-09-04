@@ -26,6 +26,18 @@ MonoBehaviour:
     - {fileID: 5633072599873236034, guid: 70838c1b25a766741b1f7aeb37f2fcb4, type: 3}
     _itemList:
     - {fileID: 4201646403381415385, guid: 185e45cc3cd54b04abaea6a140e10c3f, type: 3}
+    - {fileID: 4201646403381415385, guid: 185e45cc3cd54b04abaea6a140e10c3f, type: 3}
     - {fileID: 5925886585703298938, guid: dd4621b53d471184aa17a89624569a5b, type: 3}
+    - {fileID: 5925886585703298938, guid: dd4621b53d471184aa17a89624569a5b, type: 3}
+    - {fileID: 3935164412164114482, guid: 1d3cc6341e44e5340b68f2e3c233851e, type: 3}
     _trapList:
     - {fileID: 6402977038536893482, guid: 90306c87457c7c9478cfdb4ed2b88bcd, type: 3}
+    - {fileID: 6402977038536893482, guid: 90306c87457c7c9478cfdb4ed2b88bcd, type: 3}
+    - {fileID: 6402977038536893482, guid: 90306c87457c7c9478cfdb4ed2b88bcd, type: 3}
+    - {fileID: 6402977038536893482, guid: 90306c87457c7c9478cfdb4ed2b88bcd, type: 3}
+    - {fileID: 6402977038536893482, guid: 90306c87457c7c9478cfdb4ed2b88bcd, type: 3}
+    - {fileID: 6402977038536893482, guid: 90306c87457c7c9478cfdb4ed2b88bcd, type: 3}
+    - {fileID: 5410313523505305841, guid: b537d292ca24de449aeec11d148728f2, type: 3}
+    - {fileID: 5410313523505305841, guid: b537d292ca24de449aeec11d148728f2, type: 3}
+    - {fileID: 5410313523505305841, guid: b537d292ca24de449aeec11d148728f2, type: 3}
+    - {fileID: 4288392239472473377, guid: 9baa7a6d448c71d45be05c585c3d1ae6, type: 3}

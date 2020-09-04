@@ -39,8 +39,8 @@ public abstract class Item : MonoBehaviour
     /// <summary>
     /// 座標を変更する
     /// </summary>
-    /// <param name="x"></param> X座標
-    /// <param name="y"></param> Y座標
+    /// <param name="x"> X座標</param>
+    /// <param name="y"> Y座標</param>
     public void SetPos(int x, int y)
     {
         transform.position = new Vector3(x, transform.position.y, y);
@@ -66,7 +66,7 @@ public abstract class Item : MonoBehaviour
     /// <summary>
     /// アイテムを捨てる
     /// </summary>
-    /// <param name="pos"></param> 座標
+    /// <param name="pos"> 座標</param>
     public void Drop(Vector2Int pos)
     {
         var floor = DungeonManager.instance._floor;
@@ -154,9 +154,16 @@ public abstract class Item : MonoBehaviour
     /// <summary>
     /// アイテムを使用する
     /// </summary>
-    /// <param name="character"></param> 使ったキャラ
+    /// <param name="character"> 使ったキャラ</param>
     public virtual void Use(Character character)
     {
         UIManager.instance.AddText(character._name + "は、" + _name + "を使った");
     }
+
+    /// <summary>
+    /// 敵がアイテムを使えるか
+    /// </summary>
+    /// <param name="enemy"> 使用者</param>
+    /// <returns> アイテムを使えるか</returns>
+    public abstract bool EnemyWhetherToUse(Enemy enemy);
 }

@@ -362,16 +362,16 @@ public class Player : Character
         base.Spawn();
 
         /////////デバック
-        _dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, -1);
+        //_dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, -1);
 
-        Vector2Int pos = _dungeonManager._floor.staisPos;
-        pos.x++;
+        //Vector2Int pos = _dungeonManager._floor.staisPos;
+        //pos.x++;
 
-        transform.position = new Vector3(pos.x, 0, pos.y);
-        _destination = transform.position;
+        //transform.position = new Vector3(pos.x, 0, pos.y);
+        //_destination = transform.position;
 
-        _dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, _id);
-        _roomNo = _dungeonManager._floor.GetRoomNo(transform.position.x, transform.position.z);
+        //_dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, _id);
+        //_roomNo = _dungeonManager._floor.GetRoomNo(transform.position.x, transform.position.z);
         ////////
 
         _dungeonManager._floor.UpdateMiniMap(_roomNo);

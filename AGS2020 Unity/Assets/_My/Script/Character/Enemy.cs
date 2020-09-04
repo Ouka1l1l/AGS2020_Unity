@@ -329,29 +329,7 @@ public abstract class Enemy : Character
     /// <returns> アイテムを使うか</returns>
     protected bool CheckUseItem()
     {
-        bool useFlag = false;
-        switch (_itam._type)
-        {
-            case Item.ItemType.MedicalBox:
-                if (_hp < (_maxHp / 2))
-                {
-                    useFlag = true;
-                }
-                break;
-
-            case Item.ItemType.CP_RecoveryAgents:
-                if (_cp > 0)
-                {
-                    useFlag = true;
-                }
-                break;
-
-            default:
-                Debug.LogError("敵アイテムエラー" + _itam._type);
-                break;
-        }
-
-        if (useFlag)
+        if (_itam.EnemyWhetherToUse(this))
         {
             SetActFunc(ItemAction);
             return true;
