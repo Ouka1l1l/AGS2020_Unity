@@ -18,7 +18,9 @@ public class Title : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _fade.FadeIn();
+        _fade.FadeIn(() => _beginButton.Select());
+
+        SoundManager.instance.PlayBGM("タイトル");
 
         if (!SaveData.instance.FileCheck())
         {
@@ -35,8 +37,24 @@ public class Title : MonoBehaviour
         //}
     }
 
-    public void SceneTransition()
+    public void BeginButton()
     {
+        SaveData.instance.CreateNewData();
+        SceneTransition();
+    }
+
+    public void ContinueButton()
+    {
+        SaveData.instance.Load();
+        SceneTransition();
+    }
+
+    private void SceneTransition()
+    {
+        SoundManager.instance.PlaySE("決定");
+
+        SoundManager.instance.StopBGM();
+
         _fade.FadeOut(() => SceneManager.LoadScene("Hub"));
     }
 }

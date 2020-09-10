@@ -26,7 +26,7 @@ MonoBehaviour:
     cost: 5
     addAtk: 10
   - name: "\u7A81\u304D"
-    icon: {fileID: 21300000, guid: b363adfa4fe4be74fba503888ee678e9, type: 3}
+    icon: {fileID: 21300000, guid: 5b080dc64acd73e4fbeeafb0443c8863, type: 3}
     cost: 10
     addAtk: 5
   - name: "\u8599\u304E\u6255\u3044"

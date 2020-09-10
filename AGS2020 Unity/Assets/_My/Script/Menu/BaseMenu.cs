@@ -23,4 +23,14 @@ public abstract class BaseMenu : MonoBehaviour
     {
         DungeonManager.instance.PauseEnd();
     }
+
+    public void SubmitSe()
+    {
+        SoundManager.instance.PlaySE("決定");
+    }
+
+    public void CancelSe()
+    {
+        SoundManager.instance.PlaySE("キャンセル");
+    }
 }

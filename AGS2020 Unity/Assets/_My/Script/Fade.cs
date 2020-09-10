@@ -8,18 +8,23 @@ public class Fade : MonoBehaviour
 {
     private Image _image;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         _image = GetComponent<Image>();
     }
 
-    public void FadeIn()
+    // Start is called before the first frame update
+    void Start()
     {
-        StartCoroutine(FadeInCoroutine());
+
     }
 
-    private IEnumerator FadeInCoroutine()
+    public void FadeIn(Action action = null)
+    {
+        StartCoroutine(FadeInCoroutine(action));
+    }
+
+    private IEnumerator FadeInCoroutine(Action action)
     {
         float alpha = 1.0f;
         _image.SetAlpha(alpha);
@@ -30,6 +35,8 @@ public class Fade : MonoBehaviour
             _image.SetAlpha(alpha);
             yield return null;
         }
+
+        action?.Invoke();
     }
 
     public void FadeOut(Action action)

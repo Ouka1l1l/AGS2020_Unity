@@ -25,6 +25,8 @@ public class MonsterTrap : Event
 
         base.Execution(character);
 
+        SoundManager.instance.PlaySE("モンスタートラップ");
+
         dungeonManager._floor.SpawnEnemiesAround(transform.position, _range);
 
         dungeonManager._floor.SetTerrainData((int)transform.position.x, (int)transform.position.z, Floor.TerrainType.Floor);

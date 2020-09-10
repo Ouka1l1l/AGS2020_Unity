@@ -13,12 +13,14 @@ public class CP_RecoveryAgents : Item
 
         _type = ItemType.CP_RecoveryAgents;
         _name = "CP回復薬";
-        healValue = 30;
+        healValue = 50;
     }
 
     public override void Use(Character character)
     {
         base.Use(character);
+
+        SoundManager.instance.PlaySE("回復");
 
         character.CpSub(healValue);
 

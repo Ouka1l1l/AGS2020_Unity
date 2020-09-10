@@ -43,7 +43,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b35e5d56183538d42b97e15076bd5054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _testTrap: {fileID: 8455093820835210068, guid: 9baa7a6d448c71d45be05c585c3d1ae6,
+  testTrap: {fileID: 0}
+  testItem: {fileID: 4343657384866460614, guid: 185e45cc3cd54b04abaea6a140e10c3f,
     type: 3}
   _floorCube: {fileID: 2048751911888334219, guid: ed37470fc83361342ae9008732ad402d,
     type: 3}
@@ -51,5 +52,4 @@ MonoBehaviour:
     type: 3}
   _maskCube: {fileID: 7804540303340314029, guid: 49b36df68c08f7148bc53de2ae6f99e5,
     type: 3}
-  material: {fileID: 2100000, guid: 44681b5d76c042d41815780eb8822927, type: 2}
   staisPos: {x: 0, y: 0}

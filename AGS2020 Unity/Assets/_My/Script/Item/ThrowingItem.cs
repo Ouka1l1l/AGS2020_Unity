@@ -24,6 +24,8 @@ public abstract class ThrowingItem : Item
     {
         UIManager.instance.AddText(character._name + "は、" + _name + "を投げた");
 
+        SoundManager.instance.PlaySE("投擲");
+
         foreach (var renderer in _renderers)
         {
             renderer.enabled = true;

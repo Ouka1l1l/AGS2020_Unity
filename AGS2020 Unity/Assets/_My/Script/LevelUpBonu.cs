@@ -270,6 +270,8 @@ public class LevelUpBonu : MonoBehaviour
 
     private void Submit()
     {
+        SoundManager.instance.PlaySE("決定");
+
         if (_levelUpBonus[_choice]._bonusType != LevelUpBonusType.Skill)
         {
             _player.LevelUpBonus(_levelUpBonus[_choice]);
@@ -342,6 +344,8 @@ public class LevelUpBonu : MonoBehaviour
 
         if (Input.GetButtonDown("Submit"))
         {
+            SoundManager.instance.PlaySE("決定");
+
             _statusText[0].text = string.Format("最大HP {0:d}", _player._maxHp);
             _statusText[1].text = string.Format("CP容量 {0:d}", _player._cpLimit);
             _statusText[2].text = string.Format("攻撃力 {0:d}", _player._atk);
@@ -355,6 +359,8 @@ public class LevelUpBonu : MonoBehaviour
     {
         if (Input.GetButtonDown("Submit"))
         {
+            SoundManager.instance.PlaySE("決定");
+
             _statusCanvas.gameObject.SetActive(false);
             _bonusCanvas.gameObject.SetActive(true);
 

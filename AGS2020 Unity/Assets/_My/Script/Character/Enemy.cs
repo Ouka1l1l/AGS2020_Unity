@@ -82,6 +82,11 @@ public abstract class Enemy : Character
     /// </summary>
     protected Player _player;
 
+    /// <summary>
+    /// プレイヤーから見えているか
+    /// </summary>
+    private bool _isVisibility = false;
+
     protected Vector3 _targetPos;
 
     // Start is called before the first frame update
@@ -110,10 +115,10 @@ public abstract class Enemy : Character
 
     private void Update()
     {
-        bool ret = _player.VisibilityCheck(transform.position);
+        bool _isVisibility = _player.VisibilityCheck(transform.position);
         foreach (var renderer in _renderers)
         {
-            renderer.enabled = ret;
+            renderer.enabled = _isVisibility;
         }
     }
 
@@ -122,6 +127,11 @@ public abstract class Enemy : Character
         if(_thinkEnd)
         {
             return true;
+        }
+
+        if(!AnimationIdleDetection())
+        {
+            return false;
         }
 
         //アイテムを持っているか
@@ -154,7 +164,7 @@ public abstract class Enemy : Character
             if (PlayerDetection(new Vector2Int(1, 1)))
             {
                 //通常攻撃
-                _dir = GetTargetDir(_player._destination);
+                _dir = GetTargetDir(_player.transform.position);
                 SetActFunc(AttackAction);
                 return false;
             }
@@ -467,5 +477,17 @@ public abstract class Enemy : Character
         }
 
         Destroy(gameObject);
+    }
+
+    /// <summary>
+    /// アニメーションからPlaySEを呼び出す用
+    /// </summary>
+    /// <param name="seName"> SEの名前</param>
+    protected override void PlaySe(string seName)
+    {
+        if (!_isVisibility)
+        {
+            base.PlaySe(seName);
+        }
     }
 }

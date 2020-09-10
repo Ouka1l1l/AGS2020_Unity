@@ -7,10 +7,16 @@ using UnityEngine.SceneManagement;
 public class GameOver : MonoBehaviour
 {
     [SerializeField]
+    private Fade _fade;
+
+    [SerializeField]
     private TextMeshProUGUI _arrivalFloorText;
 
     [SerializeField]
-    private TextMeshProUGUI _conversionText;
+    private GameObject _conversionText;
+
+    [SerializeField]
+    private GameObject _partsImage;
 
     [SerializeField]
     private TextMeshProUGUI _partsText;
@@ -24,7 +30,8 @@ public class GameOver : MonoBehaviour
 
         _arrivalFloorText.text = string.Format("{0:d}階まで到達した", DungeonManager.instance._hierarchy);
 
-        _conversionText.gameObject.SetActive(false);
+        _conversionText.SetActive(false);
+        _partsImage.SetActive(false);
         _partsText.gameObject.SetActive(false);
         _addPartsText.gameObject.SetActive(false);
 
@@ -37,10 +44,13 @@ public class GameOver : MonoBehaviour
 
         yield return new WaitUntil(() => Input.GetButtonDown("Submit"));
 
-        _conversionText.gameObject.SetActive(true);
+        SoundManager.instance.PlaySE("決定");
+
+        _conversionText.SetActive(true);
+        _partsImage.SetActive(true);
         _partsText.gameObject.SetActive(true);
 
-        _partsText.text = string.Format("パーツ {0:d}", SaveData.instance._playerData.parts);
+        _partsText.text = string.Format("{0:d}", SaveData.instance._playerData.parts);
 
         var itemList = DungeonManager.instance._player._itemList;
 
@@ -54,17 +64,22 @@ public class GameOver : MonoBehaviour
 
         yield return new WaitUntil(() => Input.GetButtonDown("Submit"));
 
+        SoundManager.instance.PlaySE("決定");
+
         _addPartsText.gameObject.SetActive(false);
 
         SaveData.instance._playerData.parts += addParts;
 
-        _partsText.text = string.Format("パーツ {0:d}", SaveData.instance._playerData.parts);
+        _partsText.text = string.Format("{0:d}", SaveData.instance._playerData.parts);
 
         yield return null;
 
         yield return new WaitUntil(() => Input.GetButtonDown("Submit"));
 
-        SceneManager.LoadScene("Hub");
+        SoundManager.instance.PlaySE("決定");
+
+        SoundManager.instance.StopBGM();
+        _fade.FadeOut(() => SceneManager.LoadScene("Hub"));
     }
 
     public void GameQuit()

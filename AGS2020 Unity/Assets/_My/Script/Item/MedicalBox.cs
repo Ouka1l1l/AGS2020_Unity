@@ -20,6 +20,8 @@ public class MedicalBox : Item
     {
         base.Use(character);
 
+        SoundManager.instance.PlaySE("回復");
+
         character.Heal(healValue);
 
         Destroy(gameObject);

@@ -19,15 +19,23 @@ public class SaveData : Singleton<SaveData>
     /// </summary>
     private string filePath;
 
-    // Start is called before the first frame update
-    void Start()
+    private new void Awake()
     {
+        base.Awake();
+
         directoryPath = Path.Combine(Application.dataPath, @"SaveData");
 
         filePath = Path.Combine(directoryPath, "Data.txt");
+    }
 
-        _playerData = new PlayerData();
-        CreateNewData();
+    // Start is called before the first frame update
+    void Start()
+    {
+        if (_playerData == null)
+        {
+            _playerData = new PlayerData();
+            CreateNewData();
+        }
     }
 
     public void CreateNewData()
@@ -60,15 +68,15 @@ public class SaveData : Singleton<SaveData>
             Directory.CreateDirectory(directoryPath);
         }
 
-        if (!File.Exists(filePath))
-        {
-            File.Create(filePath);
-        }
+        //if (!File.Exists(filePath))
+        //{
+        //    File.Create(filePath);
+        //}
 
         BinaryFormatter binaryFormatter = new BinaryFormatter();
 
         //書き込み専用でファイルを開く
-        FileStream file = File.Open(filePath, FileMode.Open, FileAccess.Write);
+        FileStream file = File.Open(filePath, FileMode.OpenOrCreate, FileAccess.Write);
 
         try
         {
@@ -104,7 +112,7 @@ public class SaveData : Singleton<SaveData>
         FileStream file = File.Open(filePath, FileMode.Open, FileAccess.Read);
         try
         {
-            var t = (PlayerData)binaryFormatter.Deserialize(file);
+            _playerData = (PlayerData)binaryFormatter.Deserialize(file);
         }
         finally
         {

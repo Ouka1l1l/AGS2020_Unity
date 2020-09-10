@@ -51,6 +51,8 @@ public abstract class Item : MonoBehaviour
     /// </summary>
     public void BePickedUp()
     {
+        SoundManager.instance.PlaySE("拾う");
+
         var level = DungeonManager.instance._floor;
 
         Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
@@ -88,6 +90,8 @@ public abstract class Item : MonoBehaviour
                 }
                 floor.SetTerrainData(pos + offset, Floor.TerrainType.Item);
                 floor.SetItemData(pos + offset, this);
+
+                SoundManager.instance.PlaySE("落とす");
 
                 return true;
             }

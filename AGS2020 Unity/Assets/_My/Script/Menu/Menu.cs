@@ -48,4 +48,10 @@ public class Menu : BaseMenu
 
         DungeonManager.instance.PauseEnd();
     }
+
+    public void Cancel()
+    {
+        UIManager.instance.CloseMenuAll();
+        CancelSe();
+    }
 }

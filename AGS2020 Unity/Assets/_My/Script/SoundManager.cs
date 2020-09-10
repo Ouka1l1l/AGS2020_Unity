@@ -8,7 +8,10 @@ public class SoundManager : Singleton<SoundManager>
     private float _bgmVolume = 1;
 
     private AudioSource _bgmAudioSource;
-    private AudioSource _seAudioSource;
+    private List<AudioSource> _seAudioSourceList = new List<AudioSource>();
+
+    [SerializeField]
+    private int _seAudioSourceNum = 2;
 
     [System.Serializable]
     struct Audio
@@ -23,14 +26,25 @@ public class SoundManager : Singleton<SoundManager>
     [SerializeField]
     private List<Audio> _seList;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
+        base.Awake();
+
         _bgmAudioSource = gameObject.AddComponent<AudioSource>();
-        _seAudioSource = gameObject.AddComponent<AudioSource>();
+
+        for (int i = 0; i < _seAudioSourceNum; i++)
+        {
+            _seAudioSourceList.Add(gameObject.AddComponent<AudioSource>());
+        }
 
         _bgmAudioSource.loop = true;
         _bgmAudioSource.volume = _bgmVolume;
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+
     }
 
     // Update is called once per frame
@@ -69,6 +83,21 @@ public class SoundManager : Singleton<SoundManager>
             return;
         }
 
-        _seAudioSource.PlayOneShot(seClip);
+        foreach(var audioSource in _seAudioSourceList)
+        {
+            if(!audioSource.isPlaying)
+            {
+                audioSource.PlayOneShot(seClip);
+                break;
+            }
+        }
+    }
+
+    public void StopSE()
+    {
+        foreach (var audioSource in _seAudioSourceList)
+        {
+            audioSource.Stop();
+        }
     }
 }

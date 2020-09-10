@@ -93,6 +93,17 @@ public class HubPlayer : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
 
+        yield return new WaitForSeconds(1);
+
         ReturnRoom(Vector3.back * 2);
+    }
+
+    /// <summary>
+    /// アニメーションからPlaySEを呼び出す用
+    /// </summary>
+    /// <param name="seName"> SEの名前</param>
+    protected virtual void PlaySe(string seName)
+    {
+        SoundManager.instance.PlaySE(seName);
     }
 }

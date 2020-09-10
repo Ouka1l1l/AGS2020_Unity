@@ -55,8 +55,15 @@ public class ItemMenu : BaseMenu
         base.Init();
     }
 
+    public void Cancel()
+    {
+        SoundManager.instance.PlaySE("キャンセル");
+        UIManager.instance.CloseMenu();
+    }
+
     public void Submit(int no)
     {
+        SoundManager.instance.PlaySE("決定");
         DungeonManager.instance._player.UseItem(no + _indexOffset);
         UIManager.instance.CloseMenuAll();
     }

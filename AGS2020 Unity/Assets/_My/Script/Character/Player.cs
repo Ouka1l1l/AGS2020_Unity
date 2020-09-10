@@ -30,20 +30,41 @@ public class Player : Character
     [SerializeField]
     private GameObject _arrow;
 
+    private FollowCamera _camera;
+
+    /// <summary>
+    /// セーブデータからステータスをロード
+    /// </summary>
+    private void StatusLoad()
+    {
+        const int defaultHp = 100;
+        const int defaultCp = 150;
+        const int defaultAtk = 30;
+        const int defaultDef = 5;
+        const int defaultRegeneration = 1;
+        const int defaultitamMax = 10;
+
+        var upCounts = SaveData.instance._playerData.upCounts;
+        _maxHp = defaultHp + (10 * upCounts[PlayerData.Status.Hp]);
+        _cpLimit = defaultCp + (10 * upCounts[PlayerData.Status.Cp]);
+        _atk = defaultAtk + upCounts[PlayerData.Status.Atk];
+        _def = defaultDef + upCounts[PlayerData.Status.Def];
+        _regeneration = defaultRegeneration + upCounts[PlayerData.Status.Regene];
+        _itamMax = defaultitamMax + upCounts[PlayerData.Status.BagCapacity];
+    }
+
     // Start is called before the first frame update
     new void Start()
     {
-        base.Start();
+        StatusLoad();
 
-        _atk = 30;
+        base.Start();
 
         _type = CharacterType.Player;
         _id = 0;
         _name = "<color=#ffff00>プレイヤー</color>";
 
         _itemList = new List<Item>();
-
-        _regeneration = 1;
 
         _skillAttackSlot = new SkillAttackType[4];
 
@@ -59,16 +80,11 @@ public class Player : Character
 
         _visibleRect = new Rect(2, 2, 2, 2);
 
-        _cpLimit = 100;
+        _camera = Camera.main.GetComponent<FollowCamera>();
     }
 
     public override bool Think()
     {
-        if(Input.GetKeyDown("4"))
-        {
-            StartCoroutine(ExpUp(300));
-        }
-
         if (_thinkEnd)
         {
             return true;
@@ -116,6 +132,7 @@ public class Player : Character
         if (Input.GetButtonDown("Y_Button"))
         {
             //メニューを開く
+            SoundManager.instance.PlaySE("メニュー");
             UIManager.instance.OpenMenu();
             return false;
         }
@@ -140,13 +157,23 @@ public class Player : Character
         return false;
     }
 
-    protected override void AttackAction()
+    //protected override void AttackAction()
+    //{
+    //    int exp = Attack();
+    //    if (exp > 0)
+    //    {
+    //        StartCoroutine(ExpUp(exp));
+    //    }
+    //}
+
+    new protected int Attack()
     {
-        int exp = Attack();
+        int exp = base.Attack();
         if (exp > 0)
         {
             StartCoroutine(ExpUp(exp));
         }
+        return exp;
     }
 
     protected override void ActEnd()
@@ -317,6 +344,8 @@ public class Player : Character
 
     private void LevelUp()
     {
+        SoundManager.instance.PlaySE("レベルアップ");
+
         _level++;
         UIManager.instance.AddText(_name + "は、レベル" + _level + "になった");
 
@@ -434,6 +463,16 @@ public class Player : Character
         return true;
     }
 
+    public override bool Damage(int damage, int def = 0)
+    {
+        if(!base.Damage(damage, def))
+        {
+            _camera.Shake(0.5f, 0.1f);
+            return false;
+        }
+        return true;
+    }
+
     protected override void Death()
     {
         base.Death();
@@ -460,7 +499,7 @@ public class Player : Character
     /// <summary>
     /// 見えているかのチェック
     /// </summary>
-    /// <param name="pos"></param> 座標
+    /// <param name="pos"> 座標</param>
     /// <returns></returns>
     public bool VisibilityCheck(Vector3 pos)
     {

@@ -14,26 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyData:
   - name: "\u30B9\u30E9\u30A4\u30E0"
-    maxHp: 100
+    maxHp: 50
     atk: 10
     def: 5
     exp: 50
     skillAttacks: 01000000
   - name: "\u30BE\u30F3\u30D3"
-    maxHp: 100
+    maxHp: 80
     atk: 15
     def: 5
     exp: 50
     skillAttacks: 02000000
   - name: "\u30B9\u30B1\u30EB\u30C8\u30F3"
-    maxHp: 100
-    atk: 20
+    maxHp: 80
+    atk: 15
     def: 5
     exp: 50
     skillAttacks: 010000000300000004000000
   - name: "\u3046\u3054\u304F\u77F3\u50CF"
     maxHp: 100
-    atk: 50
+    atk: 20
     def: 5
     exp: 50
     skillAttacks: 

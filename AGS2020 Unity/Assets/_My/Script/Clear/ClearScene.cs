@@ -13,6 +13,9 @@ public class ClearScene : MonoBehaviour
     [SerializeField]
     private Canvas _blinkCanvas;
 
+    [SerializeField]
+    private Fade _fade;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +26,7 @@ public class ClearScene : MonoBehaviour
         _playableDirector.stopped += OnPlayableDirectorStopped;
 
         SoundManager.instance.PlayBGM("クリア");
+        _fade.FadeIn(() => _playableDirector.Play());
     }
 
     // Update is called once per frame
@@ -35,8 +39,10 @@ public class ClearScene : MonoBehaviour
 
         if(Input.GetButtonDown("Submit"))
         {
+            //SoundManager.instance.PlaySE("決定");
             SoundManager.instance.StopBGM();
-            SceneManager.LoadScene("Hub");
+
+            _fade.FadeOut(() => SceneManager.LoadScene("Hub"));
         }
     }
 

@@ -32,6 +32,8 @@ public class Workbench : MonoBehaviour
             _powerUpMenu.Init();
 
             _trigger.enabled = false;
+
+            StartCoroutine(Wait(player));
         }
     }
 

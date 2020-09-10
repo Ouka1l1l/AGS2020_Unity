@@ -15,16 +15,21 @@ public class FollowCamera : MonoBehaviour
     [SerializeField]
     private Vector3 _offset;
 
+    private bool _isShake = false;
+
     // Start is called before the first frame update
     void Start()
     {
-
+        _isShake = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.position = _target.transform.position + _offset;
+        if (!_isShake)
+        {
+            transform.position = _target.transform.position + _offset;
+        }
     }
 
     /// <summary>
@@ -35,5 +40,32 @@ public class FollowCamera : MonoBehaviour
     {
         _target = target;
         transform.position = _target.transform.position + _offset;
+    }
+
+    public void Shake(float duration,float magnitude)
+    {
+        StartCoroutine(ShakeCoroutine(duration, magnitude));
+    }
+
+    private IEnumerator ShakeCoroutine(float duration, float magnitude)
+    {
+        _isShake = true;
+
+        var pos = transform.localPosition;
+
+        var rotation = transform.rotation;
+
+        while(duration > 0)
+        {
+            var x = pos.x + Random.Range(-1f, 1f) * magnitude;
+            var y = pos.y + Random.Range(-1f, 1f) * magnitude;
+
+            transform.localPosition = new Vector3(x, y, pos.z);
+
+            duration -= Time.deltaTime;
+            yield return null;
+        }
+
+        _isShake = false;
     }
 }

@@ -30,6 +30,7 @@ public class QuestionText : MonoBehaviour
     {
         _isSubmit = false;
         _yes = false;
+        SoundManager.instance.PlaySE("メニュー");
     }
 
     public IEnumerator Question(Action<bool> CallBack)

@@ -214,7 +214,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// スキル攻撃エフェクト
     /// </summary>
-    private TrailRenderer _trailRenderer;
+    private TrailRenderer[] _trailRenderers;
 
     /// <summary>
     /// ActFuncをターン中に１階だけ呼び出すようフラグ
@@ -250,14 +250,14 @@ public abstract class Character : MonoBehaviour
 
         _animator = GetComponentInChildren<Animator>();
 
-        _trailRenderer = transform.GetComponentInChildren<TrailRenderer>();
+        _trailRenderers = transform.GetComponentsInChildren<TrailRenderer>();
     }
 
     /// <summary>
     /// アニメーションが待機かどうか
     /// </summary>
     /// <returns> 待機アニメーションか</returns>
-    private bool AnimationIdleDetection()
+    protected bool AnimationIdleDetection()
     {
         return _animator.GetCurrentAnimatorStateInfo(0).IsName("アーマチュア|Idle") && !_animator.IsInTransition(0);
     }
@@ -296,9 +296,12 @@ public abstract class Character : MonoBehaviour
             {
                 ActEnd();
 
-                if (_trailRenderer != null)
+                foreach (var trail in _trailRenderers)
                 {
-                    _trailRenderer.emitting = false;
+                    if (trail != null)
+                    {
+                        trail.emitting = false;
+                    }
                 }
 
                 return true;
@@ -413,7 +416,7 @@ public abstract class Character : MonoBehaviour
             return false;
         }
 
-        transform.position = Vector3.MoveTowards(transform.position, _destination, Time.deltaTime * 5.0f);
+        transform.position = Vector3.MoveTowards(transform.position, _destination, Time.deltaTime * 8.0f);
         if (_destination == transform.position)
         {
             _animator.SetBool("MoveFlag", false);
@@ -440,7 +443,9 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected virtual void AttackAction()
     {
-        Attack();
+        transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
+        _animator.SetTrigger("AttackTrigger");
+        //Attack();
     }
 
     /// <summary>
@@ -449,9 +454,9 @@ public abstract class Character : MonoBehaviour
     /// <returns> 獲得経験値</returns>
     protected int Attack()
     {
-        _animator.SetTrigger("AttackTrigger");
+        //_animator.SetTrigger("AttackTrigger");
 
-        transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
+        //transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
 
         UIManager.instance.AddText(_name + "の攻撃");
 
@@ -492,22 +497,27 @@ public abstract class Character : MonoBehaviour
     /// <param name="skillAttackType"> セットするスキル攻撃のタイプ</param>
     protected void SetSkillAttackAction(SkillAttackType skillAttackType)
     {
+        string animName = string.Empty;
         switch (skillAttackType)
         {
             case SkillAttackType.RotaryAttack:
                 SkillAttackFunc = RotaryAttack;
+                animName = "RotaryAttackTrigger";
                 break;
 
             case SkillAttackType.HeavyAttack:
                 SkillAttackFunc = HeavyAttack;
+                animName = "HeavyAttackTrigger";
                 break;
 
             case SkillAttackType.ThrustAttack:
                 SkillAttackFunc = ThrustAttack;
+                animName = "ThrustAttackTrigger";
                 break;
 
             case SkillAttackType.MowDownAttack:
                 SkillAttackFunc = MowDownAttack;
+                animName = "MowDownAttackTrigger";
                 break;
 
             default:
@@ -515,7 +525,21 @@ public abstract class Character : MonoBehaviour
                 break;
         }
 
-        SetActFunc(SkillAttackAction);
+        Action action = () =>
+        {
+            foreach (var trail in _trailRenderers)
+            {
+                if (trail != null)
+                {
+                    trail.emitting = true;
+                }
+            }
+
+            _animator.SetTrigger(animName);
+        };
+
+
+        SetActFunc(action);
     }
 
     /// <summary>
@@ -526,10 +550,13 @@ public abstract class Character : MonoBehaviour
     /// <returns> 獲得経験値</returns>
     protected virtual int SkillAttack(SkillAttackType skillType)
     {
-        if (_trailRenderer != null)
-        {
-            _trailRenderer.emitting = true;
-        }
+        //foreach (var trail in _trailRenderers)
+        //{
+        //    if (trail != null)
+        //    {
+        //        trail.emitting = true;
+        //    }
+        //}
 
         _thinkEnd = true;
 
@@ -615,7 +642,7 @@ public abstract class Character : MonoBehaviour
     /// <returns> 獲得経験値</returns>
     protected int HeavyAttack()
     {
-        _animator.SetTrigger("HeavyAttackTrigger");
+        //_animator.SetTrigger("HeavyAttackTrigger");
 
         return SkillAttack(SkillAttackType.HeavyAttack);
     }
@@ -637,7 +664,7 @@ public abstract class Character : MonoBehaviour
     /// <returns> 獲得経験値</returns>
     protected int RotaryAttack()
     {
-        _animator.SetTrigger("RotaryAttackTrigger");
+        //_animator.SetTrigger("RotaryAttackTrigger");
 
         return SkillAttack(SkillAttackType.RotaryAttack);
     }
@@ -668,7 +695,7 @@ public abstract class Character : MonoBehaviour
     /// <returns> 獲得経験値</returns>
     protected int ThrustAttack()
     {
-        _animator.SetTrigger("ThrustAttackTrigger");
+        //_animator.SetTrigger("ThrustAttackTrigger");
 
         return SkillAttack(SkillAttackType.ThrustAttack);
     }
@@ -695,7 +722,7 @@ public abstract class Character : MonoBehaviour
     /// <returns> 獲得経験値</returns>
     protected int MowDownAttack()
     {
-        _animator.SetTrigger("MowDownAttackTrigger");
+        //_animator.SetTrigger("MowDownAttackTrigger");
 
         return SkillAttack(SkillAttackType.MowDownAttack);
     }
@@ -739,7 +766,7 @@ public abstract class Character : MonoBehaviour
     /// <param name="damage"> ダメージ量</param>
     /// <param name="def"> ダメージに対する抵抗デフォルトは0</param>
     /// <returns> trueなら死亡</returns>
-    public bool Damage(int damage,int def = 0)
+    public virtual bool Damage(int damage,int def = 0)
     {
         damage = DamageCalculation(damage, def);
 
@@ -909,5 +936,24 @@ public abstract class Character : MonoBehaviour
         _actFuncOnce = false;
 
         DungeonManager.instance._floor.SetCharacterData(transform.position.x, transform.position.z, _id);
+    }
+
+    /// <summary>
+    /// アニメーションからPlaySEを呼び出す用
+    /// </summary>
+    /// <param name="seName"> SEの名前</param>
+    protected virtual void PlaySe(string seName)
+    {
+        SoundManager.instance.PlaySE(seName);
+    }
+
+    protected void PauseStart()
+    {
+        DungeonManager.instance.PauseStart();
+    }
+
+    protected void PauseEnd()
+    {
+        DungeonManager.instance.PauseEnd();
     }
 }

@@ -21,7 +21,11 @@ public class ExplosionFloor : Event
     {
         base.Execution(character);
 
-        _explosion.Play();
+        if (DungeonManager.instance._player._roomNo == _roomNo)
+        {
+            SoundManager.instance.PlaySE("爆発");
+            _explosion.Play();
+        }
 
         var dungeonManager = DungeonManager.instance;
         var charDataList = dungeonManager._floor.GetSurroundingCharacterData(transform.position.x, transform.position.z, 1, 1);

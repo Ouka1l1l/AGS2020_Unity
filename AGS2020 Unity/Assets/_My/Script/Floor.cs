@@ -8,7 +8,11 @@ using Random = UnityEngine.Random;
 public class Floor : MonoBehaviour
 {
     ////////
-    public GameObject _testTrap;
+    public GameObject testTrap;
+    ////////
+
+    ////////
+    public GameObject testItem;
     ////////
 
     /// <summary>
@@ -817,15 +821,15 @@ public class Floor : MonoBehaviour
             _itemData[grid.y, grid.x] = Item;
         }
 
-        ////
+        ////////
         //var tpos = new Vector2Int(staisPos.x, staisPos.y - 1);
         //var tgrid = DungeonManager.instance.GetGrid(tpos);
 
         //_terrainData[tgrid.y, tgrid.x] = TerrainType.Item;
-        //var Portion = Instantiate((GameObject)Resources.Load("WoodNeedle")).GetComponent<Item>();
+        //var Portion = Instantiate(testItem).GetComponent<Item>();
         //Portion.SetPos(tpos.x, tpos.y);
         //_itemData[tgrid.y, tgrid.x] = Portion;
-        ////
+        ////////
     }
 
     /// <summary>
@@ -922,7 +926,7 @@ public class Floor : MonoBehaviour
             {
                 if (_enemies[i] == null)
                 {
-                    Enemy enemy = Instantiate(_floorDatas.GetLotteryEnemy(0)).GetComponent<Enemy>();
+                    Enemy enemy = Instantiate(_floorDatas.GetLotteryEnemy(0)).GetComponentInChildren<Enemy>();
                     enemy.SpawnSetPosition((int)pos.x + key.x, (int)pos.z + key.y, 0, i + 1);
                     _enemies[i] = enemy;
 
@@ -934,7 +938,7 @@ public class Floor : MonoBehaviour
             //空きがなかったら敵配列を追加
             if(i >= _enemies.Count)
             {
-                Enemy enemy = Instantiate(_floorDatas.GetLotteryEnemy(0)).GetComponent<Enemy>();
+                Enemy enemy = Instantiate(_floorDatas.GetLotteryEnemy(0)).GetComponentInChildren<Enemy>();
                 enemy.SpawnSetPosition((int)pos.x + key.x, (int)pos.z + key.y, 0, i + 1);
                 _enemies.Add(enemy);
                 i++;
@@ -952,7 +956,7 @@ public class Floor : MonoBehaviour
         {
             if (_enemies[i] == null)
             {
-                Enemy enemy = Instantiate(_floorDatas.GetLotteryEnemy(0)).GetComponent<Enemy>();
+                Enemy enemy = Instantiate(_floorDatas.GetLotteryEnemy(0)).GetComponentInChildren<Enemy>();
                 do
                 {
                     enemy.Spawn(0, i + 1);
@@ -986,7 +990,7 @@ public class Floor : MonoBehaviour
         int enemyCount = Random.Range(_enemyMin, _enemyMax + 1);
         for (int e = 1; e <= enemyCount; e++)
         {
-            Enemy enemy = Instantiate(_floorDatas.GetLotteryEnemy(0)).GetComponent<Enemy>();
+            Enemy enemy = Instantiate(_floorDatas.GetLotteryEnemy(0)).GetComponentInChildren<Enemy>();
             enemy.Spawn(0, e);
             _enemies.Add(enemy);
         }

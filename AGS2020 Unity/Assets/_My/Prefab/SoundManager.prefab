@@ -45,9 +45,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _dontDestroyOnLoad: 1
   _bgmVolume: 0.3
+  _seAudioSourceNum: 2
   _bgmList:
   - name: "\u30AF\u30EA\u30A2"
     clip: {fileID: 8300000, guid: 412da8aca7f09994c872fea56fece88a, type: 3}
+  - name: "\u30BF\u30A4\u30C8\u30EB"
+    clip: {fileID: 8300000, guid: 34c1185979dd7a246a14a27df6e4cda5, type: 3}
+  - name: "\u62E0\u70B9"
+    clip: {fileID: 8300000, guid: 4081c35730fd563428a682a06ef4dfa2, type: 3}
+  - name: "\u30C0\u30F3\u30B8\u30E7\u30F3"
+    clip: {fileID: 8300000, guid: 4c3b851c4f194e647b2c7b0aa04891ae, type: 3}
   _seList:
   - name: "\u6C7A\u5B9A"
     clip: {fileID: 8300000, guid: 225e2f7142e61974da1286c0fc1351ca, type: 3}
@@ -57,5 +64,25 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 7f7bdfd4bd2858740b1aa3a7add5b520, type: 3}
   - name: "\u30C0\u30E1\u30FC\u30B8"
     clip: {fileID: 8300000, guid: 36acd8bfb353b9f4e9dfc8c375d45038, type: 3}
+  - name: "\u8DB3\u97F3"
+    clip: {fileID: 8300000, guid: b896cea6283754348abd0303f3c5711b, type: 3}
+  - name: "\u7206\u767A"
+    clip: {fileID: 8300000, guid: bc0753b59e19cc842ae442c9507d2946, type: 3}
+  - name: "\u30C9\u30A2"
+    clip: {fileID: 8300000, guid: 1c07f7801c674044fa9b1898f321a599, type: 3}
+  - name: "\u30EC\u30D9\u30EB\u30A2\u30C3\u30D7"
+    clip: {fileID: 8300000, guid: 856ac8b401ef6344d99e2c70245b9e59, type: 3}
+  - name: "\u6295\u64F2"
+    clip: {fileID: 8300000, guid: 570fa4a80ea7d3746a49c699cd8fb718, type: 3}
+  - name: "\u56DE\u5FA9"
+    clip: {fileID: 8300000, guid: 35acd8c8e6e3faa41b235762d18990aa, type: 3}
+  - name: "\u30E1\u30CB\u30E5\u30FC"
+    clip: {fileID: 8300000, guid: 5a02af97e1181de4287cf6c6a196b07b, type: 3}
   - name: "\u968E\u6BB5"
     clip: {fileID: 8300000, guid: ad4b9c70c39c971448ba21a11a5bb24d, type: 3}
+  - name: "\u62FE\u3046"
+    clip: {fileID: 8300000, guid: 7fda0ed9c036dd44eabdfd579138abe8, type: 3}
+  - name: "\u843D\u3068\u3059"
+    clip: {fileID: 8300000, guid: 1c98804c2c4fa3145b53319e06265aad, type: 3}
+  - name: "\u30E2\u30F3\u30B9\u30BF\u30FC\u30C8\u30E9\u30C3\u30D7"
+    clip: {fileID: 8300000, guid: 7967aea6368ddd44cbb556521870b622, type: 3}

@@ -39,7 +39,7 @@ public class FloorDatas : ScriptableObject
 [System.Serializable]
 public struct FloorData
 {
-    public List<Enemy> _enemyList;
+    public List<GameObject> _enemyList;
     public List<Item> _itemList;
     public List<Event> _trapList;
 }

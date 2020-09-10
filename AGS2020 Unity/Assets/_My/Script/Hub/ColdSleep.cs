@@ -16,10 +16,15 @@ public class ColdSleep : MonoBehaviour
 
     private Collider _collider;
 
+    [SerializeField]
+    private Fade _fade;
+
     // Start is called before the first frame update
     void Start()
     {
         _collider = GetComponent<Collider>();
+
+        _fade.FadeIn();
 
         StartCoroutine(OpenDoor());
     }
@@ -53,7 +58,7 @@ public class ColdSleep : MonoBehaviour
 
         if (result)
         {
-            SceneManager.LoadScene("Title");
+            _fade.FadeOut(() => SceneManager.LoadScene("Title"));
         }
         else
         {
@@ -64,6 +69,10 @@ public class ColdSleep : MonoBehaviour
     private IEnumerator OpenDoor()
     {
         _collider.enabled = false;
+
+        yield return new WaitForSeconds(1);
+
+        SoundManager.instance.PlaySE("ドア");
 
         for (int i = 0; i < 5; i++)
         {

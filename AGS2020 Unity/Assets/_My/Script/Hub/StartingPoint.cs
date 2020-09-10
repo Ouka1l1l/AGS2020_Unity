@@ -8,10 +8,13 @@ public class StartingPoint : MonoBehaviour
     [SerializeField]
     private QuestionText _questionText;
 
+    [SerializeField]
+    private Fade _fade;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        SoundManager.instance.PlayBGM("拠点");
     }
 
     private void OnTriggerEnter(Collider other)
@@ -34,7 +37,8 @@ public class StartingPoint : MonoBehaviour
 
         if (result)
         {
-            SceneManager.LoadScene("Dungeon");
+            SoundManager.instance.StopBGM();
+            _fade.FadeOut(() => SceneManager.LoadScene("Dungeon"));
         }
         else
         {

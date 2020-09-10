@@ -9,6 +9,9 @@ public class DungeonManager : Singleton<DungeonManager>
     [SerializeField]
     private GameOver _gameOver;
 
+    [SerializeField]
+    private Fade _fade;
+
     /// <summary>
     /// 階層
     /// </summary>
@@ -46,20 +49,29 @@ public class DungeonManager : Singleton<DungeonManager>
     {
         _pause = 0;
         _turnCount = 1;
-        _player = Instantiate((GameObject)Resources.Load("Player")).GetComponent<Player>();
+        _player = Instantiate((GameObject)Resources.Load("Player")).GetComponentInChildren<Player>();
         _floor = Instantiate((GameObject)Resources.Load("Level")).GetComponent<Floor>();
-        NextFloor();
+
+        SoundManager.instance.PlayBGM("ダンジョン");
+
+        PauseStart();
+        NextFloorFunc();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            _player.Damage(10);
-        }
+        //if (Input.GetKeyDown(KeyCode.Alpha9))
+        //{
+        //    _player.Damage(10);
+        //}
 
-        if(_pause > 0)
+        //if (Input.GetKeyDown(KeyCode.Alpha8))
+        //{
+        //    _player.CpSub(10);
+        //}
+
+        if (_pause > 0)
         {
             return;
         }
@@ -106,6 +118,11 @@ public class DungeonManager : Singleton<DungeonManager>
     /// </summary>
     private void EnemyThink()
     {
+        //////////
+        //TurncController = TurnEnd;
+        //return;
+        //////////
+
         bool thinkEnd = true;
         foreach (var enemy in _floor._enemies)
         {
@@ -192,9 +209,17 @@ public class DungeonManager : Singleton<DungeonManager>
     /// </summary>
     public void NextFloor()
     {
+        PauseStart();
+
+        _fade.FadeOut(() => NextFloorFunc());
+    }
+
+    private void NextFloorFunc()
+    {
         if (_hierarchy >= 10)
         {
-            SceneManager.LoadScene("Clear");
+            SoundManager.instance.StopBGM();
+            _fade.FadeOut(() => SceneManager.LoadScene("Clear"));
             return;
         }
 
@@ -205,6 +230,8 @@ public class DungeonManager : Singleton<DungeonManager>
 
         UIManager.instance.WhatFloor(_hierarchy);
         UIManager.instance.TextClear();
+
+        _fade.FadeIn(() => PauseEnd());
     }
 
     /// <summary>
@@ -244,6 +271,7 @@ public class DungeonManager : Singleton<DungeonManager>
 
     public void GameOver()
     {
+        PauseStart();
         _gameOver.gameObject.SetActive(true);
     }
 }

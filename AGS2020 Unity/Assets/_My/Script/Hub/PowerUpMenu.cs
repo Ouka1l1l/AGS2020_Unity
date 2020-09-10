@@ -28,20 +28,23 @@ public class PowerUpMenu : MonoBehaviour
 
     public void Init()
     {
+        SoundManager.instance.PlaySE("メニュー");
+
         _currentButtonListIndex = 0;
 
         ButtonUpdate();
-
-        Invoke("DefaultButtonSelect", 0.5f);
     }
 
     private void DefaultButtonSelect()
     {
         _startSelectButtonList[_currentButtonListIndex].Select();
+        _startSelectButtonList[_currentButtonListIndex].OnSelect(null);
     }
 
     public void Cancel()
     {
+        SoundManager.instance.PlaySE("キャンセル");
+        EventSystem.current.SetSelectedGameObject(null);
         gameObject.SetActive(false);
     }
 
@@ -58,15 +61,24 @@ public class PowerUpMenu : MonoBehaviour
             _currentButtonListIndex--;
         }
 
-        _buttonList[_currentButtonListIndex].SetActive(true);
-        _startSelectButtonList[_currentButtonListIndex].Select();
-        _startSelectButtonList[_currentButtonListIndex].OnSelect(null);
-
         ButtonUpdate();
     }
 
     private void ButtonUpdate()
     {
+        for(int i = 0;i< _buttonList.Count;i++)
+        {
+            if(i == _currentButtonListIndex)
+            {
+                _buttonList[i].SetActive(true);
+                Invoke("DefaultButtonSelect", 0.5f);
+            }
+            else
+            {
+                _buttonList[i].SetActive(false);
+            }
+        }
+
         bool interactable = (_currentButtonListIndex > 0);
         if (_backButton.enabled != interactable)
         {
