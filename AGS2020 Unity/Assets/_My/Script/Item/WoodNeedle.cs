@@ -13,6 +13,6 @@ public class WoodNeedle : ThrowingItem
 
         _type = ItemType.WoodNeedle;
 
-        _damageVal = 10;
+        _damageVal = 30;
     }
 }

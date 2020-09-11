@@ -276,6 +276,7 @@ public class Player : Character
 
         if(flag)
         {
+            SoundManager.instance.PlaySE("決定");
             UIManager.instance.GetSkillMenu().gameObject.SetActive(false);
         }
     }
@@ -390,7 +391,7 @@ public class Player : Character
     {
         base.Spawn();
 
-        /////////デバック
+        ///////デバック
         //_dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, -1);
 
         //Vector2Int pos = _dungeonManager._floor.staisPos;
@@ -401,7 +402,7 @@ public class Player : Character
 
         //_dungeonManager._floor.SetCharacterData(transform.position.x, transform.position.z, _id);
         //_roomNo = _dungeonManager._floor.GetRoomNo(transform.position.x, transform.position.z);
-        ////////
+        //////
 
         _dungeonManager._floor.UpdateMiniMap(_roomNo);
 

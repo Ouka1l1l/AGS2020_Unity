@@ -13,7 +13,7 @@ public class MedicalBox : Item
 
         _type = ItemType.MedicalBox;
         _name = "回復薬";
-        healValue = 10;
+        healValue = 50;
     }
 
     public override void Use(Character character)

@@ -216,10 +216,13 @@ public class DungeonManager : Singleton<DungeonManager>
 
     private void NextFloorFunc()
     {
-        if (_hierarchy >= 10)
+        if (_hierarchy >= 5)
         {
             SoundManager.instance.StopBGM();
-            _fade.FadeOut(() => SceneManager.LoadScene("Clear"));
+            var itemList = _player._itemList;
+            int addParts = 5 * itemList.Count;
+            SaveData.instance._playerData.parts += addParts;
+            SceneManager.LoadScene("Clear");
             return;
         }
 

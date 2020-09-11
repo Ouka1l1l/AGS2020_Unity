@@ -88,9 +88,9 @@ public class Floor : MonoBehaviour
     /// </summary>
     private int _eventMax = 20;
 
-    private int _itemMin = 5;
+    private int _itemMin = 10;
 
-    private int _itemMax = 8;
+    private int _itemMax = 18;
 
     [SerializeField]
     private GameObject _floorCube;

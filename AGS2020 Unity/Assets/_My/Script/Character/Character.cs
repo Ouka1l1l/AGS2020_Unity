@@ -540,6 +540,8 @@ public abstract class Character : MonoBehaviour
 
 
         SetActFunc(action);
+
+        _thinkEnd = true;
     }
 
     /// <summary>
@@ -557,8 +559,6 @@ public abstract class Character : MonoBehaviour
         //        trail.emitting = true;
         //    }
         //}
-
-        _thinkEnd = true;
 
         transform.rotation = Quaternion.Euler(0, (float)_dir, 0);
 
@@ -791,6 +791,7 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected virtual void Death()
     {
+        SoundManager.instance.PlaySE("ダメージ");
         UIManager.instance.AddText(_name + "は、やられた");
     }
 
